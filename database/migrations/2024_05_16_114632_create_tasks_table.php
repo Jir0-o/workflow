@@ -17,11 +17,17 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'in_progress','incomplete'])->default('pending'); 
             $table->date('submit_date');
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('title_id')->nullable();;
             $table->timestamps();
 
             $table->foreign('user_id')
             ->references('id')
             ->on('users')
+            ->onDelete('cascade');
+            
+            $table->foreign('title_id')
+            ->references('id')
+            ->on('title_names')
             ->onDelete('cascade');
         });
     }
