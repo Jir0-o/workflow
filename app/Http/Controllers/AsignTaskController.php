@@ -31,7 +31,7 @@ class AsignTaskController extends Controller
             }
         }
 
-        $user = Task::with('user')->get();
+        $user = Task::with('user','title')->get();
   
 
         //count
@@ -40,12 +40,12 @@ class AsignTaskController extends Controller
         $incompleteCount = Task::where('status', 'incomplete')->count();
         $inprogressCount = Task::where('status', 'in_progress')->count();
 
-        $pendingTasks = Task::where('status', 'pending')->get();
-        $completeTasks = Task::where('status', 'completed')->get();
-        $incompleteTasks = Task::where('status', 'incomplete')->get();
-        $inprogressTasks = Task::where('status', 'in_progress')->get();
+        $pendingTasks = Task::where('status', 'pending')->with('user','title')->get();
+        $completeTasks = Task::where('status', 'completed')->with('user','title')->get();
+        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title')->get();
+        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title')->get();
     
-        return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','user','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
+        return view('user.asign_task', compact('pendingTasks', 'user', 'completeTasks', 'incompleteTasks','user','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
     }
 
     /**
