@@ -68,6 +68,7 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>User Name</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
                                             <th>Last Date of Submit</th>
@@ -80,6 +81,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->title->project_title }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -135,6 +137,7 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>User Name</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
                                             <th>Last Date of Submit</th>
@@ -147,6 +150,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->title->project_title }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -202,6 +206,7 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>User Name</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
                                             <th>Last Date of Submit</th>
@@ -214,6 +219,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->title->project_title }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -269,6 +275,7 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>User Name</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
                                             <th>Last Date of Submit</th>
@@ -281,6 +288,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->title->project_title }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>

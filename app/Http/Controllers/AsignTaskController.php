@@ -32,6 +32,7 @@ class AsignTaskController extends Controller
         }
 
         $user = Task::with('user')->get();
+  
 
         //count
         $pendingCount = Task::where('status', 'pending')->count();
