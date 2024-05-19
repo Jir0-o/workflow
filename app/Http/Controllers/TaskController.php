@@ -95,13 +95,13 @@ class TaskController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'description' => 'required',
+            'message' => 'required',
         ]);
     
         $task = Task::findOrFail($id);
 
-        $task->description = $request->description;
-        $task->submit_date = $request->last_submit_date;
+        $task->message = $request->message;
+        $task->status = 'in_progress';
         $task->save();
     
         return back()->with('success', 'Task created successfully.');

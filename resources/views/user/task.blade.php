@@ -27,7 +27,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Complete Task
+                                    Completed Task
                                     <span class="badge bg-primary"> {{ $completeCount }}</span>
                                 </button>
                             </li>
@@ -49,7 +49,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Pending Task</h5>
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
@@ -92,15 +92,8 @@
                                                     </button>
                                                     <div class="dropdown-menu">
                                                         <a class="dropdown-item" href="{{ route('tasks.edit', ['task' => $pendingTask->id]) }}">
-                                                            <i class="bx bx-edit-alt me-1"></i> Edit
+                                                            <i class="bx bx-edit-alt me-1"></i> Suggest Edit
                                                         </a>
-                                                        <form action="{{ route('tasks.destroy', $pendingTask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-trash me-1"></i> Delete
-                                                            </button>
-                                                        </form>
                                                         <form action="{{ route('tasks.complete', $pendingTask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                             @csrf
                                                             @method('PATCH')
@@ -124,7 +117,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Incomplete Task</h5>
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
@@ -199,7 +192,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Completed Task</h5>
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
@@ -267,7 +260,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Requested Task</h5>
                                     </div>
                                     
                                     <div class="col-12 col-md-6">

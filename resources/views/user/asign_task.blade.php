@@ -27,7 +27,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Complete Task
+                                    Completed Task
                                     <span class="badge bg-primary"> {{ $completeCount }}</span>
                                 </button>
                             </li>
@@ -49,13 +49,13 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Pending Task</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
                                             </a>
                                         </div>
                                     </div>
@@ -118,13 +118,13 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Incomplete Task</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
                                             </a>
                                         </div>
                                     </div>
@@ -187,13 +187,13 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Completed Task</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
                                             </a>
                                         </div>
                                     </div>
@@ -256,13 +256,13 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Tasks</h5>
+                                        <h5>Requested Task</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
                                             </a>
                                         </div>
                                     </div>
@@ -277,6 +277,7 @@
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Suggestion</th>
                                             <th>Status</th>
                                             <th>Last Date of Submit</th>
                                             <th>Created Date</th>
@@ -290,6 +291,7 @@
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
+                                            <td>{{ $task->message }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->created_at->format('d F Y') }}</td>
