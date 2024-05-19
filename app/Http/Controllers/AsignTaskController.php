@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\asign_task;
 use App\Models\Task;
+use App\Models\TitleName;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Title;
 
 class AsignTaskController extends Controller
 {
@@ -29,9 +31,12 @@ class AsignTaskController extends Controller
                 $task->status = 'pending';
                 $task->save();
             }
+            if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isSameDay($startOfToday)) {
+                $task->status = 'pending';
+                $task->save();
+            }
         }
 
-        $user = Task::with('user','title')->get();
   
 
         //count
@@ -45,7 +50,7 @@ class AsignTaskController extends Controller
         $incompleteTasks = Task::where('status', 'incomplete')->with('user','title')->get();
         $inprogressTasks = Task::where('status', 'in_progress')->with('user','title')->get();
     
-        return view('user.asign_task', compact('pendingTasks', 'user', 'completeTasks', 'incompleteTasks','user','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
+        return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
     }
 
     /**
@@ -54,7 +59,8 @@ class AsignTaskController extends Controller
     public function create()
     {
         $users = User::all(); 
-        return view('user.create_task', compact('users'));
+        $title = TitleName::all();
+        return view('user.create_task', compact('users','title'));
     }
 
     /**
@@ -70,6 +76,7 @@ class AsignTaskController extends Controller
         $task = new Task();
 
         $task->user_id = $request->user_id;
+        $task->title_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
         $task->save();

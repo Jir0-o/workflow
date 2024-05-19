@@ -36,10 +36,10 @@ class TaskController extends Controller
         $inprogressCount = Task::where('user_id', $userId)->where('status', 'in_progress')->count();
 
 
-        $pendingTasks = Task::where('user_id', $userId)->where('status', 'pending')->get();
-        $completedTasks = Task::where('user_id', $userId)->where('status', 'completed')->get();
-        $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->get();
-        $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->get();
+        $pendingTasks = Task::where('user_id', $userId)->where('status', 'pending')->with('user','title')->get();
+        $completedTasks = Task::where('user_id', $userId)->where('status', 'completed')->with('user','title')->get();
+        $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->with('user','title')->get();
+        $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->with('user','title')->get();
     
         return view('user.task', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount'));
 

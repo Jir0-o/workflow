@@ -68,6 +68,7 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Last Date of Submit</th>
                                             <th>Created Date</th>
@@ -79,6 +80,7 @@
                                         @foreach($pendingTasks as $key => $pendingTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $pendingTask->title->project_title }}</td>
                                             <td>{!! nl2br(e($pendingTask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $pendingTask->created_at->format('d F Y') }}</td>
@@ -141,6 +143,7 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Last Date of Submit</th>
                                             <th>Created Date</th>
@@ -152,6 +155,7 @@
                                         @foreach($incompletedTasks as $key => $incompletedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $incompletedtask->title->project_title }}</td>
                                             <td>{!! nl2br(e($incompletedtask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $incompletedtask->created_at->format('d F Y') }}</td>
@@ -214,6 +218,7 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Last Date of Submit</th>
                                             <th>Created Date</th>
@@ -225,6 +230,7 @@
                                         @foreach($completedTasks as $key => $completedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $completedtask->title->project_title }}</td>
                                             <td>{!! nl2br(e($completedtask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $completedtask->created_at->format('d F Y') }}</td>
@@ -280,6 +286,7 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Last Date of Submit</th>
                                             <th>Created Date</th>
@@ -291,6 +298,7 @@
                                         @foreach($requestedTasks as $key => $requestedTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $requestedTask->title->project_title }}</td>
                                             <td>{!! nl2br(e($requestedTask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->created_at->format('d F Y') }}</td>
