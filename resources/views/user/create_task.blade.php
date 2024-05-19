@@ -23,13 +23,13 @@
                 </div> 
                 <div class="mb-3">
                     <label for="user_id">User Name</label>
-                    <select id="user_id" name="user_id" class="form-control" required>
-                    <option value="">Select User</option>
+                    <select id="user_id" name="user_id[]" class="form-control" multiple="multiple" required>
+                        <option value="">Select User</option>
                         @foreach($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                         @endforeach 
                     </select>
-                </div> 
+                </div>
                 <div class="mb-3">
                     <label for="description">Task Description</label>
                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
@@ -46,4 +46,15 @@
         </div>
     </div>
 </div>
+<!-- Include jQuery first -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#user_id').select2({
+            placeholder: 'Select User',
+            allowClear: true
+        });
+    });
+</script>
 @endsection

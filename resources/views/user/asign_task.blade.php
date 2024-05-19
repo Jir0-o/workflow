@@ -81,7 +81,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title }}</td>
+                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -150,7 +150,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title }}</td>
+                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -219,7 +219,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title }}</td>
+                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -288,7 +288,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title }}</td>
+                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>

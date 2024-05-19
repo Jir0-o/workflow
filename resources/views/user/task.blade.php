@@ -80,7 +80,7 @@
                                         @foreach($pendingTasks as $key => $pendingTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $pendingTask->title->project_title }}</td>
+                                            <td>{{ $pendingTask->title->project_title ?? 'No project title selected'  }}</td>
                                             <td>{!! nl2br(e($pendingTask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $pendingTask->created_at->format('d F Y') }}</td>
@@ -155,7 +155,7 @@
                                         @foreach($incompletedTasks as $key => $incompletedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $incompletedtask->title->project_title }}</td>
+                                            <td>{{ $incompletedtask->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($incompletedtask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $incompletedtask->created_at->format('d F Y') }}</td>
@@ -230,7 +230,7 @@
                                         @foreach($completedTasks as $key => $completedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $completedtask->title->project_title }}</td>
+                                            <td>{{ $completedtask->title->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($completedtask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $completedtask->created_at->format('d F Y') }}</td>
@@ -298,7 +298,7 @@
                                         @foreach($requestedTasks as $key => $requestedTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $requestedTask->title->project_title }}</td>
+                                            <td>{{ $requestedTask->title->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($requestedTask->description)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->created_at->format('d F Y') }}</td>
