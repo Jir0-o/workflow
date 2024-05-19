@@ -14,11 +14,11 @@
                 @csrf
                 @method('PUT')
                 <div class="mb-3">
-                    <label for="message">Task Description</label>
-                    <textarea id="message" name="message" class="form-control" rows="4" required placeholder="Task Details"></textarea>
+                    <label for="message">Write a message to edit</label>
+                    <textarea id="message" name="message" class="form-control" rows="4" required placeholder="Your message"></textarea>
                 </div>
                 <a href="/settings" class="btn btn-secondary">Back</a>
-                <button type="submit" class="btn btn-primary">Update Task</button>
+                <button type="submit" class="btn btn-primary">Send Request</button>
             </form>
             </div>
         </div>

@@ -13,6 +13,15 @@
             <form action="{{route('tasks.store')}}" method="POST">
                 @csrf
                 <div class="mb-3">
+                    <label for="title">User Name</label>
+                    <select id="title" name="title" class="form-control" required>
+                        <option value="">Select project Title</option>
+                        @foreach($title as $tit)
+                        <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
+                        @endforeach 
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="description">Task Description</label>
                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
                 </div>

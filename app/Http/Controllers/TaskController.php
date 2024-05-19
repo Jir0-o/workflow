@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\TitleName;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,7 +52,8 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return view('user.user_create_task');
+        $title = TitleName::all();
+        return view('user.user_create_task', compact('title'));
     }
 
     /**
@@ -65,6 +67,7 @@ class TaskController extends Controller
     
         $task = new Task();
         $task->user_id = auth()->user()->id;
+        $task->title_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
         $task->save();
@@ -133,5 +136,22 @@ public function extend($id)
     $task->save();
 
     return back()->with('success', 'Task marked as completed successfully.');
+}
+public function redo($id)
+{
+    $task = Task::findOrFail($id);
+    $task->status = 'pending';
+    $task->save();
+
+    return back()->with('success', 'Task marked as pending successfully.');
+}
+public function cancel($id)
+{
+    $task = Task::findOrFail($id);
+    $task->message = 'Request Cancel';
+    $task->status = 'incomplete';
+    $task->save();
+
+    return back()->with('success', 'Task canceled successfully.');
 }
 }

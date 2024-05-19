@@ -32,6 +32,8 @@ Route::middleware([
 
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
     Route::patch('/tasks/{task}/extend', [TaskController::class, 'extend'])->name('tasks.extend');
+    Route::patch('/tasks/{task}/redo', [TaskController::class, 'redo'])->name('tasks.redo');
+    Route::patch('/tasks/{task}/cancel', [TaskController::class, 'cancel'])->name('tasks.cancel');
     
     Route::patch('/tasks/{task}/incomplete', [AsignTaskController::class, 'incomplete'])->name('asign_tasks.incomplete');
 

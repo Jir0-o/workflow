@@ -234,14 +234,11 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('tasks.edit', ['task' => $completedtask->id]) }}">
-                                                            <i class="bx bx-edit-alt me-1"></i> Edit
-                                                        </a>
-                                                        <form action="{{ route('tasks.destroy', $completedtask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form action="{{ route('tasks.redo', $completedtask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to re-do this task?');">
                                                             @csrf
-                                                            @method('DELETE')
+                                                            @method('PATCH')
                                                             <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-trash me-1"></i> Delete
+                                                                <i class="bx bx-time-five me-1"></i> Re-Do Task
                                                             </button>
                                                         </form>
                                                     </div>
@@ -302,14 +299,11 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('tasks.edit', ['task' => $requestedTask->id]) }}">
-                                                            <i class="bx bx-edit-alt me-1"></i> Edit
-                                                        </a>
-                                                        <form action="{{ route('tasks.destroy', $requestedTask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form action="{{ route('tasks.cancel', $requestedTask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel your request?');">
                                                             @csrf
-                                                            @method('DELETE')
+                                                            @method('PATCH')
                                                             <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-trash me-1"></i> Delete
+                                                                <i class="bx bx-time-five me-1"></i> Cancel Request
                                                             </button>
                                                         </form>
                                                     </div>
