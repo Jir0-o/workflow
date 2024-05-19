@@ -69,17 +69,27 @@ class AsignTaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|string|max:255',
             'description' => 'required',
+            'user_id' => 'required|array|min:1',
+            'user_id.*' => 'exists:users,id',
         ]);
     
-        $task = new Task();
+        foreach ($request -> user_id as $id) {
+            $task = new Task();
+            $task->title_id = $request->title;
+            $task->description = $request->description;
+            $task->submit_date = $request->last_submit_date;
+            $task->user_id = $id;
+            $task->save();
+        }
 
-        $task->user_id = $request->user_id;
-        $task->title_id = $request->title;
-        $task->description = $request->description;
-        $task->submit_date = $request->last_submit_date;
-        $task->save();
+        // $task = new Task();
+
+        // $task->user_id = $request->user_id;
+        // $task->title_id = $request->title;
+        // $task->description = $request->description;
+        // $task->submit_date = $request->last_submit_date;
+        // $task->save();
     
         return back()->with('success', 'Task created successfully.');
     }

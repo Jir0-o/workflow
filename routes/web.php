@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AsignTaskController;
+use App\Http\Controllers\ProjectTitleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
@@ -33,6 +34,8 @@ Route::middleware([
     Route::patch('/tasks/{task}/extend', [TaskController::class, 'extend'])->name('tasks.extend');
     
     Route::patch('/tasks/{task}/incomplete', [AsignTaskController::class, 'incomplete'])->name('asign_tasks.incomplete');
+
+    Route::resource('project_title', ProjectTitleController::class);
 
 
 });

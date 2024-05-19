@@ -12,15 +12,20 @@
             <div class="card-body">
             <form action="{{route('asign_tasks.store')}}" method="POST">
                 @csrf
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <label for="title">Project Title</label>
-                    <select id="title" name="title" class="form-control">
-                    <option value="">Select title</option>
-                        @foreach($title as $tit)
-                            <option value="{{ $tit->id }}">{{ $tit->project_title}}</option>
-                        @endforeach 
-                    </select>
-                </div> 
+                    <div class="d-flex align-items-center">
+                        <select id="title" name="title" class="form-control" style="width: calc(100% - 30px);">
+                            <option value="">Select title</option>
+                            @foreach($title as $tit)
+                                <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
+                            @endforeach
+                        </select>
+                        <a href="{{ route('project_title.create') }}" class="btn btn-link p-0 ml-2" style="text-decoration: none;"data-toggle="tooltip" title="Create new project title">
+                            <i class="fas fa-plus-circle" style="font-size: 24px; color: #007bff;"></i>
+                        </a>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label for="user_id">User Name</label>
                     <select id="user_id" name="user_id[]" class="form-control" multiple="multiple" required>
