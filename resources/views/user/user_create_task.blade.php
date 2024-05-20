@@ -13,7 +13,7 @@
             <form action="{{route('tasks.store')}}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label for="title">User Name</label>
+                    <label for="title">Select Title</label>
                     <select id="title" name="title" class="form-control" required>
                         <option value="">Select project Title</option>
                         @foreach($title as $tit)

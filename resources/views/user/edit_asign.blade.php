@@ -11,8 +11,18 @@
             </div>
             <div class="card-body">
             <form action="{{ route('asign_tasks.update', $tasks->id) }}" method="POST">
+                {{-- {{dd ($titles)}} --}}
                 @csrf
                 @method('PUT')
+                <div class="mb-3">
+                    <label for="title">Select Title</label>
+                    <select id="title" name="title" class="form-control"  required>
+                        {{-- <option value="">{{ $tasks->title->project_title ?? 'No project title selected' }}</option> --}}
+                        @foreach($title as $tit)
+                        <option value="{{ $tit->id }}" {{ $tit->id == $tasks->title_id ? 'selected' : '' }}>{{$tit->project_title}}</option>
+                        @endforeach 
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label for="user_id">User Name</label>
                     <select id="user_id" name="task_user_id" class="form-control" required>

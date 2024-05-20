@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TitleName;
 use Illuminate\Http\Request;
 
-class ProjectTitleController extends Controller
+class ReportController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $projects= TitleName::all();
-        return view('user.project.projectTitle',compact('projects'));
+        //
     }
 
     /**
@@ -21,29 +19,16 @@ class ProjectTitleController extends Controller
      */
     public function create()
     {
-        return view('user.project.createProject');
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-
-     public function store(Request $request)
-        {
-            $request->validate([
-                'title' => 'required',
-            ]);
-        
-    
-            $project= new TitleName();
-    
-            $project->project_title = $request->title;
-            $project->description = $request->description;
-            $project->start_date = $request->start_date;
-            $project->save();
-        
-            return redirect('asign_tasks/create')->with('success', 'Task created successfully.');
-        }
+    public function store(Request $request)
+    {
+        //
+    }
 
     /**
      * Display the specified resource.

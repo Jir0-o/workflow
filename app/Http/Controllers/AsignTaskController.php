@@ -110,7 +110,8 @@ class AsignTaskController extends Controller
 
         $users = User::all();
         $tasks = Task::find($id);
-        return view('user.edit_asign', compact('tasks','id','users'));
+        $title = TitleName::all();
+        return view('user.edit_asign', compact('tasks','id','users','title'));
     }
 
     /**
@@ -126,6 +127,8 @@ class AsignTaskController extends Controller
         $task = Task::findOrFail($id);
 
         $task->user_id = $request->task_user_id;
+        $task->message = 'Task edited by admin';
+        $task->title_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
         $task->status = $request->status;
@@ -151,6 +154,32 @@ class AsignTaskController extends Controller
     $task->status = 'incomplete';
     $task->save();
 
+    return back()->with('success', 'Task marked as Incompleted successfully.');
+}
+public function completed($id)
+{
+    $task = Task::findOrFail($id);
+    $task->status = 'completed';
+    $task->save();
+
     return back()->with('success', 'Task marked as completed successfully.');
 }
+public function requested($id)
+{
+    $task = Task::findOrFail($id);
+    $task->status = 'in_progress';
+    $task->save();
+
+    return back()->with('success', 'Task marked as completed successfully.');
+}
+public function pendingdate($id)
+{
+    $task = Task::findOrFail($id);
+    $task->submit_date = Carbon::now();
+    $task->status = 'pending';
+    $task->save();
+
+    return back()->with('success', 'Task marked as completed successfully.');
+}
+
 }

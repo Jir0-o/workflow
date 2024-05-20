@@ -87,8 +87,13 @@
                             </a>
                         </li>
                         <li class="menu-item">
-                            <a href="{{route('asign_tasks.index')}}" class="menu-link">
-                                <div data-i18n="Container">Conpleted Task</div>
+                            <a href="{{route('project_title.index')}}" class="menu-link">
+                                <div data-i18n="Container">Project Details</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{route('report.index')}}" class="menu-link">
+                                <div data-i18n="Container">View Report</div>
                             </a>
                         </li>
                     </ul>

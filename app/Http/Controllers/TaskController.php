@@ -141,6 +141,7 @@ public function redo($id)
 {
     $task = Task::findOrFail($id);
     $task->status = 'pending';
+    $task->message = 'task re opned';
     $task->save();
 
     return back()->with('success', 'Task marked as pending successfully.');
@@ -153,5 +154,13 @@ public function cancel($id)
     $task->save();
 
     return back()->with('success', 'Task canceled successfully.');
+}
+public function incompleted($id)
+{
+    $task = Task::findOrFail($id);
+    $task->status = 'incomplete';
+    $task->save();
+
+    return back()->with('success', 'Task incompleted .');
 }
 }

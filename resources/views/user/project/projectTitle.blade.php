@@ -6,6 +6,7 @@
         <div class="col-12 col-md-12 col-lg-12">
 
             <div class="card p-lg-4 p-2">
+                {{-- {{dd($projects)}} --}}
                 <!-- Nav tabs -->
                 <div class="container">
                     <div class="row justify-content-center">
@@ -13,29 +14,22 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
-                                    Pending Task 
-                                    <span class="badge bg-primary"> {{ $pendingCount }}</span>
+                                    Running Project 
+                                    <span class="badge bg-primary"> #</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Incomplete Task
-                                    <span class="badge bg-primary"> {{ $incompleteCount }}</span>
+                                    Completed Project
+                                    <span class="badge bg-primary"> #</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Completed Task
-                                    <span class="badge bg-primary"> {{ $completeCount }}</span>
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Request"
-                                    type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Requested Task
-                                    <span class="badge bg-primary"> {{ $inprogressCount }}</span>
+                                    Dropped Project
+                                    <span class="badge bg-primary">#</span>
                                 </button>
                             </li>
                         </ul>
@@ -49,13 +43,13 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Pending Task</h5>
+                                        <h5>Running Project</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                                <i class="bx bx-edit-alt me-1"></i> Create New Project
                                             </a>
                                         </div>
                                     </div>
@@ -67,36 +61,33 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>User Name</th>
                                             <th>Project Title</th>
-                                            <th>Task</th>
+                                            <th>Description</th>
+                                            <th>Assiged User</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
+                                            <th>Start Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
-                                        @foreach($pendingTasks as $key => $task)
+                                        @foreach($projects as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($task->description)) !!}</td>
-                                            <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>#</td>
+                                            <td>{{ $project->status }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
+                                                        <a class="dropdown-item" href="#">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form action="#" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="dropdown-item">
@@ -111,14 +102,14 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.complete', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form action="#" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="submit" class="dropdown-item">Make Completed</button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.requested', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form action="#" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="submit" class="dropdown-item">Move to Requested</button>
@@ -128,6 +119,7 @@
                                                         </div>
                                                     </div>
                                                 </div>                                                           
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -141,7 +133,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Incomplete Task</h5>
+                                        <h5>Completed Project</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
@@ -159,35 +151,33 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>User Name</th>
                                             <th>Project Title</th>
-                                            <th>Task</th>
+                                            <th>Description</th>
+                                            <th>Assiged User</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
+                                            <th>Start Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        @foreach($incompleteTasks as $key => $task)
+                                        @foreach($projects as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($task->description)) !!}</td>
-                                            <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>#</td>
+                                            <td>{{ $project->status }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
+                                                        <a class="dropdown-item" href="#">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form action="#" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="dropdown-item">
@@ -202,21 +192,14 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to pending this task? Pending Date of this task will be today.');">
-                                                                        @csrf
-                                                                        @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Pending</button>
-                                                                    </form>
-                                                                </li>
-                                                                <li>
-                                                                    <form action="{{ route('asign_tasks.complete', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form action="#" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="submit" class="dropdown-item">Make Completed</button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.requested', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form action="#" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="submit" class="dropdown-item">Move to Requested</button>
@@ -225,7 +208,7 @@
                                                             </ul>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>                                                           
                                             </td>
                                         </tr>
                                         @endforeach
@@ -240,7 +223,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Completed Task</h5>
+                                        <h5>Dropped Project</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
@@ -258,35 +241,33 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>User Name</th>
                                             <th>Project Title</th>
-                                            <th>Task</th>
+                                            <th>Description</th>
+                                            <th>Assiged User</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
+                                            <th>Start Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        @foreach($completeTasks as $key => $task)
+                                        @foreach($projects as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($task->description)) !!}</td>
-                                            <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>#</td>
+                                            <td>{{ $project->status }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
+                                                        <a class="dropdown-item" href="#">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form action="#" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="dropdown-item">
@@ -301,14 +282,14 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to pending this task? Pending Date of this task will be today.');">
+                                                                    <form action="#" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Pending</button>
+                                                                        <button type="submit" class="dropdown-item">Make Completed</button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.requested', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form action="#" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="submit" class="dropdown-item">Move to Requested</button>
@@ -317,7 +298,7 @@
                                                             </ul>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>                                                           
                                             </td>
                                         </tr>
                                         @endforeach
@@ -327,100 +308,6 @@
                         </div>
                     </div>
                     
-                   <div class="tab-pane" id="Request" role="tabpanel" aria-labelledby="profile-tab">
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="row">
-                                    <div class="col-12 col-md-6">
-                                        <h5>Requested Task</h5>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="float-end">
-                                            <!-- Button trigger modal -->
-                                            <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="table-responsive text-nowrap p-3">
-                                <table id="datatable4" class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>SL</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
-                                            <th>Suggestion</th>
-                                            <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-border-bottom-0">
-                                        @foreach($inprogressTasks as $key => $task)
-                                        <tr>
-                                            <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($task->description)) !!}</td>
-                                            <td>{{ $task->message }}</td>
-                                            <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
-                                            <td>
-                                                <div class="dropdown">
-                                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
-                                                            <i class="bx bx-edit-alt me-1"></i> Accept
-                                                        </a>
-                                                        <form action="{{ route('asign_tasks.incomplete', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-trash me-1"></i> Reject
-                                                            </button>
-                                                        </form>
-                                                        <div class="dropdown-divider"></div>
-                                                        <!-- Right-aligned dropdown for Change Status -->
-                                                        <div class="dropdown-submenu">
-                                                            <a class="dropdown-item test" href="#" id="dropdownStatusLink">
-                                                                <i class="bx bx-refresh me-1"></i> Change Status
-                                                            </a>
-                                                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
-                                                                <li>
-                                                                    <form action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to pending this task? Pending Date of this task will be today.');">
-                                                                        @csrf
-                                                                        @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Pending</button>
-                                                                    </form>
-                                                                </li>
-                                                                <li>
-                                                                    <form action="{{ route('asign_tasks.complete', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
-                                                                        @csrf
-                                                                        @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Completed</button>
-                                                                    </form>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
