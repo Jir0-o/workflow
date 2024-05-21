@@ -1,5 +1,6 @@
 @extends('layouts.master')
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <h4 class="py-2 m-4"><span class="text-muted fw-light">Assign Task</span></h4>
 
     <div class="row mt-5">
@@ -96,10 +97,10 @@
                                                         <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">
+                                                            <button type="button" class="dropdown-item" onclick="confirmDeleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form>
@@ -111,17 +112,21 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.complete', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.complete', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Completed</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Make Completed
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.requested', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('asign_tasks.requested', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Move to Requested</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Move to Requested
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                             </ul>
@@ -130,6 +135,60 @@
                                                 </div>                                                           
                                         </tr>
                                         @endforeach
+                                        {{-- --<script>
+                                            function confirmDeleteTask(DeleteTaskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to delete this task?",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes, Delete it!'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`delete-task-form-${DeleteTaskId}`).submit();
+                                                    }
+                                                });
+                                            } 
+                                        </script>  --}}
+                                        {{-- Sweet alart for completed task change  --}}
+                                        {{-- <script>
+                                            function confirmCompleteTask(StatusTaskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to make this task completed?",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`complete-task-form-${StatusTaskId}`).submit();
+                                                    }
+                                                });
+                                            } 
+                                        </script>  --}}
+                                        {{-- Sweet alart for requested task change  --}}
+                                        {{-- <script>
+                                            function confirmRequestedTask(requestTaskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to make this task requested?",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`requested-task-form-${requestTaskId}`).submit();
+                                                    }
+                                                });
+                                            } 
+                                        </script>  --}}
+
                                     </tbody>
                                 </table>
                             </div>
@@ -187,10 +246,10 @@
                                                         <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">
+                                                            <button type="button" class="dropdown-item" onclick="confirmDeleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form>
@@ -202,24 +261,30 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to pending this task? Pending Date of this task will be today.');">
+                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Pending</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Make Pending
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.complete', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.complete', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Completed</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Make Completed
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.requested', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('asign_tasks.requested', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Move to Requested</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Move to Requested
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                             </ul>
@@ -286,10 +351,10 @@
                                                         <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">
+                                                            <button type="button" class="dropdown-item" onclick="confirmDeleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form>
@@ -301,17 +366,21 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to pending this task? Pending Date of this task will be today.');">
+                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Pending</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Make Pending
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.requested', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('asign_tasks.requested', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Move to Requested</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Move to Requested
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                             </ul>
@@ -367,7 +436,7 @@
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
-                                            <td>{{ $task->message }}</td>
+                                            <td>{!! nl2br(e($task->message)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->created_at->format('d F Y') }}</td>
@@ -380,10 +449,10 @@
                                                         <a class="dropdown-item" href="{{ route('asign_tasks.edit', ['asign_task' => $task->id]) }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Accept
                                                         </a>
-                                                        <form action="{{ route('asign_tasks.incomplete', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                        <form id="incomplete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.incomplete', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
-                                                            <button type="submit" class="dropdown-item">
+                                                            <button type="button" class="dropdown-item" onclick="confirmIncompleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Reject
                                                             </button>
                                                         </form>
@@ -395,17 +464,21 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to pending this task? Pending Date of this task will be today.');">
+                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Pending</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Make Pending
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form action="{{ route('asign_tasks.complete', $task->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.complete', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
-                                                                        <button type="submit" class="dropdown-item">Make Completed</button>
+                                                                        <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
+                                                                            <i class="bx bx-trash me-1"></i> Make Completed
+                                                                        </button>
                                                                     </form>
                                                                 </li>
                                                             </ul>
@@ -422,6 +495,95 @@
                     </div>
 
                 </div>
+                <script>
+                    function confirmDeleteTask(DeleteTaskId) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to delete this task?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, Delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById(`delete-task-form-${DeleteTaskId}`).submit();
+                            }
+                        });
+                    } 
+                </script> 
+                {{-- Sweet alart for completed task change  --}}
+                <script>
+                    function confirmCompleteTask(StatusTaskId) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to make this task completed?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById(`complete-task-form-${StatusTaskId}`).submit();
+                            }
+                        });
+                    } 
+                </script> 
+                {{-- Sweet alart for requested task change  --}}
+                <script>
+                    function confirmRequestedTask(requestTaskId) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to make this task requested?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById(`requested-task-form-${requestTaskId}`).submit();
+                            }
+                        });
+                    } 
+                </script> 
+                {{-- Sweet alart for pending task change  --}}
+                <script>
+                    function confirmPendingTask(pendingTaskId) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to make this task pending? Task last date of submit will be today.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById(`pending-task-form-${pendingTaskId}`).submit();
+                            }
+                        });
+                    } 
+                </script>
+                {{-- Sweet alart for incomplete task change  --}}
+                <script>
+                    function confirmIncompleteTask(incompleteTaskId) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to make this task incomplete or pending? If task last submit date is not expired then pending other wise incomplete.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById(`incomplete-task-form-${incompleteTaskId}`).submit();
+                            }
+                        });
+                    } 
+                </script>
             </div>
         </div>
     </div>
@@ -438,5 +600,18 @@ $(document).ready(function(){
     });
 });
 </script>
+@if (session('success'))
+<script>
+    Swal.fire({
+        toast: true,
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 3000
+
+        }
+    );
+</script>
+@endif 
 
 @endsection

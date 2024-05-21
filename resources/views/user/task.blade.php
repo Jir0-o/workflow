@@ -332,6 +332,7 @@
                                             <th>SL</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Comment</th>
                                             <th>Last Date of Submit</th>
                                             <th>Created Date</th>
                                             <th>Status</th>
@@ -344,6 +345,7 @@
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $requestedTask->title->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($requestedTask->description)) !!}</td>
+                                            <td>{!! nl2br(e($requestedTask->message)) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->created_at->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->status }}</td>
@@ -369,7 +371,7 @@
                                             function confirmRequestedTask(requestTaskId) {
                                                 Swal.fire({
                                                     title: 'Are you sure?',
-                                                    text: "Do you want to Re-do this task? Last submit date of this task will be today.",
+                                                    text: "Do you want to cancel this request?",
                                                     icon: 'warning',
                                                     showCancelButton: true,
                                                     confirmButtonColor: '#3085d6',

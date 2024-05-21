@@ -31,6 +31,11 @@ class TaskController extends Controller
                 $task->status = 'pending';
                 $task->save();
             }
+            if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isSameDay($startOfToday)) {
+                $task->status = 'pending';
+                $task->save();
+            }
+
         }
         //count
         $pendingCount = Task::where('user_id', $userId)->where('status', 'pending')->count();
@@ -109,7 +114,7 @@ class TaskController extends Controller
         $task->status = 'in_progress';
         $task->save();
     
-        return back()->with('success', 'Task created successfully.');
+        return redirect('/tasks')->with('success', 'Edit message send to admin successfully.');
     }
 
     /**

@@ -82,16 +82,7 @@ class AsignTaskController extends Controller
             $task->user_id = $id;
             $task->save();
         }
-
-        // $task = new Task();
-
-        // $task->user_id = $request->user_id;
-        // $task->title_id = $request->title;
-        // $task->description = $request->description;
-        // $task->submit_date = $request->last_submit_date;
-        // $task->save();
-    
-        return back()->with('success', 'Task created successfully.');
+        return redirect('/asign_tasks')->with('success', 'Task assign successfully.');
     }
 
     /**
@@ -133,7 +124,7 @@ class AsignTaskController extends Controller
         $task->status = $request->status;
         $task->save();
     
-        return back()->with('success', 'Task created successfully.');
+        return redirect('/asign_tasks')->with('success', 'Assign Task edited successfully.');
     }
 
     /**
@@ -169,7 +160,7 @@ public function requested($id)
     $task->status = 'in_progress';
     $task->save();
 
-    return back()->with('success', 'Task marked as completed successfully.');
+    return back()->with('success', 'Task moved to requested successfully.');
 }
 public function pendingdate($id)
 {
@@ -178,7 +169,7 @@ public function pendingdate($id)
     $task->status = 'pending';
     $task->save();
 
-    return back()->with('success', 'Task marked as completed successfully.');
+    return back()->with('success', 'Task marked as pending successfully.');
 }
 
 }
