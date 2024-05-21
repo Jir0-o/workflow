@@ -46,7 +46,6 @@
                 <a href="/settings" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Create Task</button>
             </form>
-
             </div>
         </div>
     </div>

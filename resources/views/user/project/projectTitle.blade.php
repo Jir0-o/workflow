@@ -48,7 +48,7 @@
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
-                                            <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
+                                            <a href="{{ route('new_project.create') }}" class="btn btn-primary">
                                                 <i class="bx bx-edit-alt me-1"></i> Create New Project
                                             </a>
                                         </div>
@@ -66,6 +66,7 @@
                                             <th>Assiged User</th>
                                             <th>Status</th>
                                             <th>Start Date</th>
+                                            <th>End Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -78,6 +79,7 @@
                                             <td>#</td>
                                             <td>{{ $project->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

@@ -127,7 +127,6 @@ class AsignTaskController extends Controller
         $task = Task::findOrFail($id);
 
         $task->user_id = $request->task_user_id;
-        $task->message = 'Task edited by admin';
         $task->title_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;

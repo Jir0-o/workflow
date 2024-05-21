@@ -87,7 +87,7 @@
                             </a>
                         </li>
                         <li class="menu-item">
-                            <a href="{{route('project_title.index')}}" class="menu-link">
+                            <a href="{{route('new_project.index')}}" class="menu-link">
                                 <div data-i18n="Container">Project Details</div>
                             </a>
                         </li>

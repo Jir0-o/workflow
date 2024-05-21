@@ -1,7 +1,8 @@
 @extends('layouts.master')
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <h4 class="py-2 m-4"><span class="text-muted fw-light">My Task</span></h4>
-
+    {{-- @include('sweetalert::alert') --}}
     <div class="row mt-5">
         <div class="col-12 col-md-12 col-lg-12">
 
@@ -94,18 +95,36 @@
                                                         <a class="dropdown-item" href="{{ route('tasks.edit', ['task' => $pendingTask->id]) }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Suggest Edit
                                                         </a>
-                                                        <form action="{{ route('tasks.complete', $pendingTask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to complete this task?');">
+                                                        <form id="complete-task-form-{{ $pendingTask->id }}" action="{{ route('tasks.complete', $pendingTask->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
-                                                            <button type="submit" class="dropdown-item">
+                                                            <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $pendingTask->id }})">
                                                                 <i class="bx bx-check me-1"></i> Complete Task
                                                             </button>
                                                         </form>
                                                     </div>
-                                                </div>
+                                                </div>                                                
                                             </td>
                                         </tr>
                                         @endforeach
+                                        <script>
+                                            function confirmCompleteTask(taskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to complete this task?",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes, complete it!'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`complete-task-form-${taskId}`).submit();
+                                                    }
+                                                });
+                                            } 
+                                        </script> 
+
                                     </tbody>
                                 </table>
                             </div>
@@ -169,11 +188,11 @@
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form> --}}
-                                                        <form action="{{ route('tasks.extend', $incompletedtask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to request for extend this task?');">
+                                                        <form id="incomplete-task-form-{{ $incompletedtask->id }}" action="{{ route('tasks.extend', $incompletedtask->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
-                                                            <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-time-five me-1"></i> Extend Time
+                                                            <button type="button" class="dropdown-item" onclick="confirmInCompleteTask({{ $incompletedtask->id }})">
+                                                                <i class="bx bx-check me-1"></i> Extend Task
                                                             </button>
                                                         </form>
                                                     </div>
@@ -181,6 +200,24 @@
                                             </td>
                                         </tr>
                                         @endforeach
+                                        <script>
+                                            function confirmInCompleteTask(intaskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to extend this task? Request will be send to admin.",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`incomplete-task-form-${intaskId}`).submit();
+                                                    }
+                                                });
+                                            }
+                                        </script> 
+
                                     </tbody>
                                 </table>
                             </div>
@@ -234,11 +271,11 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <form action="{{ route('tasks.redo', $completedtask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to re-do this task?');">
+                                                        <form id="complete-task-form-{{ $completedtask->id }}" action="{{ route('tasks.redo', $completedtask->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
-                                                            <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-time-five me-1"></i> Re-Do Task
+                                                            <button type="button" class="dropdown-item" onclick="confirmCompletedTask({{ $completedtask->id }})">
+                                                                <i class="bx bx-check me-1"></i> Re-Do Task
                                                             </button>
                                                         </form>
                                                     </div>
@@ -246,6 +283,23 @@
                                             </td>
                                         </tr>
                                         @endforeach
+                                        <script>
+                                            function confirmCompletedTask(completetaskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to Re-do this task? Last submit date of this task will be today.",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`complete-task-form-${completetaskId}`).submit();
+                                                    }
+                                                });
+                                            }
+                                        </script> 
                                     </tbody>
                                 </table>
                             </div>
@@ -299,11 +353,11 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <form action="{{ route('tasks.cancel', $requestedTask->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel your request?');">
+                                                        <form id="request-task-form-{{ $requestedTask->id }}" action="{{ route('tasks.cancel', $requestedTask->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
-                                                            <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-time-five me-1"></i> Cancel Request
+                                                            <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $requestedTask->id }})">
+                                                                <i class="bx bx-check me-1"></i> Request Cancel
                                                             </button>
                                                         </form>
                                                     </div>
@@ -311,14 +365,43 @@
                                             </td>
                                         </tr>
                                         @endforeach
+                                        <script>
+                                            function confirmRequestedTask(requestTaskId) {
+                                                Swal.fire({
+                                                    title: 'Are you sure?',
+                                                    text: "Do you want to Re-do this task? Last submit date of this task will be today.",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Yes'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById(`request-task-form-${requestTaskId}`).submit();
+                                                    }
+                                                });
+                                            }
+                                        </script> 
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
+@if (session('success'))
+<script>
+    Swal.fire({
+        toast: true,
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 3000
+
+        }
+    );
+</script>
+@endif  
 @endsection

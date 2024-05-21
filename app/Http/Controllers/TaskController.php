@@ -7,6 +7,8 @@ use App\Models\TitleName;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class TaskController extends Controller
 {
@@ -64,7 +66,7 @@ class TaskController extends Controller
         $request->validate([
             'description' => 'required',
         ]);
-    
+
         $task = new Task();
         $task->user_id = auth()->user()->id;
         $task->title_id = $request->title;
@@ -72,7 +74,7 @@ class TaskController extends Controller
         $task->submit_date = $request->last_submit_date;
         $task->save();
     
-        return back()->with('success', 'Task created successfully.');
+        return redirect('/tasks')->with('success', 'Task created successfully.');
     }
 
     /**
@@ -122,6 +124,7 @@ class TaskController extends Controller
     }
     public function complete($id)
 {
+
     $task = Task::findOrFail($id);
     $task->status = 'completed';
     $task->save();
@@ -132,16 +135,18 @@ class TaskController extends Controller
 public function extend($id)
 {
     $task = Task::findOrFail($id);
-    $task->status = 'in_progress';
-    $task->save();
 
-    return back()->with('success', 'Task marked as completed successfully.');
+    $task->status = 'in_progress';
+    $task->message = 'Requested to extend time';
+    $task->save();
+    return back()->with('success', 'Task extend request send successfully.');
 }
 public function redo($id)
 {
     $task = Task::findOrFail($id);
+    $task->submit_date = Carbon::now();
     $task->status = 'pending';
-    $task->message = 'task re opned';
+    $task->message = 'Task re-opned';
     $task->save();
 
     return back()->with('success', 'Task marked as pending successfully.');
@@ -153,7 +158,7 @@ public function cancel($id)
     $task->status = 'incomplete';
     $task->save();
 
-    return back()->with('success', 'Task canceled successfully.');
+    return back()->with('success', 'Request canceled successfully.');
 }
 public function incompleted($id)
 {

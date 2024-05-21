@@ -10,7 +10,7 @@
                 <h5>Project Details</h5>
             </div>
             <div class="card-body">
-            <form action="{{route('project_title.store')}}" method="POST">
+            <form action="{{route('new_project.store')}}" method="POST">
                 @csrf
                 <div class="mb-3 position-relative">
                     <label for="title">Project name</label>
