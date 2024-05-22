@@ -45,10 +45,10 @@ class AsignTaskController extends Controller
         $incompleteCount = Task::where('status', 'incomplete')->count();
         $inprogressCount = Task::where('status', 'in_progress')->count();
 
-        $pendingTasks = Task::where('status', 'pending')->with('user','title')->get();
-        $completeTasks = Task::where('status', 'completed')->with('user','title')->get();
-        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title')->get();
-        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title')->get();
+        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->get();
+        $completeTasks = Task::where('status', 'completed')->with('user','title_name')->get();
+        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->get();
+        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->get();
     
         return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
     }
@@ -76,7 +76,7 @@ class AsignTaskController extends Controller
     
         foreach ($request -> user_id as $id) {
             $task = new Task();
-            $task->title_id = $request->title;
+            $task->title_name_id = $request->title;
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
             $task->user_id = $id;
@@ -118,7 +118,7 @@ class AsignTaskController extends Controller
         $task = Task::findOrFail($id);
 
         $task->user_id = $request->task_user_id;
-        $task->title_id = $request->title;
+        $task->title_name_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
         $task->status = $request->status;

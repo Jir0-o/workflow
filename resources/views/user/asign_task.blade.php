@@ -83,7 +83,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
+                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -105,7 +105,6 @@
                                                             </button>
                                                         </form>
                                                         <div class="dropdown-divider"></div>
-                                                        <!-- Right-aligned dropdown for Change Status -->
                                                         <div class="dropdown-submenu">
                                                             <a class="dropdown-item test" href="#" id="dropdownStatusLink">
                                                                 <i class="bx bx-refresh me-1"></i> Change Status
@@ -135,60 +134,6 @@
                                                 </div>                                                           
                                         </tr>
                                         @endforeach
-                                        {{-- --<script>
-                                            function confirmDeleteTask(DeleteTaskId) {
-                                                Swal.fire({
-                                                    title: 'Are you sure?',
-                                                    text: "Do you want to delete this task?",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#3085d6',
-                                                    cancelButtonColor: '#d33',
-                                                    confirmButtonText: 'Yes, Delete it!'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        document.getElementById(`delete-task-form-${DeleteTaskId}`).submit();
-                                                    }
-                                                });
-                                            } 
-                                        </script>  --}}
-                                        {{-- Sweet alart for completed task change  --}}
-                                        {{-- <script>
-                                            function confirmCompleteTask(StatusTaskId) {
-                                                Swal.fire({
-                                                    title: 'Are you sure?',
-                                                    text: "Do you want to make this task completed?",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#3085d6',
-                                                    cancelButtonColor: '#d33',
-                                                    confirmButtonText: 'Yes'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        document.getElementById(`complete-task-form-${StatusTaskId}`).submit();
-                                                    }
-                                                });
-                                            } 
-                                        </script>  --}}
-                                        {{-- Sweet alart for requested task change  --}}
-                                        {{-- <script>
-                                            function confirmRequestedTask(requestTaskId) {
-                                                Swal.fire({
-                                                    title: 'Are you sure?',
-                                                    text: "Do you want to make this task requested?",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#3085d6',
-                                                    cancelButtonColor: '#d33',
-                                                    confirmButtonText: 'Yes'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        document.getElementById(`requested-task-form-${requestTaskId}`).submit();
-                                                    }
-                                                });
-                                            } 
-                                        </script>  --}}
-
                                     </tbody>
                                 </table>
                             </div>
@@ -232,7 +177,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
+                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -337,7 +282,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
+                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
@@ -434,7 +379,7 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title->project_title ?? 'No project title selected' }}</td>
+                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{!! nl2br(e($task->message)) !!}</td>
                                             <td>{{ $task->status }}</td>

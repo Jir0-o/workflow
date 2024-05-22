@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('project_title');
             $table->text('description')->nullable();
-            $table->enum('status', ['pending', 'completed', 'in_progress','incomplete'])->default('in_progress'); 
+            $table->enum('status', ['completed', 'in_progress','dropped'])->default('in_progress'); 
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->timestamps();

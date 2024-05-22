@@ -12,6 +12,7 @@
             <div class="card-body">
             <form action="{{route('project_title.store')}}" method="POST">
                 @csrf
+                <input type="hidden" name="previous_url" value="{{ url()->previous() }}">
                 <div class="mb-3 position-relative">
                     <label for="title">Project name</label>
                     <div class="d-flex align-items-center">
@@ -30,7 +31,7 @@
                     <label for="end_date">Project End Date</label>
                     <input id="end_date" name="end_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date">
                 </div>
-                <a href="/settings" class="btn btn-secondary">Back</a>
+                <a href="{{ url()->previous() }}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Create Project</button>
             </form>
             </div>

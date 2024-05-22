@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    <h4 class="py-2 m-4"><span class="text-muted fw-light">Assign Task</span></h4>
+    <h4 class="py-2 m-4"><span class="text-muted fw-light">Project Details</span></h4>
 
     <div class="row mt-5">
         <div class="col-12 col-md-12 col-lg-12">
@@ -15,21 +15,21 @@
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
                                     Running Project 
-                                    <span class="badge bg-primary"> #</span>
+                                    <span class="badge bg-primary"> {{$runningCount}}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
                                     Completed Project
-                                    <span class="badge bg-primary"> #</span>
+                                    <span class="badge bg-primary">{{$completedCount}}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
                                     Dropped Project
-                                    <span class="badge bg-primary">#</span>
+                                    <span class="badge bg-primary">{{$droppedCount}}</span>
                                 </button>
                             </li>
                         </ul>
@@ -48,7 +48,7 @@
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
-                                            <a href="{{ route('new_project.create') }}" class="btn btn-primary">
+                                            <a href="{{ route('project_title.create') }}" class="btn btn-primary">
                                                 <i class="bx bx-edit-alt me-1"></i> Create New Project
                                             </a>
                                         </div>
@@ -71,7 +71,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        @foreach($projects as $key => $project)
+                                        @foreach($runningProject as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
@@ -86,7 +86,7 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">
+                                                        <a class="dropdown-item" href="{{ route('project_title.edit', ['project_title' => $project->id]) }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
                                                         <form action="#" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
@@ -140,8 +140,8 @@
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
-                                            <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                            <a href="{{ route('project_title.create') }}" class="btn btn-primary">
+                                                <i class="bx bx-edit-alt me-1"></i> Create New Project
                                             </a>
                                         </div>
                                     </div>
@@ -162,7 +162,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        @foreach($projects as $key => $project)
+                                        @foreach($completedProject as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
@@ -230,8 +230,8 @@
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
-                                            <a href="{{ route('asign_tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                            <a href="{{ route('project_title.create') }}" class="btn btn-primary">
+                                                <i class="bx bx-edit-alt me-1"></i> Create New Project
                                             </a>
                                         </div>
                                     </div>
@@ -252,7 +252,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        @foreach($projects as $key => $project)
+                                        @foreach($droppedProject as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>

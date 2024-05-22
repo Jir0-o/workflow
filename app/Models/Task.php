@@ -11,7 +11,7 @@ class Task extends Model
     public function User(){
         return $this->belongsTo(User::class);
     }
-    public function title(){
+    public function title_name(){
         return $this->belongsTo(TitleName::class);
     }
 }

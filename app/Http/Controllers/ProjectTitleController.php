@@ -12,8 +12,19 @@ class ProjectTitleController extends Controller
      */
     public function index()
     {
-        // $projects= TitleName::all();
-        // return view('user.project.projectTitle',compact('projects'));
+        $projects= TitleName::all();
+
+        //count
+        $runningCount = TitleName::where('status', 'in_progress')->count();
+        $completedCount = TitleName::where('status', 'completed')->count();
+        $droppedCount = TitleName::where('status', 'dropped')->count();
+
+        $runningProject = TitleName::where('status', 'in_progress')->with('user','task')->get();
+        $completedProject = TitleName::where('status', 'completed')->with('user','task')->get();
+        $droppedProject = TitleName::where('status', 'dropped')->with('user','task')->get();
+    
+        return view('user.project.projectTitle', compact('runningCount', 'completedCount', 'droppedCount','runningProject','completedProject','droppedProject','projects'));
+
     }
 
     /**
@@ -42,8 +53,9 @@ class ProjectTitleController extends Controller
             $project->start_date = $request->start_date;
             $project->end_date = $request->end_date;
             $project->save();
-        
-            return redirect('asign_tasks/create')->with('success', 'Task created successfully.');
+            
+            $previousUrl = $request->input('previous_url');
+            return redirect($previousUrl)->with('success', 'Task created successfully.');
         }
 
     /**
@@ -59,7 +71,8 @@ class ProjectTitleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $project= TitleName::find($id);
+        return view('user.project.editProject', compact('project'));
     }
 
     /**
@@ -67,7 +80,20 @@ class ProjectTitleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+        ]);
+    
+
+        $project= TitleName::find($id);
+
+        $project->project_title = $request->title;
+        $project->description = $request->description;
+        $project->start_date = $request->start_date;
+        $project->end_date = $request->end_date;
+        $project->save();
+
+        return redirect()->back()->with('success', 'Task created successfully.');
     }
 
     /**
