@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\TitleName;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class ReportController extends Controller
 {
@@ -35,7 +36,12 @@ class ReportController extends Controller
         $users = User::all();
         $titles = TitleName::all();
     
-        $query = Task::whereBetween('submit_date', [$request->start_date, $request->end_date]);
+
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+        $dateField = $request->date_criteria;
+        $query = Task::whereBetween($dateField, [$startDate, $endDate]);
     
         if ($request->filled('title_name_id')) {
             $query->where('title_name_id', $request->title_name_id);
