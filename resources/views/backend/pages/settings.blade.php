@@ -17,59 +17,12 @@
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#exampleModal">
-                                    <i class="bx bx-edit-alt me-1"></i> Create Role
+                                    <a href="{{ route('roles.create') }}" class="btn btn-primary">
+                                        <i class="bx bx-edit-alt me-1"></i> Create Role
+                                    </a>
                                 </button>
 
                                 <!-- Modal -->
-                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Create Role</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <label for="name">Role Name</label>
-                                                        <input id="name" name="name" type="text" required
-                                                            class="form-control" placeholder="Role Name">
-                                                    </div>
-                                                    <div class="col-12 mt-3">
-                                                        <table  class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>SL</th>
-                                                                    <th>Permission Name</th>
-                                                                    <th>Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($permissions as $permission)
-                                                                    <tr>
-                                                                        <td>{{ $loop->iteration }}</td>
-                                                                        <td>{{ $permission->name }}</td>
-                                                                        <td><input value="{{ $permission->id }}"
-                                                                                type="checkbox" name="permission[]"
-                                                                                id="permission"></td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,7 +62,7 @@
                                                 <i class="bx bx-dots-vertical-rounded"></i>
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
+                                                <a class="dropdown-item" href="{{ route('roles.edit', $role->id) }}"><i
                                                         class="bx bx-edit-alt me-1"></i> Edit</a>
                                                 <a class="dropdown-item" href="javascript:void(0);"><i
                                                         class="bx bx-trash me-1"></i> Delete</a>
@@ -137,37 +90,12 @@
                             <div class="float-end">
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#Permission">
+                                data-bs-target="">
+                                <a href="{{ route('permission.create') }}" class="btn btn-primary">
                                     <i class="bx bx-edit-alt me-1"></i> Create Permission
-                                </button>
-
+                                </a>
+                            </button>
                                 <!-- Modal -->
-                                <div class="modal fade" id="Permission" tabindex="-1" aria-labelledby="PermissionLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="PermissionLabel">Create Permission</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <label for="name">Permission Name</label>
-                                                        <input id="name" name="name" type="text" required
-                                                            class="form-control" placeholder="Permission Name">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -197,10 +125,15 @@
                                                 <i class="bx bx-dots-vertical-rounded"></i>
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
+                                                <a class="dropdown-item" href="{{ route('permission.edit', $permission->id) }}"><i
                                                         class="bx bx-edit-alt me-1"></i> Edit</a>
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
-                                                        class="bx bx-trash me-1"></i> Delete</a>
+                                                        <form action="{{ route('permission.destroy', $permission->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="dropdown-item">
+                                                                <i class="bx bx-trash me-1"></i> Delete
+                                                            </button>
+                                                        </form>                                                        
                                             </div>
                                         </div>
                                     </td>
@@ -295,7 +228,7 @@
                                                 <i class="bx bx-dots-vertical-rounded"></i>
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
+                                                <a class="dropdown-item" href="{{ route('users.edit',$user->id) }}"><i
                                                         class="bx bx-edit-alt me-1"></i> Edit</a>
                                                 <a class="dropdown-item" href="javascript:void(0);"><i
                                                         class="bx bx-trash me-1"></i> Delete</a>

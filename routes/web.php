@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AsignTaskController;
 
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectTitleController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
@@ -29,6 +30,7 @@ Route::middleware([
 
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
+    Route::resource('permission', PermissionController::class);
 
     Route::resource('tasks', TaskController::class);
     Route::resource('asign_tasks', AsignTaskController::class);
