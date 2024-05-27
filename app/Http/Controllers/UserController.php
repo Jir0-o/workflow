@@ -3,139 +3,103 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $data = User::latest()->get();
-        $inactiveUsers = $data->where('status', false)->count();
-        $admin = $data->where('is_admin', true)->count();
-        $customers = $data->where('is_admin', false)->count();
-
-        $userData = ['customers' => $customers, 'admin' => $admin, 'inactive' => $inactiveUsers];
-        $users = User::with('roles')->latest()->paginate(20);
-
-        return view('user.index', compact(['users', 'userData']));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $roles = Role::latest()->get();
-
-        return view('user.create',compact(['roles']));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|max:80',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-            'roles' => 'required'
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'status' => $request->status,
-        ]);
-
-        $user->syncRoles($request->roles);
-
-        session()->flash('success', 'User created successfully');
-
-        return back();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
     {
         //
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Show the form for creating a new resource.
      */
-    public function edit(User $user)
+    public function create()
     {
-        $roles = Role::latest()->get();
-        $data = $user->roles->pluck('id')->toArray();
-        return view('user.edit', compact('user','roles','data'));
+        $roles = Role::with('permissions')->latest()->get();
+        $permissions = Permission::all();
+        return view('user.create.create',compact('roles','permissions'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed',
+            'role' => 'required|array' 
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        $user->syncRoles($request->role);
+
+        return redirect()->back()->with('success', 'User created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $roles = Role::with('permissions')->latest()->get();
+        $user = User::find($id);
+        return view('user.create.edit',compact('user','roles'));
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, string $id)
     {
-
         $request->validate([
-            'name' => 'required|max:80',
-            'email' => "required|email|unique:users,email,$user->id",
-            'password' => 'nullable|sometimes|min:6|confirmed',
-            'roles' => 'required'
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|confirmed', 
+            'role' => 'required|array'
         ]);
-
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'status' => $request->status,
-        ]);
-
-        $user->syncRoles($request->roles);
-
-        if($request->has('password')){
-            $user->update(['password' => bcrypt('password')]);
+    
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+    
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
         }
+    
+        $user->syncRoles($request->role);
+        $user->save();
 
-        session()->flash('success', 'User updated successfully');
-        return back();
+        return redirect()->back()->with('success', 'User updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(string $id)
     {
-        $user->delete();
-
-        session()->flash('success', 'User deleted successfully');
-        return back();
+        //
     }
 }

@@ -16,4 +16,6 @@ class SettingsController extends Controller
         $users = User::with('roles')->latest()->get();
         return view('backend.pages.settings', compact(['roles','permissions','users']));
     }
+
+    
 }

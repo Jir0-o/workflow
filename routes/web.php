@@ -28,7 +28,7 @@ Route::middleware([
     })->name('dashboard');
     Route::get('/settings',[SettingsController::class, 'index'])->name('settings');
 
-    Route::resource('users', UserController::class);
+    Route::resource('user', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('permission', PermissionController::class);
 

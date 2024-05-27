@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Models\TitleName;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProjectTitleController extends Controller

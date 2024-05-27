@@ -63,7 +63,6 @@
                                             <th>SL</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
-                                            <th>Assiged User</th>
                                             <th>Status</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
@@ -76,7 +75,6 @@
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($project->description)) !!}</td>
-                                            <td>#</td>
                                             <td>{{ $project->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
@@ -155,7 +153,6 @@
                                             <th>SL</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
-                                            <th>Assiged User</th>
                                             <th>Status</th>
                                             <th>Start Date</th>
                                             <th>Actions</th>
@@ -167,7 +164,6 @@
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($project->description)) !!}</td>
-                                            <td>#</td>
                                             <td>{{ $project->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>
@@ -245,7 +241,6 @@
                                             <th>SL</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
-                                            <th>Assiged User</th>
                                             <th>Status</th>
                                             <th>Start Date</th>
                                             <th>Actions</th>
@@ -257,7 +252,6 @@
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($project->description)) !!}</td>
-                                            <td>#</td>
                                             <td>{{ $project->status }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>

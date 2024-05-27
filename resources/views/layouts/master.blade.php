@@ -17,6 +17,22 @@
 
     <meta name="description" content="" />
 
+    <!-- FullCalendar CSS -->
+    <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/timeline@4.4.0/main.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/resource-timeline@4.4.0/main.css' rel='stylesheet' />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/timeline@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/resource-common@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/resource-timeline@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/interaction@4.4.0/main.js'></script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
 

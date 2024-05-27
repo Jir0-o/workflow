@@ -20,7 +20,7 @@
                     <input id="permissionName" name="permissionName" type="text" required class="form-control" value="{{ $permission->name }}" placeholder="Title Name">
                     </div>
                 </div>
-                <a href="#" class="btn btn-secondary">Back</a>
+                <a href="{{Route('settings')}}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Update Permission</button>
             </form>
             </div>

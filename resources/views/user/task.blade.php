@@ -1,7 +1,7 @@
 @extends('layouts.master')
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <h4 class="py-2 m-4"><span class="text-muted fw-light">My Task</span></h4>
+    <h4 class="py-2 m-4"><span class="text-muted fw-light">My Work Plan</span></h4>
     {{-- @include('sweetalert::alert') --}}
     <div class="row mt-5">
         <div class="col-12 col-md-12 col-lg-12">
@@ -11,6 +11,7 @@
                 <div class="container">
                     <div class="row justify-content-center">
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            @can('View Work Plan Pending')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
@@ -18,6 +19,8 @@
                                     <span class="badge bg-primary"> {{ $pendingCount }}</span>
                                 </button>
                             </li>
+                            @endcan
+                            @can('View Work Plan Incomplete')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
@@ -25,6 +28,8 @@
                                     <span class="badge bg-primary"> {{ $incompleteCount }}</span>
                                 </button>
                             </li>
+                            @endcan
+                            @can('View Work Plan Completed')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
@@ -32,6 +37,8 @@
                                     <span class="badge bg-primary"> {{ $completeCount }}</span>
                                 </button>
                             </li>
+                            @endcan
+                            @can('View Work Plan Requested')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Requested"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
@@ -39,6 +46,7 @@
                                     <span class="badge bg-primary"> {{ $inprogressCount }}</span>
                                 </button>
                             </li>
+                            @endcan
                         </ul>
                     </div>
                 </div>
@@ -46,6 +54,7 @@
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div class="tab-pane active" id="Pending" role="tabpanel" aria-labelledby="home-tab">
+                        @can('View Work Plan Pending')
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
@@ -57,13 +66,13 @@
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Create Work Plan
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="table-responsive text-nowrap p-3">
                                 <table id="datatable1" class="table">
                                     <thead>
@@ -129,6 +138,7 @@
                                 </table>
                             </div>
                         </div>
+                        @endcan
                     </div>
                     
                     <div class="tab-pane" id="Incomplete" role="tabpanel" aria-labelledby="profile-tab">
@@ -143,7 +153,7 @@
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Create Work Plan
                                             </a>
                                         </div>
                                     </div>
@@ -236,7 +246,7 @@
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Create Work Plan
                                             </a>
                                         </div>
                                     </div>
@@ -318,7 +328,7 @@
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="{{ route('tasks.create') }}" class="btn btn-primary">
-                                                <i class="bx bx-edit-alt me-1"></i> Create Task
+                                                <i class="bx bx-edit-alt me-1"></i> Create Work Plan
                                             </a>
                                         </div>
                                     </div>

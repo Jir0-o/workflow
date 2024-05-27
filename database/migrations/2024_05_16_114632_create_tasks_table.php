@@ -16,7 +16,9 @@ return new class extends Migration
             $table->text('description');
             $table->enum('status', ['pending', 'completed', 'in_progress','incomplete'])->default('pending'); 
             $table->date('submit_date');
+            $table->date('submit_by_date');
             $table->text('message')->nullable();
+            $table->text('admin_message')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('title_name_id')->nullable();
             $table->timestamps();

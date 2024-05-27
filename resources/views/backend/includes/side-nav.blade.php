@@ -74,41 +74,50 @@
                         <i class="menu-icon tf-icons bx bx-layout"></i>
                         <div data-i18n="Layouts">Layouts</div>
                     </a>
-
                     <ul class="menu-sub">
+                        @can('View Assign Task')
                         <li class="menu-item">
-                            <a href="{{route('asign_tasks.index')}}" class="menu-link">
-                                <div data-i18n="Without menu">Asign Task</div>
+                            <a href="{{ route('asign_tasks.index') }}" class="menu-link">
+                                <div data-i18n="Without menu">Assign Task</div>
                             </a>
                         </li>
+                        @endcan
+                        @can('View Work Plan')
                         <li class="menu-item">
-                            <a href="{{route('tasks.index')}}" class="menu-link">
-                                <div data-i18n="Without navbar">My Task</div>
+                            <a href="{{ route('tasks.index') }}" class="menu-link">
+                                <div data-i18n="Without navbar">Work Plan</div>
                             </a>
                         </li>
+                        @endcan
+                        @can('View Project Details')
                         <li class="menu-item">
                             <a href="{{route('project_title.index')}}" class="menu-link">
                                 <div data-i18n="Container">Project Details</div>
                             </a>
                         </li>
+                        @endcan
+                        @can('View Report')
                         <li class="menu-item">
                             <a href="{{route('report.index')}}" class="menu-link">
                                 <div data-i18n="Container">View Report</div>
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
+                @can('View Role Permission Menu')
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">Settings Section</span>
+                    <span class="menu-header-text"> Role and Permission</span>
                 </li>
                 <!-- Settings -->
                 <li class="menu-item">
                     <a href="{{route('settings')}}"
                         class="menu-link">
                         <i class="menu-icon bx bx-cog"></i>
-                        <div data-i18n="Settings">Settings</div>
+                        <div data-i18n="Settings">Role Permission & User</div>
                     </a>
                 </li>
+                @endcan
             </ul>
         </aside>
         <!-- / Menu -->

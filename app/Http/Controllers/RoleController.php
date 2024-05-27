@@ -40,7 +40,7 @@ class RoleController extends Controller
     'guard_name' => 'web']);
         $role->permissions()->sync($request->permissions);
     
-        return redirect()->route('roles.index')->with('success', 'Role created successfully.');
+        return redirect()->route('settings')->with('success', 'Role created successfully.');
     }
 
     /**
@@ -80,7 +80,7 @@ class RoleController extends Controller
         $role->permissions()->sync($request->permissions);
     
     
-        return redirect()->route('roles.index')->with('success', 'Role created successfully.');
+        return redirect()->route('settings')->with('success', 'Role created successfully.');
     }
 
     /**
@@ -88,6 +88,9 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $permission = Role::find($id);
+        $permission->delete();
+ 
+        return back()->with('success', 'Role deleted successfully.');
     }
 }

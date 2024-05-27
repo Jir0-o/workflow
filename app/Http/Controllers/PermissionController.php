@@ -10,6 +10,14 @@ class PermissionController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function __construct(){
+    //     $this->middleware('permission:View Assign Task',['only'=>['index']]);
+    //     $this->middleware('permission:Create Assign task',['only'=>['create']]);
+    //     $this->middleware('permission:Edit Assign Task',['only'=>['edit']]);
+    //     $this->middleware('permission:Delete Assign Task',['only'=>['destroy']]);
+    //     $this->middleware('permission:Change Status',['only'=>['incomplete','completed','requested','pendingdate']]);
+
+    // }
     public function index()
     {
         //
@@ -30,7 +38,7 @@ class PermissionController extends Controller
     {
         $permission = Permission::create(['name' => $request->permissionName,
     'guard_name' => 'web']);
-        return redirect()->back();
+        return redirect()->route('settings')->with('success', 'Permission Created successfully.');
     }
 
     /**
@@ -64,7 +72,7 @@ class PermissionController extends Controller
 
         $permission->name = $request->permissionName;
         $permission->save();
-        return redirect()->back()->with('success', 'Permission Updated successfully.');
+        return redirect()->route('settings')->with('success', 'Permission Updated successfully.');
     }
 
     /**

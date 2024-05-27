@@ -16,6 +16,14 @@ class AsignTaskController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function __construct(){
+        $this->middleware('permission:View Assign Task',['only'=>['index']]);
+        $this->middleware('permission:Create Assign task',['only'=>['create']]);
+        $this->middleware('permission:Edit Assign Task',['only'=>['edit']]);
+        $this->middleware('permission:Delete Assign Task',['only'=>['destroy']]);
+        $this->middleware('permission:Change Status',['only'=>['incomplete','completed','requested','pendingdate']]);
+
+    }
     public function index()
     {   
         $tasks = Task::all();
