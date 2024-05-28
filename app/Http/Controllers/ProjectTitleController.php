@@ -6,15 +6,25 @@ use App\Models\Task;
 use App\Models\TitleName;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ProjectTitleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function __construct(){
+        $this->middleware('permission:View Project Details',['only'=>['index']]);
+        $this->middleware('permission:Create Project',['only'=>['create']]);
+        $this->middleware('permission:Edit Project',['only'=>['update','edit']]);
+        $this->middleware('permission:Delete Project',['only'=>['destroy']]);
+        $this->middleware('permission:Project Change Status',['only'=>['complete','drop','running']]);
+
+    }
     public function index()
-    {
-        $projects= TitleName::all();
+    {   
+
+        $projects= TitleName::with('user')->get();
 
         //count
         $runningCount = TitleName::where('status', 'in_progress')->count();
@@ -34,7 +44,8 @@ class ProjectTitleController extends Controller
      */
     public function create()
     {
-        return view('user.project.createProject',);
+        $users = User::all(); 
+        return view('user.project.createProject',compact('users'));
     }
 
     /**
@@ -45,19 +56,22 @@ class ProjectTitleController extends Controller
         {
             $request->validate([
                 'title' => 'required',
+                'description' => 'required',
             ]);
         
-    
+
             $project= new TitleName();
     
             $project->project_title = $request->title;
             $project->description = $request->description;
             $project->start_date = $request->start_date;
             $project->end_date = $request->end_date;
+            $project->user_id = implode(',', $request['user_id']);
             $project->save();
+
             
             $previousUrl = $request->input('previous_url');
-            return redirect($previousUrl)->with('success', 'Task created successfully.');
+            return redirect($previousUrl)->with('success', 'Project created successfully.');
         }
 
     /**
@@ -73,8 +87,11 @@ class ProjectTitleController extends Controller
      */
     public function edit(string $id)
     {
-        $project= TitleName::find($id);
-        return view('user.project.editProject', compact('project'));
+
+        $users = User::all(); 
+        $project = TitleName::findOrFail($id);
+        $assignedUsers = explode(',', $project->user_id);
+        return view('user.project.editProject', compact('project','users','assignedUsers'));
     }
 
     /**
@@ -93,9 +110,10 @@ class ProjectTitleController extends Controller
         $project->description = $request->description;
         $project->start_date = $request->start_date;
         $project->end_date = $request->end_date;
+        $project->user_id = implode(',', $request->user_id);
         $project->save();
 
-        return redirect()->back()->with('success', 'Task created successfully.');
+        return redirect()->back()->with('success', 'Project Updated successfully.');
     }
 
     /**
@@ -103,6 +121,39 @@ class ProjectTitleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $task = TitleName::find($id);
+        $task->delete();
+ 
+        return back()->with('success', 'Project deleted successfully.');
     }
+    public function complete($id)
+    {
+    
+        $task = TitleName::findOrFail($id);
+        $task->end_by_date = Carbon::now();
+        $task->status = 'completed';
+        $task->save();
+    
+        return back()->with('success', 'Project completed successfully.');
+    }
+    public function drop($id)
+    {
+    
+        $task = TitleName::findOrFail($id);
+        $task->status = 'dropped';
+        $task->save();
+    
+        return back()->with('success', 'Project Dropped successfully.');
+    }
+    public function running($id)
+    {
+    
+        $task = TitleName::findOrFail($id);
+        $task->end_by_date = null;
+        $task->status = 'in_progress';
+        $task->save();
+    
+        return back()->with('success', 'Project in Now running.');
+    }
+    
 }

@@ -1,13 +1,13 @@
 @extends('layouts.master')
 @section('content')
-<h4 class="py-2 m-4"><span class="text-muted fw-light">Create Task</span></h4>
+<h4 class="py-2 m-4"><span class="text-muted fw-light">Edit Task</span></h4>
 
 <div class="row mt-5">
     <div class="col-12">
         {{-- Users --}}
         <div class="card">
             <div class="card-header">
-                <h5>Assign Task</h5>
+                <h5>Edit Assign Task</h5>
             </div>
             <div class="card-body">
             <form action="{{ route('asign_tasks.update', $tasks->id) }}" method="POST">
@@ -36,7 +36,7 @@
                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details">{{ $tasks->description }}</textarea>
                 </div>
                 <div class="mb-3">
-                    <label for="last_submit_date">Last Submit Date</label>
+                    <label for="last_submit_date">Due Date</label>
                     <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ $tasks->submit_date }}">
                 </div>
                 <div class="mb-3">
@@ -48,7 +48,7 @@
                         <option value="in_progress" {{ $tasks->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     </select>
                 </div> 
-                <a href="/settings" class="btn btn-secondary">Back</a>
+                <a href="{{route('asign_tasks.index')}}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Update Task</button>
             </form>
             </div>

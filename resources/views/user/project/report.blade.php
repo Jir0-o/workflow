@@ -64,30 +64,38 @@
                             <label for="columns" class="form-label">Select Columns to Display</label>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="col_create_date" data-column="2" checked>
-                                <label class="form-check-label" for="col_create_date">Create Date</label>
+                                <label class="form-check-label" for="col_create_date">Start Date</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="col_submit_date" data-column="3" checked>
-                                <label class="form-check-label" for="col_submit_date">Submit Date</label>
+                                <label class="form-check-label" for="col_submit_date">Due Date</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_project_title" data-column="4" checked>
+                                <input class="form-check-input" type="checkbox" id="col_submit_date" data-column="4" checked>
+                                <label class="form-check-label" for="col_submitted_date">Submitted Date</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="col_project_title" data-column="5" checked>
                                 <label class="form-check-label" for="col_project_title">Project Title</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_description" data-column="5" checked>
+                                <input class="form-check-input" type="checkbox" id="col_description" data-column="6" checked>
                                 <label class="form-check-label" for="col_description">Description</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_assigned_user" data-column="6" checked>
+                                <input class="form-check-input" type="checkbox" id="col_assigned_user" data-column="7" checked>
                                 <label class="form-check-label" for="col_assigned_user">Assigned User</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_task_message" data-column="7" checked>
+                                <input class="form-check-input" type="checkbox" id="col_task_message" data-column="8" checked>
                                 <label class="form-check-label" for="col_task_message">Task Message</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_status" data-column="8" checked>
+                                <input class="form-check-input" type="checkbox" id="col_task_message" data-column="9" checked>
+                                <label class="form-check-label" for="col_admin_message">Admin Message</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="col_status" data-column="10" checked>
                                 <label class="form-check-label" for="col_status">Status</label>
                             </div>
                         </div>
@@ -133,12 +141,14 @@
                         <thead>
                             <tr>
                                 <th>SL</th>
-                                <th class="column-create-date">Create Date</th>
-                                <th class="column-submit-date">Submit Date</th>
+                                <th class="column-create-date">Start Date</th>
+                                <th class="column-submit-date">Due Date</th>
+                                <th class="column-submitted-date">Submitted Date</th>
                                 <th class="column-project-title">Project Title</th>
                                 <th class="column-description">Description</th>
                                 <th class="column-assigned-user">Assigned User</th>
                                 <th class="column-task-message">Task Message</th>
+                                <th class="column-admin-message">Admin Message</th>
                                 <th class="column-status">Status</th>
                             </tr>
                         </thead>
@@ -146,12 +156,14 @@
                             @foreach($tasks as $key => $task)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td class="column-create-date">{{ \Carbon\Carbon::parse($task->created_at)->format('d F Y') }}</td>
+                                    <td class="column-create-date">{{ \Carbon\Carbon::parse($task->created_at)->format('d F Y, h:i A') }}</td>
                                     <td class="column-submit-date">{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                    <td class="column-submitted-date">{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Not Submitted' }}</td></td>
                                     <td class="column-project-title">{{ $task->title_name->project_title ?? 'N/A' }}</td>
                                     <td class="column-description">{{ $task->description }}</td>
                                     <td class="column-assigned-user">{{ $task->user->name }}</td>
                                     <td class="column-task-message">{{ $task->message ?? 'N/A'}}</td>
+                                    <td class="column-admin-message">{{ $task->admin_message ?? 'N/A'}}</td>
                                     <td class="column-status">{{ $task->status }}</td>
                                 </tr>
                             @endforeach

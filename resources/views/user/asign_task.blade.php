@@ -68,12 +68,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -82,12 +83,13 @@
                                         @foreach($pendingTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -163,12 +165,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -176,12 +179,13 @@
                                         @foreach($incompleteTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y') : 'Task Incomplete' }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -268,12 +272,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -281,12 +286,13 @@
                                         @foreach($completeTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -364,13 +370,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>User Name</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Suggestion</th>
                                             <th>Status</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -378,13 +384,13 @@
                                         @foreach($inprogressTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{!! nl2br(e($task->message)) !!}</td>
                                             <td>{{ $task->status }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->created_at->format('d F Y') }}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

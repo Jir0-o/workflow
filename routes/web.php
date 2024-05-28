@@ -36,13 +36,16 @@ Route::middleware([
     Route::resource('asign_tasks', AsignTaskController::class);
     Route::resource('project_title', ProjectTitleController::class);
     Route::resource('report', ReportController::class);
-    Route::resource('project_title', ProjectTitleController::class);
 
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
     Route::patch('/tasks/{task}/extend', [TaskController::class, 'extend'])->name('tasks.extend');
     Route::patch('/tasks/{task}/redo', [TaskController::class, 'redo'])->name('tasks.redo');
     Route::patch('/tasks/{task}/cancel', [TaskController::class, 'cancel'])->name('tasks.cancel');
 
+
+    Route::patch('/project_title/{project_title}/complete', [ProjectTitleController::class, 'complete'])->name('project.complete');
+    Route::patch('/project_title/{project_title}/drop', [ProjectTitleController::class, 'drop'])->name('project.drop');
+    Route::patch('/project_title/{project_title}/running', [ProjectTitleController::class, 'running'])->name('project.running');
  
 
     Route::patch('/tasks/{task}/completed', [AsignTaskController::class, 'completed'])->name('asign_tasks.complete');

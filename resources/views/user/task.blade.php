@@ -53,8 +53,8 @@
 
                 <!-- Tab panes -->
                 <div class="tab-content">
+                    @can('View Work Plan Pending')
                     <div class="tab-pane active" id="Pending" role="tabpanel" aria-labelledby="home-tab">
-                        @can('View Work Plan Pending')
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
@@ -78,23 +78,28 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Status</th>
+                                            @can('Work Plan Allow Action')
                                             <th>Actions</th>
+                                            @endcan
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
                                         @foreach($pendingTasks as $key => $pendingTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $pendingTask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ $pendingTask->submit_by_date ? \Carbon\Carbon::parse($pendingTask->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $pendingTask->title_name->project_title ?? 'No project title selected'  }}</td>
                                             <td>{!! nl2br(e($pendingTask->description)) !!}</td>
-                                            <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $pendingTask->created_at->format('d F Y') }}</td>
                                             <td>{{ $pendingTask->status }}</td>
+                                            @can('Work Plan Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -112,8 +117,9 @@
                                                             </button>
                                                         </form>
                                                     </div>
-                                                </div>                                                
+                                                </div>                                     
                                             </td>
+                                            @endcan     
                                         </tr>
                                         @endforeach
                                         <script>
@@ -138,8 +144,8 @@
                                 </table>
                             </div>
                         </div>
-                        @endcan
                     </div>
+                    @endcan
                     
                     <div class="tab-pane" id="Incomplete" role="tabpanel" aria-labelledby="profile-tab">
                         <div class="card">
@@ -165,23 +171,28 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Status</th>
+                                            @can('Work Plan Allow Action')
                                             <th>Actions</th>
+                                            @endcan
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
                                         @foreach($incompletedTasks as $key => $incompletedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $incompletedtask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ $incompletedtask->submit_by_date ? \Carbon\Carbon::parse($incompletedtask->submit_by_date)->format('d F Y, h:i A') : 'Task incompleted' }}</td>
                                             <td>{{ $incompletedtask->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($incompletedtask->description)) !!}</td>
-                                            <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $incompletedtask->created_at->format('d F Y') }}</td>
                                             <td>{{ $incompletedtask->status }}</td>
+                                            @can('Work Plan Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -208,6 +219,7 @@
                                                     </div>
                                                 </div>
                                             </td>
+                                            @endcan
                                         </tr>
                                         @endforeach
                                         <script>
@@ -258,23 +270,28 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
+                                            <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
                                             <th>Status</th>
+                                            @can('Work Plan Allow Action')
                                             <th>Actions</th>
+                                            @endcan
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
                                         @foreach($completedTasks as $key => $completedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $completedtask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
                                             <td>{{ $completedtask->title_name->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($completedtask->description)) !!}</td>
-                                            <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $completedtask->created_at->format('d F Y') }}</td>
                                             <td>{{ $completedtask->status }}</td>
+                                            @can('Work Plan Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -291,6 +308,7 @@
                                                     </div>
                                                 </div>
                                             </td>
+                                            @endcan
                                         </tr>
                                         @endforeach
                                         <script>
@@ -340,25 +358,28 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Start Date</th>
+                                            <th>Due Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
-                                            <th>Comment</th>
-                                            <th>Last Date of Submit</th>
-                                            <th>Created Date</th>
+                                            <th>Your Message</th>
                                             <th>Status</th>
+                                            @can('Work Plan Allow Action')
                                             <th>Actions</th>
+                                            @endcan
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
                                         @foreach($requestedTasks as $key => $requestedTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $requestedTask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->title_name->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($requestedTask->description)) !!}</td>
                                             <td>{!! nl2br(e($requestedTask->message)) !!}</td>
-                                            <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $requestedTask->created_at->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->status }}</td>
+                                            @can('Work Plan Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -375,6 +396,7 @@
                                                     </div>
                                                 </div>
                                             </td>
+                                            @endcan
                                         </tr>
                                         @endforeach
                                         <script>

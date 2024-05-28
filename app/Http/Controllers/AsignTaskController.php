@@ -32,14 +32,17 @@ class AsignTaskController extends Controller
 
         foreach ($tasks as $task) {
             if ($task->status == 'pending' && Carbon::parse($task->submit_date)->isBefore($startOfToday)) {
+                $task->message = 'Time Expired';
                 $task->status = 'incomplete';
                 $task->save();
             }
             if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isAfter($startOfToday)) {
+                $task->submit_by_date = null;
                 $task->status = 'pending';
                 $task->save();
             }
             if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isSameDay($startOfToday)) {
+                $task->submit_by_date = null;
                 $task->status = 'pending';
                 $task->save();
             }
@@ -53,10 +56,10 @@ class AsignTaskController extends Controller
         $incompleteCount = Task::where('status', 'incomplete')->count();
         $inprogressCount = Task::where('status', 'in_progress')->count();
 
-        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->get();
-        $completeTasks = Task::where('status', 'completed')->with('user','title_name')->get();
-        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->get();
-        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->get();
+        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->latest()->get();
+        $completeTasks = Task::where('status', 'completed')->with('user','title_name')->latest()->get();
+        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->latest()->get();
+        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->latest()->get();
     
         return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
     }
@@ -157,6 +160,7 @@ class AsignTaskController extends Controller
 public function completed($id)
 {
     $task = Task::findOrFail($id);
+    $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
     $task->save();
 
@@ -174,6 +178,7 @@ public function pendingdate($id)
 {
     $task = Task::findOrFail($id);
     $task->submit_date = Carbon::now();
+    $task->submit_by_date = null;
     $task->status = 'pending';
     $task->save();
 

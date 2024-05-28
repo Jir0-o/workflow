@@ -18,6 +18,7 @@ class TaskController extends Controller
     public function __construct(){
         $this->middleware('permission:View Work Plan',['only'=>['index']]);
         $this->middleware('permission:Create Work Plan',['only'=>['create']]);
+        $this->middleware('permission:Work Plan Allow Action',['only'=>['update','complete','extend','redo','cancel']]);
 
     }
     public function index()
@@ -29,14 +30,17 @@ class TaskController extends Controller
 
         foreach ($tasks as $task) {
             if ($task->status == 'pending' && Carbon::parse($task->submit_date)->isBefore($startOfToday)) {
+                $task->message = 'Time Expired';
                 $task->status = 'incomplete';
                 $task->save();
             }
             if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isAfter($startOfToday)) {
+                $task->submit_by_date = null;
                 $task->status = 'pending';
                 $task->save();
             }
             if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isSameDay($startOfToday)) {
+                $task->submit_by_date = null;
                 $task->status = 'pending';
                 $task->save();
             }
@@ -49,10 +53,10 @@ class TaskController extends Controller
         $inprogressCount = Task::where('user_id', $userId)->where('status', 'in_progress')->count();
 
 
-        $pendingTasks = Task::where('user_id', $userId)->where('status', 'pending')->with('user','title_name')->get();
-        $completedTasks = Task::where('user_id', $userId)->where('status', 'completed')->with('user','title_name')->get();
-        $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->with('user','title_name')->get();
-        $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->with('user','title_name')->get();
+        $pendingTasks = Task::where('user_id', $userId)->where('status', 'pending')->with('user','title_name')->latest()->get();
+        $completedTasks = Task::where('user_id', $userId)->where('status', 'completed')->with('user','title_name')->latest()->get();
+        $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->with('user','title_name')->latest()->get();
+        $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->with('user','title_name')->latest()->get();
     
         return view('user.task', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount'));
 
@@ -64,7 +68,8 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $title = TitleName::all();
+        $userId = auth()->id();
+        $title = TitleName::where('status', 'in_progress')->where('user_id', $userId)->get();
         return view('user.user_create_task', compact('title'));
     }
 
@@ -136,6 +141,7 @@ class TaskController extends Controller
 {
 
     $task = Task::findOrFail($id);
+    $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
     $task->save();
 
@@ -155,6 +161,7 @@ public function redo($id)
 {
     $task = Task::findOrFail($id);
     $task->submit_date = Carbon::now();
+    $task->submit_by_date = null;
     $task->status = 'pending';
     $task->message = 'Task re-opned';
     $task->save();

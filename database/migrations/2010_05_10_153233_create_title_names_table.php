@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('status', ['completed', 'in_progress','dropped'])->default('in_progress'); 
             $table->date('start_date');
             $table->date('end_date')->nullable();
+            $table->datetime('end_by_date')->nullable();
+            $table->text('user_id')->nullable();
             $table->timestamps();
 
         });

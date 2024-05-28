@@ -20,6 +20,16 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <label for="user_id">User Name</label>
+                    <select id="user_id" name="user_id[]" class="form-control" multiple="multiple" required>
+                        <option value="">Select User</option>
+                        @foreach($users as $user)
+                        <option value="{{ $user->id }}"
+                                @if(in_array($user->id, $assignedUsers)) selected @endif>{{ $user->name }}</option>
+                    @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="description">Project Description (Not required)</label>
                     <textarea id="description" name="description" class="form-control" rows="4" placeholder="Project Details">{{ $project->description}}</textarea>
                 </div>
@@ -38,4 +48,14 @@
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#user_id').select2({
+            placeholder: 'Select User',
+            allowClear: true
+        });
+    });
+</script>
 @endsection
