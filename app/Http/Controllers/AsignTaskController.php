@@ -93,7 +93,7 @@ class AsignTaskController extends Controller
             $task->user_id = $id;
             $task->save();
         }
-        return redirect('/asign_tasks')->with('success', 'Task assign successfully.');
+        return redirect()->route('asign_tasks.index')->with('success', 'Task assign successfully.');
     }
 
     /**
@@ -135,7 +135,7 @@ class AsignTaskController extends Controller
         $task->status = $request->status;
         $task->save();
     
-        return redirect('/asign_tasks')->with('success', 'Assign Task edited successfully.');
+        return redirect()->route('asign_tasks.index')->with('success', 'Assign Task edited successfully.');
     }
 
     /**

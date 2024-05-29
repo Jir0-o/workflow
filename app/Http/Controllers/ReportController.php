@@ -56,13 +56,17 @@ class ReportController extends Controller
         }
     
         $tasks = $query->get();
+        $selectedUser = $request->filled('user') ? User::find($request->user) : null;
+        $selectedTitle = $request->filled('title_name_id') ? TitleName::find($request->title_name_id) : null;
     
         return view('user.project.report', [
             'tasks' => $tasks,
             'projects' => $projects,
             'users' => $users,
             'titles' => $titles,
-            'oldInput' => $request->all() 
+            'oldInput' => $request->all(), 
+            'selectedUser' => $selectedUser,
+            'selectedTitle' => $selectedTitle,
         ]);
     
     }

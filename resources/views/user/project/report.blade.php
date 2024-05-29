@@ -4,6 +4,7 @@
 
 <div class="row mt-5">
     <div class="col-12">
+        {{-- {{dd($oldInput)}} --}}
         {{-- Users --}}
         <div class="card">
             <div class="card-header">
@@ -16,8 +17,9 @@
                         <div class="col-md-4">
                             <label for="date_criteria" class="form-label">Date Criteria</label>
                             <select id="date_criteria" name="date_criteria" class="form-control" required>
-                                <option value="created_at" {{ old('date_criteria', $oldInput['date_criteria'] ?? '') == 'created_at' ? 'selected' : '' }}>Created At</option>
-                                <option value="submit_date" {{ old('date_criteria', $oldInput['date_criteria'] ?? '') == 'submit_date' ? 'selected' : '' }}>Last Submit Date</option>
+                                <option value="created_at" {{ old('date_criteria', $oldInput['date_criteria'] ?? '') == 'created_at' ? 'selected' : '' }}>Start Date</option>
+                                <option value="submit_date" {{ old('date_criteria', $oldInput['date_criteria'] ?? '') == 'submit_date' ? 'selected' : '' }}>Due Date</option>
+                                <option value="submit_by_date" {{ old('date_criteria', $oldInput['date_criteria'] ?? '') == 'submit_by_date' ? 'selected' : '' }}>Submitted Date</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -127,12 +129,13 @@
                             </div>
                             <div class="col-md-6 text-right">
                                 <p><strong>Status:</strong> {{ $oldInput['status'] }}</p>
-                                <p><strong>User:</strong> {{ $oldInput['user'] }}</p>
+                                <p><strong>User:</strong> {{ $selectedUser->name ?? 'No user Selected' }}</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Project Title:</strong> {{ $oldInput['title_name_id'] }}</p>
+                                <p><strong>Project Title:</strong> {{ $selectedTitle->project_title ??  'No project Selected' }}</p>
+
                             </div>
                         </div>
                     </div>

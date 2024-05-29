@@ -10,6 +10,12 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    public function __construct(){
+        $this->middleware('permission:Create User',['only'=>['store','create']]);
+        $this->middleware('permission:edit User',['only'=>['edit','update']]);
+        $this->middleware('permission:delete User',['only'=>['destroy']]);
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -48,7 +54,7 @@ class UserController extends Controller
 
         $user->syncRoles($request->role);
 
-        return redirect()->back()->with('success', 'User created successfully.');
+        return redirect()->route('settings')->with('success', 'User created successfully.');
     }
 
     /**
@@ -92,7 +98,7 @@ class UserController extends Controller
         $user->syncRoles($request->role);
         $user->save();
 
-        return redirect()->back()->with('success', 'User updated successfully.');
+        return redirect()->route('settings')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -100,6 +106,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $user->delete();
+ 
+        return back()->with('success', 'User deleted successfully.');
     }
 }

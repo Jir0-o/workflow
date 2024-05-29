@@ -29,7 +29,7 @@
                     <label for="last_submit_date">Last Submit Date</label>
                     <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date">
                 </div>
-                <a href="/settings" class="btn btn-secondary">Back</a>
+                <a href="{{route('tasks.index')}}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Create Task</button>
             </form>
             </div>

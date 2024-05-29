@@ -41,7 +41,7 @@
                     <label for="end_date">Project End Date</label>
                     <input id="end_date" name="end_date" type="date" required class="form-control" value="{{ $project->end_date }}" placeholder="Date">
                 </div>
-                <a href="#" class="btn btn-secondary">Back</a>
+                <a href="{{route('project_title.index')}}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Edit Project</button>
             </form>
             </div>

@@ -1,5 +1,6 @@
 @extends('layouts.master')
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <h4 class="py-2 m2-4"><span class="text-muted fw-light">Users,Roles & Permissions</span></h4>
 
     <div class="row">
@@ -64,13 +65,14 @@
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item" href="{{ route('roles.edit', $role->id) }}"><i
                                                         class="bx bx-edit-alt me-1"></i> Edit</a>
-                                                        <form action="{{ route('roles.destroy', $role->id) }}" method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">
-                                                                <i class="bx bx-trash me-1"></i> Delete
-                                                            </button>
-                                                        </form>   
+                                                    <form id="delete-{{ $role->id }}" action="{{ route('roles.destroy', $role->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button" class="dropdown-item" onclick="confirmDelete({{ $role->id}})">
+                                                            <i class="bx bx-trash me-1"></i> Delete
+                                                        </button>
+                                                    </form>       
+
                                             </div>
                                         </div>
                                     </td>
@@ -132,13 +134,13 @@
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item" href="{{ route('permission.edit', $permission->id) }}"><i
                                                         class="bx bx-edit-alt me-1"></i> Edit</a>
-                                                        <form action="{{ route('permission.destroy', $permission->id) }}" method="POST">
+                                                        <form id="delete-{{ $permission->id }}" action="{{ route('permission.destroy', $permission->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">
+                                                            <button type="button" class="dropdown-item" onclick="confirmDelete({{ $permission->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
-                                                        </form>                                                        
+                                                        </form>                                                    
                                             </div>
                                         </div>
                                     </td>
@@ -161,6 +163,7 @@
                         <div class="col-12 col-md-6">
                             <h5>Users</h5>
                         </div>
+                        @can('Create User')
                         <div class="col-12 col-md-6">
                             <div class="float-end">
                                 <!-- Button trigger modal -->
@@ -174,6 +177,7 @@
                                 <!-- Modal -->
                             </div>
                         </div>
+                        @endcan
                     </div>
                 </div>
                 <div class="table-responsive text-nowrap p-3">
@@ -209,10 +213,19 @@
                                                 <i class="bx bx-dots-vertical-rounded"></i>
                                             </button>
                                             <div class="dropdown-menu">
+                                                @can('edit User')
                                                 <a class="dropdown-item" href="{{ route('user.edit', $user->id) }}"><i
                                                         class="bx bx-edit-alt me-1"></i> Edit</a>
-                                                <a class="dropdown-item" href="{{ route('user.destroy', $user->id) }}"><i
-                                                        class="bx bx-trash me-1"></i> Delete</a>
+                                                        @endcan
+                                                        @can('delete User')
+                                                        <form id="delete-{{ $user->id }}" action="{{ route('user.destroy', $user->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button" class="dropdown-item" onclick="confirmDelete({{ $user->id}})">
+                                                                <i class="bx bx-trash me-1"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                        @endcan
                                             </div>
                                         </div>
                                     </td>
@@ -223,6 +236,23 @@
                     </table>
                 </div>
             </div>
+            <script>
+                function confirmDelete(DeleteId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Do you want to delete this element? You will get back any deleted Data",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById(`delete-${DeleteId}`).submit();
+                        }
+                    });
+                } 
+            </script> 
             <!--/ Permissions -->
         </div>
     </div>

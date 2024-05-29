@@ -9,6 +9,11 @@ use Spatie\Permission\Models\Role;
 
 class SettingsController extends Controller
 {
+
+    public function __construct(){
+        $this->middleware('permission:View Role Permission Menu',['only'=>['index']]);
+
+    }
     public function index()
     {
         $roles = Role::with('permissions')->latest()->get();

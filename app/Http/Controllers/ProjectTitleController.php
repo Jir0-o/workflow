@@ -113,7 +113,7 @@ class ProjectTitleController extends Controller
         $project->user_id = implode(',', $request->user_id);
         $project->save();
 
-        return redirect()->back()->with('success', 'Project Updated successfully.');
+        return redirect()->route('project_title.index')->with('success', 'Project Updated successfully.');
     }
 
     /**

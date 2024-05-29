@@ -213,7 +213,7 @@
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="button" class="dropdown-item" onclick="confirmInCompleteTask({{ $incompletedtask->id }})">
-                                                                <i class="bx bx-check me-1"></i> Extend Task
+                                                                <i class="bx bx-timer"></i> Extend Task
                                                             </button>
                                                         </form>
                                                     </div>
@@ -302,7 +302,7 @@
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="button" class="dropdown-item" onclick="confirmCompletedTask({{ $completedtask->id }})">
-                                                                <i class="bx bx-check me-1"></i> Re-Do Task
+                                                                <i class="bx bx-redo"></i> Re-Do Task
                                                             </button>
                                                         </form>
                                                     </div>
@@ -390,7 +390,7 @@
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $requestedTask->id }})">
-                                                                <i class="bx bx-check me-1"></i> Request Cancel
+                                                                <i class="bx bx-task-x"></i> Request Cancel
                                                             </button>
                                                         </form>
                                                     </div>

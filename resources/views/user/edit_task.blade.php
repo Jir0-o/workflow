@@ -17,7 +17,7 @@
                     <label for="message">Write a message to edit</label>
                     <textarea id="message" name="message" class="form-control" rows="4" required placeholder="Your message"></textarea>
                 </div>
-                <a href="/settings" class="btn btn-secondary">Back</a>
+                <a href="{{route('tasks.index')}}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Send Request</button>
             </form>
             </div>

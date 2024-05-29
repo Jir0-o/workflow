@@ -55,12 +55,14 @@
                             <span class="align-middle">My Profile</span>
                         </a>
                     </li>
+                    @can('View Role Permission Menu')
                     <li>
                         <a class="dropdown-item" href="{{route('settings')}}">
                             <i class="bx bx-cog me-2"></i>
                             <span class="align-middle">Role & Permission</span>
                         </a>
                     </li>
+                    @endcan
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>

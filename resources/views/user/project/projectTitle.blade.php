@@ -66,10 +66,10 @@
                                             <th>Start Date</th>
                                             <th>Expected End Date</th>
                                             <th>Completed Date</th>
+                                            <th>assigned User</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
                                             <th>Status</th>
-                                            <th>assigned User</th>
                                             @can('View Project Action')
                                             <th>Actions</th>
                                             @endcan
@@ -82,9 +82,6 @@
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
                                             <td>{{ $project->end_by_date ? \Carbon\Carbon::parse($project->end_by_date)->format('d F Y, h:i A') : 'Project Running' }}</td>
-                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($project->description)) !!}</td>
-                                            <td>{{ $project->status }}</td>
                                             <td>
                                                 @foreach(explode(',', $project->user_id) as $userId)
                                                 @php
@@ -93,6 +90,9 @@
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
                                             </td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
                                                 <div class="dropdown">
@@ -179,10 +179,10 @@
                                             <th>Start Date</th>
                                             <th>Expected End Date</th>
                                             <th>Completed Date</th>
+                                            <th>assigned User</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
                                             <th>Status</th>
-                                            <th>assigned User</th>
                                             @can('View Project Action')
                                             <th>Actions</th>
                                             @endcan
@@ -195,9 +195,6 @@
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
                                             <td>{{ $project->end_by_date ? \Carbon\Carbon::parse($project->end_by_date)->format('d F Y, h:i A') : 'Project completed' }}</td>
-                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($project->description)) !!}</td>
-                                            <td>{{ $project->status }}</td>
                                             <td> @foreach(explode(',', $project->user_id) as $userId)
                                                 @php
                                                     $user = App\Models\User::find($userId);
@@ -205,6 +202,9 @@
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
                                             </td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
                                                 <div class="dropdown">
@@ -290,10 +290,10 @@
                                             <th>SL</th>
                                             <th>Start Date</th>
                                             <th>Expected End Date</th>
+                                            <th>assigned User</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
                                             <th>Status</th>
-                                            <th>assigned User</th>
                                             @can('View Project Action')
                                             <th>Actions</th>
                                             @endcan
@@ -305,9 +305,6 @@
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
-                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($project->description)) !!}</td>
-                                            <td>{{ $project->status }}</td>
                                             <td> @foreach(explode(',', $project->user_id) as $userId)
                                                 @php
                                                     $user = App\Models\User::find($userId);
@@ -315,6 +312,9 @@
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
                                             </td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
                                                 <div class="dropdown">

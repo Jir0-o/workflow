@@ -117,7 +117,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Make Completed
+                                                                            <i class='bx bx-check'></i> Make Completed
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -126,7 +126,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Move to Requested
+                                                                            <i class="bx bx-task"></i> Move to Requested
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -214,7 +214,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Make Pending
+                                                                            <i class='bx bx-repost' ></i> Make Pending
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -223,7 +223,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Make Completed
+                                                                            <i class="bx bx-check"></i> Make Completed
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -232,7 +232,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Move to Requested
+                                                                            <i class="bx bx-task"></i> Move to Requested
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -321,7 +321,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Make Pending
+                                                                            <i class="bx bx-repost"></i> Make Pending
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -330,7 +330,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Move to Requested
+                                                                            <i class="bx bx-task"></i> Move to Requested
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -419,7 +419,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Make Pending
+                                                                            <i class="bx bx-repost"></i> Make Pending
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -428,7 +428,7 @@
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
-                                                                            <i class="bx bx-trash me-1"></i> Make Completed
+                                                                            <i class="bx bx-check"></i> Make Completed
                                                                         </button>
                                                                     </form>
                                                                 </li>

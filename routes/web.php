@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AsignTaskController;
-
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectTitleController;
 use App\Http\Controllers\ReportController;
@@ -23,15 +23,10 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-    Route::get('/settings',[SettingsController::class, 'index'])->name('settings');
-
+    Route::resource('dashboard', DashboardController::class);
     Route::resource('user', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('permission', PermissionController::class);
-
     Route::resource('tasks', TaskController::class);
     Route::resource('asign_tasks', AsignTaskController::class);
     Route::resource('project_title', ProjectTitleController::class);
@@ -54,7 +49,8 @@ Route::middleware([
     Route::patch('/tasks/{task}/incomplete', [AsignTaskController::class, 'incomplete'])->name('asign_tasks.incomplete');
 
     Route::post('/report/create', [ReportController::class, 'create'])->name('report.create');
-
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+
+    Route::get('/settings',[SettingsController::class, 'index'])->name('settings');
 
 });

@@ -89,7 +89,7 @@ class TaskController extends Controller
         $task->submit_date = $request->last_submit_date;
         $task->save();
     
-        return redirect('/tasks')->with('success', 'Task created successfully.');
+        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }
 
     /**
@@ -124,7 +124,7 @@ class TaskController extends Controller
         $task->status = 'in_progress';
         $task->save();
     
-        return redirect('/tasks')->with('success', 'Edit message send to admin successfully.');
+        return redirect()->route('tasks.index')->with('success', 'Edit message send to admin successfully.');
     }
 
     /**
