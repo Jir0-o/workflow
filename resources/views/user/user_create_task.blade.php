@@ -16,9 +16,13 @@
                     <label for="title">Select Title</label>
                     <select id="title" name="title" class="form-control" required>
                         <option value="">Select project Title</option>
-                        @foreach($title as $tit)
-                        <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
-                        @endforeach 
+                        @foreach($titles as $title)
+                        @if(in_array($userId, explode(',', $title->user_id)))
+                            <option value="{{ $title->id }}">
+                                {{ $title->project_title }}
+                            </option>
+                        @endif
+                    @endforeach
                     </select>
                 </div>
                 <div class="mb-3">

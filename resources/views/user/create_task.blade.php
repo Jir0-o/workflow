@@ -7,7 +7,7 @@
         {{-- Users --}}
         <div class="card">
             <div class="card-header">
-                <h5>Asign Task</h5>
+                <h5>Assign Task</h5>
             </div>
             <div class="card-body">
             <form action="{{route('asign_tasks.store')}}" method="POST">

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+
 
 class DashboardController extends Controller
 {
@@ -14,6 +16,7 @@ class DashboardController extends Controller
     public function index()
     {
         $tasks = Task::all();
+        $user = auth()->user();
         $userId = auth()->id();
         $Today = Carbon::today();
 
@@ -21,12 +24,12 @@ class DashboardController extends Controller
         $completeCount = Task::where('status', 'completed')->count();
 
         $pendingUserTasks = Task::where('status', 'pending')->where('user_id', $userId)->whereDate('created_at', $Today)->with('user')->latest()->get();
-        $completeUserTasks = Task::where('status', 'completed')->where('user_id', $userId)->whereDate('created_at', $Today)->with('user')->latest()->get();
+        $completeUserTasks = Task::where('status', 'completed')->where('user_id', $userId)->with('user')->latest()->get();
 
         $pendingAdminTasks = Task::where('status', 'pending')->whereDate('created_at', $Today)->with('user')->latest()->get();
-        $completeAdminTasks = Task::where('status', 'completed')->whereDate('created_at', $Today)->with('user')->latest()->get();
+        $completeAdminTasks = Task::where('status', 'completed')->with('user')->latest()->get();
 
-        return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks'));
+        return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks','user'));
     }
 
     /**

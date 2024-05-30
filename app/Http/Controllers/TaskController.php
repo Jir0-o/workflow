@@ -69,8 +69,9 @@ class TaskController extends Controller
     public function create()
     {
         $userId = auth()->id();
-        $title = TitleName::where('status', 'in_progress')->where('user_id', $userId)->get();
-        return view('user.user_create_task', compact('title'));
+        $titles = TitleName::where('status', 'in_progress')->get();
+    
+        return view('user.user_create_task', compact('titles', 'userId'));
     }
 
     /**
