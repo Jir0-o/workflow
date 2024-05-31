@@ -31,9 +31,9 @@ class ProjectTitleController extends Controller
         $completedCount = TitleName::where('status', 'completed')->count();
         $droppedCount = TitleName::where('status', 'dropped')->count();
 
-        $runningProject = TitleName::where('status', 'in_progress')->with('user','task')->get();
-        $completedProject = TitleName::where('status', 'completed')->with('user','task')->get();
-        $droppedProject = TitleName::where('status', 'dropped')->with('user','task')->get();
+        $runningProject = TitleName::where('status', 'in_progress')->with('user','task')->latest()->get();
+        $completedProject = TitleName::where('status', 'completed')->with('user','task')->latest()->get();
+        $droppedProject = TitleName::where('status', 'dropped')->with('user','task')->latest()->get();
     
         return view('user.project.projectTitle', compact('runningCount', 'completedCount', 'droppedCount','runningProject','completedProject','droppedProject','projects'));
 

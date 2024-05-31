@@ -78,7 +78,7 @@
     </div>
 </div>
 
-@can('View Today Task')
+@can('Dashboard Task View')
 <div class="row mb-4">
     <div class="col-12 col-md-6 col-lg-6">
         <!-- Roles -->
@@ -96,13 +96,13 @@
                         @if ($user->hasRole('Super Admin'))
                         <div class="float-end">
                             <a href="{{ route('asign_tasks.index') }}" class="btn btn-primary">
-                                <i class="bx bx-edit-alt me-1"></i> View Assign Tasks
+                                <i class="bx bx-edit-alt me-1"></i> View Assign Details
                             </a>
                         </div>
                         @else
                         <div class="float-end">
                             <a href="{{ route('tasks.index') }}" class="btn btn-primary">
-                                <i class="bx bx-edit-alt me-1"></i> View Work Plan
+                                <i class="bx bx-edit-alt me-1"></i> View Details
                             </a>
                         </div>
                         @endif
@@ -137,7 +137,7 @@
                             <td>{{ $Task->created_at->format('d F Y, h:i A') }}</td>
                             <td>{{ \Carbon\Carbon::parse($Task->submit_date)->format('d F Y') }}</td>
                             <td>{{ $Task->user->name }}</td>
-                            <td>{{$Task->description}}</td>
+                            <td>{!! nl2br(e($Task->description)) !!}</td>
                         </tr>
                         @endforeach
                         @else
@@ -146,7 +146,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $Task->created_at->format('d F Y, h:i A') }}</td>
                             <td>{{ \Carbon\Carbon::parse($Task->submit_date)->format('d F Y') }}</td>
-                            <td>{{$Task->description}}</td>
+                            <td>{!! nl2br(e($Task->description)) !!}</td>
                         </tr>
                         @endforeach
                         @endif
@@ -168,13 +168,13 @@
                         @if ($user->hasRole('Super Admin'))
                         <div class="float-end">
                             <a href="{{ route('asign_tasks.index') }}" class="btn btn-primary">
-                                <i class="bx bx-edit-alt me-1"></i> View Assign Tasks
+                                <i class="bx bx-edit-alt me-1"></i> View Assign Details
                             </a>
                         </div>
                         @else
                         <div class="float-end">
                             <a href="{{ route('tasks.index') }}" class="btn btn-primary">
-                                <i class="bx bx-edit-alt me-1"></i> View Work Plan
+                                <i class="bx bx-edit-alt me-1"></i> View Details
                             </a>
                         </div>
                         @endif
@@ -209,7 +209,7 @@
                             <td>{{ $Task->created_at->format('d F Y, h:i A') }}</td>
                             <td>{{ $Task->submit_by_date ? \Carbon\Carbon::parse($Task->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
                             <td>{{ $Task->user->name }}</td>
-                            <td>{{$Task->description}}</td>
+                            <td>{!! nl2br(e($Task->description)) !!}</td>
                         </tr>
                         @endforeach
                         @else
@@ -218,7 +218,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $Task->created_at->format('d F Y, h:i A') }}</td>
                             <td>{{ $Task->submit_by_date ? \Carbon\Carbon::parse($Task->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
-                            <td>{{$Task->description}}</td>
+                            <td>{!! nl2br(e($Task->description)) !!}</td>
                         </tr>
                         @endforeach
                         @endif

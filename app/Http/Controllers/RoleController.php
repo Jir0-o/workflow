@@ -35,7 +35,7 @@ class RoleController extends Controller
             'permissions' => 'array',
             'permissions.*' => 'integer|exists:permissions,id',
         ]);
-    
+        
         $role = Role::create(['name' => $request->roleName,
     'guard_name' => 'web']);
         $role->permissions()->sync($request->permissions);

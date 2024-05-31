@@ -23,11 +23,11 @@ class DashboardController extends Controller
         $pendingCount = Task::where('status', 'pending')->count();
         $completeCount = Task::where('status', 'completed')->count();
 
-        $pendingUserTasks = Task::where('status', 'pending')->where('user_id', $userId)->whereDate('created_at', $Today)->with('user')->latest()->get();
-        $completeUserTasks = Task::where('status', 'completed')->where('user_id', $userId)->with('user')->latest()->get();
+        $pendingUserTasks = Task::where('status', 'pending')->where('user_id', $userId)->whereDate('created_at', $Today)->with('user')->orderBy('created_at', 'desc')->get();
+        $completeUserTasks = Task::where('status', 'completed')->where('user_id', $userId)->with('user')->orderBy('submit_by_date', 'desc')->get();
 
-        $pendingAdminTasks = Task::where('status', 'pending')->whereDate('created_at', $Today)->with('user')->latest()->get();
-        $completeAdminTasks = Task::where('status', 'completed')->with('user')->latest()->get();
+        $pendingAdminTasks = Task::where('status', 'pending')->whereDate('created_at', $Today)->with('user')->orderBy('created_at', 'desc')->get();
+        $completeAdminTasks = Task::where('status', 'completed')->with('user')->orderBy('submit_by_date', 'desc')->get();
 
         return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks','user'));
     }

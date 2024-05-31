@@ -372,7 +372,7 @@
                                             <th>SL</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
+                                            <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Suggestion</th>

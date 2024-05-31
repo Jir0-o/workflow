@@ -56,8 +56,8 @@ class AsignTaskController extends Controller
         $incompleteCount = Task::where('status', 'incomplete')->count();
         $inprogressCount = Task::where('status', 'in_progress')->count();
 
-        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->latest()->get();
-        $completeTasks = Task::where('status', 'completed')->with('user','title_name')->latest()->get();
+        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->orderBy('created_at', 'desc')->get();
+        $completeTasks = Task::where('status', 'completed')->with('user','title_name')->orderBy('submit_by_date', 'desc')->get();
         $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->latest()->get();
         $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->latest()->get();
     
