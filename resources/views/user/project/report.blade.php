@@ -73,7 +73,7 @@
                                 <label class="form-check-label" for="col_submit_date">Due Date</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_submit_date" data-column="4" checked>
+                                <input class="form-check-input" type="checkbox" id="col_submitted_date" data-column="4" checked>
                                 <label class="form-check-label" for="col_submitted_date">Submitted Date</label>
                             </div>
                             <div class="form-check form-check-inline">
@@ -88,16 +88,20 @@
                                 <input class="form-check-input" type="checkbox" id="col_assigned_user" data-column="7" checked>
                                 <label class="form-check-label" for="col_assigned_user">Assigned User</label>
                             </div>
-                            <div class="form-check form-check-inline">
+                            {{-- <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="col_task_message" data-column="8" checked>
                                 <label class="form-check-label" for="col_task_message">Task Message</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_task_message" data-column="9" checked>
+                                <input class="form-check-input" type="checkbox" id="col_admin_message" data-column="9" checked>
                                 <label class="form-check-label" for="col_admin_message">Admin Message</label>
+                            </div> --}}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="col_work_status" data-column="8" checked>
+                                <label class="form-check-label" for="col_work_status">Work Status</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="col_status" data-column="10" checked>
+                                <input class="form-check-input" type="checkbox" id="col_status" data-column="9" checked>
                                 <label class="form-check-label" for="col_status">Status</label>
                             </div>
                         </div>
@@ -120,27 +124,22 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-6 text-left">
-                                        <p><strong>Start Date:</strong> {{ $oldInput['start_date'] }}</p>
+                                        <p><strong>Start Date:</strong> {{ $formattedStartDate }}</p>
                                     </div>
                                     <div class="col-6 text-right">
-                                        <p><strong>End Date:</strong> {{ $oldInput['end_date'] }}</p>
+                                        <p><strong>End Date:</strong> {{ $formattedEndDate }}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6 text-right">
-                                <p><strong>Status:</strong> {{ $oldInput['status'] }}</p>
-                                <p><strong>User:</strong> {{ $selectedUser->name ?? 'No user Selected' }}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Project Title:</strong> {{ $selectedTitle->project_title ??  'No project Selected' }}</p>
-
+                                <p><strong>Status:</strong> {{ $oldInput['status'] ?? 'Not Selected' }}</p>
+                                <p><strong>User:</strong> {{ $selectedUser->name ?? 'Not Selected' }}</p>
+                                <p><strong>Project Title:</strong> {{ $selectedTitle->project_title ?? 'Not Selected' }}</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <table id="datatable1" class="table">
+
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -150,23 +149,25 @@
                                 <th class="column-project-title">Project Title</th>
                                 <th class="column-description">Description</th>
                                 <th class="column-assigned-user">Assigned User</th>
-                                <th class="column-task-message">Task Message</th>
-                                <th class="column-admin-message">Admin Message</th>
+                                {{-- <th class="column-task-message">Task Message</th>
+                                <th class="column-admin-message">Admin Message</th> --}}
+                                <th class="column-work-status">Work Status</th>
                                 <th class="column-status">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="table-border-bottom-0">
+                        <tbody id="printableContent" class="table-border-bottom-0">
                             @foreach($tasks as $key => $task)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td class="column-create-date">{{ \Carbon\Carbon::parse($task->created_at)->format('d F Y, h:i A') }}</td>
                                     <td class="column-submit-date">{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                    <td class="column-submitted-date">{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Not Submitted' }}</td></td>
+                                    <td class="column-submitted-date">{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Not Submitted' }}</td>
                                     <td class="column-project-title">{{ $task->title_name->project_title ?? 'N/A' }}</td>
                                     <td class="column-description">{{ $task->description }}</td>
                                     <td class="column-assigned-user">{{ $task->user->name }}</td>
-                                    <td class="column-task-message">{{ $task->message ?? 'N/A'}}</td>
-                                    <td class="column-admin-message">{{ $task->admin_message ?? 'N/A'}}</td>
+                                    {{-- <td class="column-task-message">{{ $task->message ?? 'N/A'}}</td>
+                                    <td class="column-admin-message">{{ $task->admin_message ?? 'N/A'}}</td> --}}
+                                    <td class="column-work-status">{{ $task->work_status }}</td>
                                     <td class="column-status">{{ $task->status }}</td>
                                 </tr>
                             @endforeach
@@ -217,14 +218,25 @@
         });
     </script>
 
-    <style>
-        @media print {
-            .d-none {
-                display: block !important;
-            }
-            .btn, .form-label, .form-control, .form-check, .form-check-inline, .form-select, .card-header, form {
-                display: none !important;
-            }
+<style>
+    @media print {
+        .d-none {
+            display: block !important;
         }
-    </style>
+        .btn, .form-label, .form-control, .form-check, .form-check-inline, .form-select, .card-header, form {
+            display: none !important;
+        }
+        .page {
+            page-break-after: always;
+        }
+        table {
+            width: 100%;
+            table-layout: fixed;
+        }
+        th, td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    }
+</style>
 @endsection

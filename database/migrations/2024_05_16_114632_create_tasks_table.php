@@ -19,6 +19,7 @@ return new class extends Migration
             $table->datetime('submit_by_date')->nullable();
             $table->text('message')->nullable();
             $table->text('admin_message')->nullable();
+            $table->text('work_status')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('title_name_id')->nullable();
             $table->timestamps();

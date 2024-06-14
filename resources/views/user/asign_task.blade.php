@@ -74,6 +74,7 @@
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -89,6 +90,7 @@
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -171,6 +173,7 @@
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -185,6 +188,7 @@
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -278,6 +282,7 @@
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -292,6 +297,7 @@
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -376,6 +382,7 @@
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Suggestion</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -390,6 +397,7 @@
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($task->description)) !!}</td>
                                             <td>{!! nl2br(e($task->message)) !!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">

@@ -40,6 +40,21 @@
                     <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ $tasks->submit_date }}">
                 </div>
                 <div class="mb-3">
+                    <label for="submit_by_date">Submitted Date</label>
+                    @if (is_null($tasks->submit_by_date))
+                    <input id="submit_by_date" name="submit_by_date" type="datetime-local" class="form-control" placeholder="dd/mm/yy">
+                @else
+                    <input id="submit_by_date" name="submit_by_date" type="datetime-local" class="form-control" value="{{ \Carbon\Carbon::parse($tasks->submit_by_date)->format('Y-m-d\TH:i') }}">
+                    @endif
+                </div>
+                <div class="mb-3">
+                    <label for="work_status">Work Status</label>
+                    <select id="work_status" name="work_status" class="form-control" required>
+                        <option value="Work From Home" {{ $tasks->work_status == 'Work From Home' ? 'selected' : '' }}>Work From Home</option>
+                        <option value="Work From Office" {{ $tasks->work_status == 'Work From Office' ? 'selected' : '' }}>Work From Office</option>
+                    </select>
+                </div> 
+                <div class="mb-3">
                     <label for="status">Task Status</label>
                     <select id="status" name="status" class="form-control" required>
                         <option value="pending" {{ $tasks->status == 'pending' ? 'selected' : '' }}>Pending</option>

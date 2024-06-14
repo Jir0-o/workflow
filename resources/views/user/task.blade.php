@@ -83,6 +83,7 @@
                                             <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -98,6 +99,7 @@
                                             <td>{{ $pendingTask->submit_by_date ? \Carbon\Carbon::parse($pendingTask->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $pendingTask->title_name->project_title ?? 'No project title selected'  }}</td>
                                             <td>{!! nl2br(e($pendingTask->description)) !!}</td>
+                                            <td>{{ $pendingTask->work_status }}</td>
                                             <td>{{ $pendingTask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>
@@ -176,6 +178,7 @@
                                             <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -191,6 +194,7 @@
                                             <td>{{ $incompletedtask->submit_by_date ? \Carbon\Carbon::parse($incompletedtask->submit_by_date)->format('d F Y, h:i A') : 'Task incompleted' }}</td>
                                             <td>{{ $incompletedtask->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($incompletedtask->description)) !!}</td>
+                                            <td>{{ $incompletedtask->work_status }}</td>
                                             <td>{{ $incompletedtask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>
@@ -275,6 +279,7 @@
                                             <th>Submitted Date</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -290,6 +295,7 @@
                                             <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
                                             <td>{{ $completedtask->title_name->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($completedtask->description)) !!}</td>
+                                            <td>{{ $completedtask->work_status }}</td>
                                             <td>{{ $completedtask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>
@@ -363,6 +369,7 @@
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Your Message</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -378,6 +385,7 @@
                                             <td>{{ $requestedTask->title_name->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!! nl2br(e($requestedTask->description)) !!}</td>
                                             <td>{!! nl2br(e($requestedTask->message)) !!}</td>
+                                            <td>{{ $requestedTask->work_status }}</td>
                                             <td>{{ $requestedTask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>

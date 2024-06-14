@@ -132,7 +132,10 @@ class AsignTaskController extends Controller
         $task->title_name_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
+        $task->submit_by_date = $request->submit_by_date;
+        $task->work_status = $request->work_status;
         $task->status = $request->status;
+        $task->admin_message = 'Task Edited by Admin';
         $task->save();
     
         return redirect()->route('asign_tasks.index')->with('success', 'Assign Task edited successfully.');

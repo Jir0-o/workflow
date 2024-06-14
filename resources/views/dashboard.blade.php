@@ -119,6 +119,7 @@
                             <th>Due Date</th>
                             <th>User Name</th>
                             <th>Task</th>
+                            <th>Work Task</th>
                             </tr>
                         @else
                         <tr>
@@ -138,6 +139,7 @@
                             <td>{{ \Carbon\Carbon::parse($Task->submit_date)->format('d F Y') }}</td>
                             <td>{{ $Task->user->name }}</td>
                             <td>{!! nl2br(e($Task->description)) !!}</td>
+                            <td>{{ $Task->work_status }}</td>
                         </tr>
                         @endforeach
                         @else
@@ -191,13 +193,14 @@
                             <th>Completed Date</th>
                             <th>User Name</th>
                             <th>Task</th>
+                            <th>Work Task</th>
                         </tr>
                         @else
                         <tr>
                             <th>SL</th>
                             <th>Start Date</th>
                             <th>Completed Date</th>
-                            <th>Task</th>
+                            <th>Task</th>  
                         </tr>
                         @endif
                     </thead>
@@ -210,6 +213,7 @@
                             <td>{{ $Task->submit_by_date ? \Carbon\Carbon::parse($Task->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
                             <td>{{ $Task->user->name }}</td>
                             <td>{!! nl2br(e($Task->description)) !!}</td>
+                            <td>{{ $Task->work_status }}</td>
                         </tr>
                         @endforeach
                         @else

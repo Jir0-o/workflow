@@ -26,6 +26,13 @@
                     </select>
                 </div>
                 <div class="mb-3">
+                    <label for="status">Work Status</label>
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="Work From Home">Work From Home</option>
+                        <option value="Work From Office">Work From Office</option>
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="description">Task Description</label>
                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
                 </div>

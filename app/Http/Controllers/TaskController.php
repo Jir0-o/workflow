@@ -88,6 +88,7 @@ class TaskController extends Controller
         $task->title_name_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
+        $task->work_status = $request->status;
         $task->save();
     
         return redirect()->route('tasks.index')->with('success', 'Task created successfully.');

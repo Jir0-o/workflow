@@ -15,7 +15,7 @@ class ReportController extends Controller
      */
     public function index()
     {
-        $projects = Task::all();
+        $projects = Task::orderBy('created_at', 'desc')->get();
         $users = User::all();
         $titles = TitleName::all();
         return view('user.project.report', compact('projects', 'users','titles'));
@@ -32,7 +32,7 @@ class ReportController extends Controller
             'title_name_id' => 'nullable',
         ]);
     
-        $projects = Task::all();
+        $projects = Task::orderBy('created_at', 'desc')->get();
         $users = User::all();
         $titles = TitleName::all();
     
@@ -58,15 +58,23 @@ class ReportController extends Controller
         $tasks = $query->get();
         $selectedUser = $request->filled('user') ? User::find($request->user) : null;
         $selectedTitle = $request->filled('title_name_id') ? TitleName::find($request->title_name_id) : null;
+
+        $oldInput = $request->all(); 
+        $startDate = Carbon::parse($oldInput['start_date']);
+        $endDate = Carbon::parse($oldInput['end_date']);
+        $formattedStartDate = $startDate->format('d-F, Y');
+        $formattedEndDate = $endDate->format('d-F, Y');
     
         return view('user.project.report', [
             'tasks' => $tasks,
             'projects' => $projects,
             'users' => $users,
             'titles' => $titles,
-            'oldInput' => $request->all(), 
             'selectedUser' => $selectedUser,
             'selectedTitle' => $selectedTitle,
+            'formattedStartDate' => $formattedStartDate,
+            'formattedEndDate' => $formattedEndDate,
+            'oldInput' => $oldInput,
         ]);
     
     }
