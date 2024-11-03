@@ -163,10 +163,10 @@
                                     <td class="column-submit-date">{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                     <td class="column-submitted-date">{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Not Submitted' }}</td>
                                     <td class="column-project-title">{{ $task->title_name->project_title ?? 'N/A' }}</td>
-                                    <td class="column-description">{{ $task->description }}</td>
+                                    <td class="column-description">{!! $task->description !!}</td>
                                     <td class="column-assigned-user">{{ $task->user->name }}</td>
-                                    {{-- <td class="column-task-message">{{ $task->message ?? 'N/A'}}</td>
-                                    <td class="column-admin-message">{{ $task->admin_message ?? 'N/A'}}</td> --}}
+                                    {{-- <td class="column-task-message">{!! $task->message ?? 'N/A' !!}</td>
+                                    <td class="column-admin-message">{!! $task->admin_message ?? 'N/A' !!}</td> --}}
                                     <td class="column-work-status">{{ $task->work_status }}</td>
                                     <td class="column-status">{{ $task->status }}</td>
                                 </tr>

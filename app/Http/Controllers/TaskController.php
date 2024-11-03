@@ -46,6 +46,8 @@ class TaskController extends Controller
             }
 
         }
+        //Create Work Plan
+        $titles = TitleName::where('status', 'in_progress')->get();
         //count
         $pendingCount = Task::where('user_id', $userId)->where('status', 'pending')->count();
         $completeCount = Task::where('user_id', $userId)->where('status', 'completed')->count();
@@ -58,7 +60,7 @@ class TaskController extends Controller
         $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->with('user','title_name')->latest()->get();
         $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->with('user','title_name')->latest()->get();
     
-        return view('user.task', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount'));
+        return view('user.task', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount','tasks','userId','titles'));
 
     }
     
@@ -68,10 +70,6 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $userId = auth()->id();
-        $titles = TitleName::where('status', 'in_progress')->get();
-    
-        return view('user.user_create_task', compact('titles', 'userId'));
     }
 
     /**
@@ -79,21 +77,36 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the incoming request
         $request->validate([
+            'title' => 'required', 
+            'status' => 'required',
             'description' => 'required',
+            'last_submit_date' => 'required|date',
         ]);
 
-        $task = new Task();
-        $task->user_id = auth()->user()->id;
-        $task->title_name_id = $request->title;
-        $task->description = $request->description;
-        $task->submit_date = $request->last_submit_date;
-        $task->work_status = $request->status;
-        $task->save();
-    
-        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
-    }
+        try {
+            $task = new Task();
+            $task->user_id = auth()->user()->id;
+            $task->title_name_id = $request->title;
+            $task->description = $request->description;
+            $task->submit_date = $request->last_submit_date;
+            $task->work_status = $request->status;
+            $task->save();
 
+            return response()->json([
+                'status' => true,
+                'message' => 'Task created successfully!',
+                'data' => $task
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create task. ' . $e->getMessage()
+            ], 500);
+        }
+    }
     /**
      * Display the specified resource.
      */
@@ -114,20 +127,30 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'message' => 'required',
-        ]);
-    
-        $task = Task::findOrFail($id);
 
-        $task->message = $request->message;
-        $task->status = 'in_progress';
-        $task->save();
-    
-        return redirect()->route('tasks.index')->with('success', 'Edit message send to admin successfully.');
-    }
+     public function update(Request $request, string $id)
+     {
+         try {
+             $request->validate([
+                 'message' => 'required',
+             ]);
+ 
+             $task = Task::findOrFail($id);
+             $task->message = $request->message;
+             $task->status = 'in_progress';
+             $task->save();
+ 
+             return response()->json([
+                 'status' => true,
+                 'message' => 'Edit message sent to admin successfully.',
+             ], 200);
+         } catch (\Exception $e) {
+             return response()->json([
+                 'status' => false,
+                 'message' => 'Failed to update task: ' . $e->getMessage(),
+             ], 500);
+         }
+     }
 
     /**
      * Remove the specified resource from storage.

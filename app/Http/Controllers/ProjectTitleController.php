@@ -7,6 +7,7 @@ use App\Models\TitleName;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ProjectTitleController extends Controller
 {
@@ -34,8 +35,9 @@ class ProjectTitleController extends Controller
         $runningProject = TitleName::where('status', 'in_progress')->with('user','task')->latest()->get();
         $completedProject = TitleName::where('status', 'completed')->with('user','task')->latest()->get();
         $droppedProject = TitleName::where('status', 'dropped')->with('user','task')->latest()->get();
+        $users = User::all(); 
     
-        return view('user.project.projectTitle', compact('runningCount', 'completedCount', 'droppedCount','runningProject','completedProject','droppedProject','projects'));
+        return view('user.project.projectTitle', compact('runningCount', 'completedCount', 'droppedCount','runningProject','completedProject','droppedProject','projects','users'));
 
     }
 
@@ -51,28 +53,52 @@ class ProjectTitleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
+     
      public function store(Request $request)
-        {
-            $request->validate([
-                'title' => 'required',
-                'description' => 'required',
-            ]);
-        
+     {
+         try {
+             // Validate the request data
+             $validated = $request->validate([
+                 'title' => 'required|string|max:255',
+                 'start_date' => 'required|date',
+                 'end_date' => 'required|date|after_or_equal:start_date',
+                 'user_id' => 'required|array|min:1', 
+                 'user_id.*' => 'exists:users,id' 
+             ]);
 
-            $project= new TitleName();
-    
-            $project->project_title = $request->title;
-            $project->description = $request->description;
-            $project->start_date = $request->start_date;
-            $project->end_date = $request->end_date;
-            $project->user_id = implode(',', $request['user_id']);
-            $project->save();
-
-            
-            $previousUrl = $request->input('previous_url');
-            return redirect($previousUrl)->with('success', 'Project created successfully.');
-        }
+             $project = new TitleName();
+             $project->project_title = $validated['title'];
+             $project->description = $request->description ?? null;
+             $project->start_date = $validated['start_date'];
+             $project->end_date = $validated['end_date'];
+             $project->user_id = implode(',', $validated['user_id']);
+             $project->save();
+     
+             return response()->json([
+                 'status' => true,
+                 'message' => 'Project created successfully',
+                 'data' => [
+                     'project_id' => $project->id,
+                     'title' => $project->project_title,
+                     'description' => $project->description,
+                     'start_date' => $project->start_date,
+                     'end_date' => $project->end_date,
+                     'user_ids' => $validated['user_id'],
+                 ]
+             ], 201); 
+     
+         } catch (\Exception $e) {
+             Log::error('Error creating project: '.$e->getMessage());
+     
+             // Return a JSON error response
+             return response()->json([
+                 'status' => false,
+                 'message' => 'Failed to create project',
+                 'error' => $e->getMessage()
+             ], 500); 
+         }
+     }
+     
 
     /**
      * Display the specified resource.
@@ -85,22 +111,44 @@ class ProjectTitleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function newEdit(string $id)
     {
-
-        $users = User::all(); 
-        $project = TitleName::findOrFail($id);
-        $assignedUsers = explode(',', $project->user_id);
-        return view('user.project.editProject', compact('project','users','assignedUsers'));
+        try {
+            $users = User::all(); 
+            $project = TitleName::findOrFail($id);
+            $assignedUsers = explode(',', $project->user_id);
+    
+            // Return data as JSON
+            return response()->json([
+                'status' => true,
+                'project' => $project,
+                'users' => $users,
+                'assignedUsers' => $assignedUsers
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error editing project: ' . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to edit project',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+    
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
+        try {
+            // Validate the request data
         $request->validate([
             'title' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'user_id' => 'required|array|min:1',
+            'user_id.*' => 'exists:users,id',
         ]);
     
 
@@ -113,7 +161,29 @@ class ProjectTitleController extends Controller
         $project->user_id = implode(',', $request->user_id);
         $project->save();
 
-        return redirect()->route('project_title.index')->with('success', 'Project Updated successfully.');
+        return response()->json([
+            'status' => true,
+            'message' => 'Project updated successfully',
+            'data' => [
+                'project_id' => $project->id,
+                'title' => $project->project_title,
+                'description' => $project->description,
+                'start_date' => $project->start_date,
+                'end_date' => $project->end_date,
+                'user_ids' => $request->user_id,
+            ]
+        ], 201);
+    } catch (\Exception $e) {
+        Log::error('Error updating project: '.$e->getMessage());
+
+        // Return a JSON error response
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to update project',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
     }
 
     /**

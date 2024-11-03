@@ -4,8 +4,98 @@
     <h4 class="py-2 m-4"><span class="text-muted fw-light">Project Details</span></h4>
 
     <div class="row mt-5">
-        <div class="col-12 col-md-12 col-lg-12">
+        <!-- Modal -->
+            <div class="modal fade" id="createProjectModal" tabindex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createProjectModalLabel">Create Project</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createProjectForm">
+                                @csrf
+                                <input type="hidden" name="previous_url" value="{{ url()->previous() }}">
 
+                                <div class="mb-3">
+                                    <label for="title">Project Name</label>
+                                    <input id="title" name="title" type="text" required class="form-control" placeholder="Title Name">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="user_id">Assign User</label>
+                                    <select id="user_id" name="user_id[]" class="form-control" multiple="multiple" required>
+                                        <option value="">Select User</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach 
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description">Project Description (Optional)</label>
+                                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="start_date">Project Start Date</label>
+                                    <input id="start_date" name="start_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="end_date">Project End Date</label>
+                                    <input id="end_date" name="end_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" id="saveProjectBtn" class="btn btn-primary">Create Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Edit Project Modal -->
+            <div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editProjectModalLabel">Edit Project</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProjectForm" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="mb-3">
+                                    <label for="editTitle">Project Name</label>
+                                    <input id="editTitle" name="title" type="text" required class="form-control" placeholder="Title Name">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editUser">User Name</label>
+                                    <select id="editUser" name="user_id[]" class="form-control" multiple="multiple" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editDescription">Project Description (Not required)</label>
+                                    <textarea id="editDescription" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editStartDate">Project Start Date</label>
+                                    <input id="editStartDate" name="start_date" type="date" required class="form-control" placeholder="Date">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editEndDate">Project End Date</label>
+                                    <input id="editEndDate" name="end_date" type="date" required class="form-control" placeholder="Date">
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="col-12 col-md-12 col-lg-12">
             <div class="card p-lg-4 p-2">
                 <!-- Nav tabs -->
                 <div class="container">
@@ -48,10 +138,9 @@
                                     @can('Create Project')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
-                                            <!-- Button trigger modal -->
-                                            <a href="{{ route('project_title.create') }}" class="btn btn-primary">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProjectModal">
                                                 <i class="bx bx-edit-alt me-1"></i> Create New Project
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                     @endcan
@@ -91,7 +180,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>{!! ($project->description) !!}</td>
                                             <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
@@ -100,7 +189,7 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('project_title.edit', ['project_title' => $project->id]) }}">
+                                                        <a class="dropdown-item edit-button" href="javascript:void(0);" data-id="{{ $project->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
                                                         <form id="Delete-task-form-{{ $project->id }}" action="{{ route('project_title.destroy', ['project_title' => $project->id]) }}" method="POST">
@@ -162,9 +251,9 @@
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
-                                            <a href="{{ route('project_title.create') }}" class="btn btn-primary">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProjectModal">
                                                 <i class="bx bx-edit-alt me-1"></i> Create New Project
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                     @endcan
@@ -212,9 +301,9 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('project_title.edit', ['project_title' => $project->id]) }}">
+                                                        <a class="dropdown-item edit-button" href="javascript:void(0);" data-id="{{ $project->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
-                                                        </a>
+                                                        </a>                                                 
                                                         <form id="Delete-task-form-{{ $project->id }}" action="{{ route('project_title.destroy', ['project_title' => $project->id]) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -274,9 +363,9 @@
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
-                                            <a href="{{ route('project_title.create') }}" class="btn btn-primary">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProjectModal">
                                                 <i class="bx bx-edit-alt me-1"></i> Create New Project
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                     @endcan
@@ -322,7 +411,7 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('project_title.edit', ['project_title' => $project->id]) }}">
+                                                        <a class="dropdown-item edit-button" href="javascript:void(0);" data-id="{{ $project->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>
                                                         <form id="Delete-task-form-{{ $project->id }}" action="{{ route('project_title.destroy', ['project_title' => $project->id]) }}" method="POST">
@@ -444,29 +533,175 @@
         </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize CKEditor for the Project Description field
+            CKEDITOR.replace('description');
+            CKEDITOR.replace('editDescription');
+        });
+    </script>
 
-<script>
-$(document).ready(function(){
-    $('.dropdown-submenu a.test').on("click", function(e){
-        $(this).next('ul').toggle();
-        e.stopPropagation();
-        e.preventDefault();
-    });
-});
-</script>
-@if (session('success'))
-<script>
-    Swal.fire({
-        toast: true,
-        icon: 'success',
-        title: '{{ session('success') }}',
-        showConfirmButton: false,
-        timer: 3000
-
+    <!-- CSS for Select2 z-index in Modal -->
+    <style>
+        .select2-container {
+            z-index: 9999 !important;
         }
-    );
+    </style>
+
+    <script>
+
+        $(document).ready(function() {
+            $('.dropdown-submenu a.test').on("click", function(e){
+            $(this).next('ul').toggle();
+            e.stopPropagation();
+            e.preventDefault();
+        });
+            // Initialize select2 when modal is shown
+            $('#createProjectModal').on('shown.bs.modal', function() {
+            $('#user_id').select2({
+                placeholder: 'Select User',
+                allowClear: true,
+                width: '100%'
+                });
+            });
+
+            // Initialize select2 when modal is shown
+            $('#editProjectModal').on('shown.bs.modal', function() {
+            $('#editUser').select2({
+                placeholder: 'Select User',
+                allowClear: true,
+                width: '100%'
+                });
+            });
+        // Handle form submission with AJAX
+        $('#saveProjectBtn').on('click', function(e) {
+            e.preventDefault();
+
+            // Create a new FormData object
+            let formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}'); // Add CSRF token
+            formData.append('title', $('#title').val());
+            formData.append('description', CKEDITOR.instances['description'].getData()); // Get data from CKEditor
+            formData.append('start_date', $('#start_date').val());
+            formData.append('end_date', $('#end_date').val());
+            
+            // Append user_id values individually
+            $('#user_id').val().forEach(user => {
+                formData.append('user_id[]', user);
+            });
+
+            $.ajax({
+                url: "{{ route('project_title.store') }}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#createProjectModal').modal('hide'); // Hide the modal
+                    
+                    // Display success message with SweetAlert
+                    Swal.fire({
+                        title: 'Project Created!',
+                        text: 'Your project was created successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Reload the page
+                        }
+                    });
+                    // Optionally, refresh the page or update the project list dynamically
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseText);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an error creating the project.',
+                        icon: 'error',
+                        confirmButtonText: 'Try Again'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Reload the page
+                        }
+                    });
+                }
+            });
+        });
+            // Event listener for edit button click
+            $('.edit-button').on('click', function() {
+                const projectId = $(this).data('id');
+                
+                // Construct the URL with the project ID dynamically using JavaScript string template
+                const editUrl = `{{ route('edit.project_title', ':id') }}`.replace(':id', projectId);
+                const updateUrl = `{{ route('project_title.update', ':id') }}`.replace(':id', projectId);
+
+                // Fetch project data
+                $.ajax({
+                    url: editUrl, // Use the dynamically constructed URL
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.status) {
+                            // Populate modal fields with fetched data
+                            $('#editTitle').val(response.project.project_title);
+                            // Set CKEditor data for the description field
+                            if (CKEDITOR.instances['editDescription']) {
+                                CKEDITOR.instances['editDescription'].setData(response.project.description);
+                            }
+                            $('#editStartDate').val(response.project.start_date);
+                            $('#editEndDate').val(response.project.end_date);
+                            
+                            // Populate users select field
+                            $('#editUser').empty();
+                            response.users.forEach(user => {
+                                const isSelected = response.assignedUsers.includes(user.id.toString()) ? 'selected' : '';
+                                $('#editUser').append(`<option value="${user.id}" ${isSelected}>${user.name}</option>`);
+                            });
+
+                            // Show the modal
+                            $('#editProjectModal').modal('show');
+                            
+                            // Set form action for update
+                            $('#editProjectForm').attr('action', updateUrl);
+                        } else {
+                            alert('Error loading project data');
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to load project data');
+                    }
+                });
+            });
+
+            // Handle form submission for update
+            $('#editProjectForm').on('submit', function(e) {
+                e.preventDefault();
+                    // Get the data from CKEditor for the description
+                const descriptionData = CKEDITOR.instances['editDescription'].getData();
+                const formData = $(this).serialize() + '&description=' + encodeURIComponent(descriptionData);
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.status) {
+                            $('#editProjectModal').modal('hide');
+                            Swal.fire({
+                                title: 'Project Updated!',
+                                text: 'Your project was updated successfully.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                location.reload(); // Reload the page
+                            });
+                        } else {
+                            alert('Error updating project');
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to update project');
+                    }
+                });
+            });
+    });
 </script>
-@endif 
 @endsection

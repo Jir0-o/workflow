@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Title;
 
 class AsignTaskController extends Controller
@@ -49,7 +50,8 @@ class AsignTaskController extends Controller
         }
 
   
-
+        $users = User::all(); 
+        $title = TitleName::all();
         //count
         $pendingCount = Task::where('status', 'pending')->count();
         $completeCount = Task::where('status', 'completed')->count();
@@ -61,7 +63,7 @@ class AsignTaskController extends Controller
         $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->latest()->get();
         $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->latest()->get();
     
-        return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount'));
+        return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount','users','title'));
     }
 
     /**
@@ -69,9 +71,6 @@ class AsignTaskController extends Controller
      */
     public function create()
     {
-        $users = User::all(); 
-        $title = TitleName::all();
-        return view('user.create_task', compact('users','title'));
     }
 
     /**
@@ -79,6 +78,7 @@ class AsignTaskController extends Controller
      */
     public function store(Request $request)
     {
+        try {
         $request->validate([
             'description' => 'required',
             'user_id' => 'required|array|min:1',
@@ -90,10 +90,33 @@ class AsignTaskController extends Controller
             $task->title_name_id = $request->title;
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
+            $task->work_status = $request->work_status;
             $task->user_id = $id;
             $task->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Task created successfully',
+                'data' => [
+                    'task_id' => $task->id,
+                    'title' => $task->title_name_id,
+                    'description' => $task->description,
+                    'submit_date' => $task->submit_date,
+                    'user_id' => $id,
+                ],
+            ]);
         }
-        return redirect()->route('asign_tasks.index')->with('success', 'Task assign successfully.');
+
+    } catch (\Exception $e) {
+        Log::error('Error creating project: '.$e->getMessage());
+
+        // Return a JSON error response
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to create project',
+            'error' => $e->getMessage()
+        ], 500); 
+    }
     }
 
     /**
@@ -109,12 +132,32 @@ class AsignTaskController extends Controller
      */
     public function edit(string $id)
     {
-
-        $users = User::all();
-        $tasks = Task::find($id);
-        $title = TitleName::all();
-        return view('user.edit_asign', compact('tasks','id','users','title'));
-    }
+        try {
+            $task = Task::findOrFail($id); // Retrieve task
+            $users = User::all();
+            $titles = TitleName::all();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Task data retrieved successfully',
+                'data' => [
+                    'tasks' => $task,
+                    'users' => $users,
+                    'title' => $titles,
+                ]
+            ], 200);
+    
+        } catch (\Exception $e) {
+            Log::error('Error retrieving task data: ' . $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to retrieve task data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }    
+    
 
     /**
      * Update the specified resource in storage.
@@ -123,22 +166,39 @@ class AsignTaskController extends Controller
     {
         $request->validate([
             'description' => 'required',
-
         ]);
     
-        $task = Task::findOrFail($id);
-
-        $task->user_id = $request->task_user_id;
-        $task->title_name_id = $request->title;
-        $task->description = $request->description;
-        $task->submit_date = $request->last_submit_date;
-        $task->submit_by_date = $request->submit_by_date;
-        $task->work_status = $request->work_status;
-        $task->status = $request->status;
-        $task->admin_message = 'Task Edited by Admin';
-        $task->save();
+        try {
+            $task = Task::findOrFail($id);
+            $task->user_id = $request->task_user_id;
+            $task->title_name_id = $request->title;
+            $task->description = $request->description;
+            $task->submit_date = $request->last_submit_date;
+            if ($request->submit_by_date) {
+                $task->submit_by_date = $request->submit_by_date;
+            }
+            $task->work_status = $request->work_status;
+            if ($request->status) {
+                $task->status = $request->status;
+            }else{
+                $task->status = 'pending';
+            }
+            $task->admin_message = 'Task Edited by Admin';
+            $task->save();
     
-        return redirect()->route('asign_tasks.index')->with('success', 'Assign Task edited successfully.');
+            // Return JSON response for AJAX
+            return response()->json([
+                'status' => true,
+                'message' => 'Assign Task edited successfully.',
+                'data' => $task
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update task',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
