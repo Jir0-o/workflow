@@ -78,6 +78,7 @@
                                     <th>Date</th>
                                     <th>Status</th>
                                     <th>User</th>
+                                    <th>Email</th>
                                     <th>Login Time</th>
                                     <th>Logout Time</th>
                                 </tr>
@@ -88,13 +89,17 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ \Carbon\Carbon::parse($task->created_at)->format('d F Y') }}</td>
-                                        <td> @if ($task->status == 0)
-                                            <span class="badge bg-success">Logged In</span>
-                                            @else
+                                        <td>
+                                            @if ($task->status == 0)
+                                                <span class="badge bg-success">Logged In</span>
+                                            @elseif ($task->status == 1 && $task->is_active == 1)
+                                                <span class="badge bg-warning">Logged Out (Browser Changed)</span>
+                                            @elseif ($task->status == 1)
                                                 <span class="badge bg-danger">Logged Out</span>
                                             @endif
                                         </td>
                                         <td>{{ $task->name ?? 'N/A' }}</td>
+                                        <td>{{ $task->email_address ?? 'N/A' }}</td>
                                         <td>{{ $task->login_time ? \Carbon\Carbon::parse($task->login_time)->format(' h:i A') : 'Logged In From Another Browser' }}</td>
                                         <td>{{ $task->logout_time ? \Carbon\Carbon::parse($task->logout_time)->format(' h:i A') : 'Not Logged Out' }}</td>
                                     </tr>

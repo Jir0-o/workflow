@@ -292,7 +292,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>{!! ($project->description) !!}</td>
                                             <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
@@ -402,7 +402,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! nl2br(e($project->description)) !!}</td>
+                                            <td>{!! ($project->description) !!}</td>
                                             <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
