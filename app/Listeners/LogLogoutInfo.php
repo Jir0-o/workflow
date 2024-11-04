@@ -30,19 +30,31 @@ class LogLogoutInfo
          // Today's date
          $todayDate = Carbon::today()->toDateString();
      
+         // Generate a custom session token
+         $sessionToken = session('custom_session_token');
+     
          // Get all records for today with status 0 for this user
          $todayDateUserIds = LoginInfo::where('user_id', $user->id)
              ->where('status', 0)
              ->get();
      
-         // Update each record individually
-         foreach ($todayDateUserIds as $loginInfo) {
-             $loginInfo->update([
-                 'logout_time' => Carbon::now(),
-                 'ip_address' => request()->getClientIp(),
-                 'status' => 1,
-             ]);
-         }
+            // Update each record individually
+            foreach ($todayDateUserIds as $loginInfo) {
+                // Check if the session ID matches the custom session token
+                if ($user->session_id == $sessionToken) {
+                    $logoutTime = Carbon::now();
+                    $status = 1;
+                } else {
+                    $logoutTime = null;
+                    $status = 0;
+                }
+            // Update the loginInfo record
+            $loginInfo->update([
+                'logout_time' => $logoutTime,
+                'ip_address' => request()->getClientIp(),
+                'status' => $status,
+            ]);
+            }
      
          // If no records were found, create a new LoginInfo entry
          if ($todayDateUserIds->isEmpty()) {

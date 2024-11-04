@@ -70,10 +70,12 @@
                 </li>
                 <!-- Layouts -->
                 <li class="menu-item">
+                    @can('View Assign Task')
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-layout"></i>
+                        <i class="menu-icon tf-icons bx bx-task"></i>
                         <div data-i18n="Layouts">Manage Task Details</div>
                     </a>
+                    @endcan
                     <ul class="menu-sub">
                         @can('View Assign Task')
                         <li class="menu-item">
@@ -101,7 +103,7 @@
                 @can('View Work Plan')
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-layout"></i>
+                        <i class="menu-icon tf-icons bx bx-calendar-check"></i>
                         <div data-i18n="Layouts">Today's Work Plan</div>
                     </a>
                     <ul class="menu-sub">
@@ -113,24 +115,30 @@
                     </ul>
                 </li>
                 @endcan
+                @can('View Login Details Tab')
                  <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-layout"></i>
+                        <i class="menu-icon tf-icons bx bx-user-check"></i>
                         <div data-i18n="Layouts">Login Details</div>
                     </a>
+                    @can('View User login Details')
                     <ul class="menu-sub">
                         <li class="menu-item">
                             <a href="{{ route('login_details.index') }}" class="menu-link">
                                 <div data-i18n="Without menu">User Login Details</div>
                             </a>
                         </li>
+                        @endcan
+                        @can('View Login Report')
                         <li class="menu-item">
                             <a href="{{ route('loginReport.view') }}" class="menu-link">
                                 <div data-i18n="Without navbar">Login Report</div>
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
+                @endcan
                 @can('View Role Permission Menu')
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text"> Role and Permission</span>

@@ -129,8 +129,13 @@
                                                         <tr>
                                                             <td>{{ $key + 1 }}</td>
                                                             <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($log->login_time)->format('h:i A') }}
-                                                                <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                                            <td>
+                                                                @if ($log->login_time)
+                                                                    {{ \Carbon\Carbon::parse($log->login_time)->format('h:i A')}}
+                                                                    <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                                                @else
+                                                                    <span class="">Logged In From Another Browser</span>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 @if($log->logout_time)
@@ -154,9 +159,12 @@
                                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                                     </button>
                                                                     <div class="dropdown-menu">
+                                                                        @can('Edit Login Details')
                                                                         <a class="dropdown-item edit-button" id="logId" href="javascript:void(0);" data-id="{{ $log->id }}">
                                                                             <i class="bx bx-edit-alt me-1"></i> Edit
-                                                                        </a>                                                                        
+                                                                        </a>
+                                                                        @endcan      
+                                                                        @can('Delete Login Details')                                                                  
                                                                         <form id="Delete-task-form-{{ $log->id }}" action="{{ route('login_details.destroy', ['login_detail' => $log->id]) }}" method="POST">
                                                                             @csrf
                                                                             @method('DELETE')
@@ -164,6 +172,7 @@
                                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                                             </button>
                                                                         </form>
+                                                                        @endcan
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -226,8 +235,13 @@
                                                         @foreach($userLogs as $key => $log)
                                                         <tr>
                                                             <td>{{ $key + 1 }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($log->login_time)->format('h:i A') }}
-                                                                <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                                            <td>
+                                                                @if ($log->login_time)
+                                                                    {{ \Carbon\Carbon::parse($log->login_time)->format('h:i A')}}
+                                                                    <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                                                @else
+                                                                    <span class="">Logged In From Another Browser</span>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 @if($log->logout_time)
@@ -250,9 +264,12 @@
                                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                                     </button>
                                                                     <div class="dropdown-menu">
+                                                                        @can('Edit Login Details')
                                                                         <a class="dropdown-item edit-button" id="logId" href="javascript:void(0);" data-id="{{ $log->id }}">
                                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                                         </a>
+                                                                        @endcan
+                                                                        @can('Delete Login Details')
                                                                         <form id="Delete-task-form-{{ $log->id }}" action="{{ route('login_details.destroy', ['login_detail' => $log->id]) }}" method="POST">
                                                                             @csrf
                                                                             @method('DELETE')
@@ -260,6 +277,7 @@
                                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                                             </button>
                                                                         </form>
+                                                                        @endcan
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -305,8 +323,13 @@
                                         <td>{{ $log->name }}</td>
                                         <td>{{ $email }}</td>
                                         <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($log->login_time)->format('h:i A') }}
-                                            <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                        <td>
+                                            @if ($log->login_time)
+                                                {{ \Carbon\Carbon::parse($log->login_time)->format('h:i A')}}
+                                                <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                            @else
+                                                <span class="">Logged In From Another Browser</span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if($log->logout_time)
@@ -329,9 +352,12 @@
                                                     <i class="bx bx-dots-vertical-rounded"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
+                                                    @can('Edit Login Details')
                                                     <a class="dropdown-item edit-button" id="logId" href="javascript:void(0);" data-id="{{ $log->id }}">
                                                         <i class="bx bx-edit-alt me-1"></i> Edit
                                                     </a>
+                                                    @endcan
+                                                    @can('Delete Login Details')   
                                                     <form id="Delete-task-form-{{ $log->id }}" action="{{ route('login_details.destroy', ['login_detail' => $log->id]) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -339,6 +365,7 @@
                                                             <i class="bx bx-trash me-1"></i> Delete
                                                         </button>
                                                     </form>
+                                                    @endcan
                                                 </div>
                                             </div>
                                         </td>

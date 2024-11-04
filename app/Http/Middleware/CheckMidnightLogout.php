@@ -32,7 +32,7 @@ class CheckMidnightLogout
                     // Check if it's a new day since the last login
                     if ($loginDate !== $currentDate) {
                         Auth::guard('web')->logout(); 
-                        return redirect('/login')->withErrors(['message' => 'You login session has expired. Please log in again.']);
+                        return redirect()->route('login')->withErrors(['message' => 'You login session has expired. Please log in again.']);
                     }
                 }
             }

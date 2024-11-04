@@ -41,16 +41,19 @@
                             </select>
                         </div>
                     </div>
-
+                    @can('Generate Login Report')
                     <button type="submit" class="btn btn-primary float-end">Generate Report</button>
+                    @endcan
                 </form>
 
                 @if(isset($tasks) && $tasks->isNotEmpty())
+                    @can('Print Login Report')
                     <div class="row mt-4">
                         <div class="col-md-12 text-end">
                             <button onclick="printReport()" class="btn btn-secondary">Print Report</button>
                         </div>
                     </div>
+                    @endcan
                     <div class="table-responsive text-nowrap p-3" id="reportSection">
                         <div id="reportHeader" class="d-none container">
                             <div class="text-center">
@@ -92,7 +95,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $task->name ?? 'N/A' }}</td>
-                                        <td>{{ $task->login_time ? \Carbon\Carbon::parse($task->login_time)->format(' h:i A') : 'Not Logged In' }}</td>
+                                        <td>{{ $task->login_time ? \Carbon\Carbon::parse($task->login_time)->format(' h:i A') : 'Logged In From Another Browser' }}</td>
                                         <td>{{ $task->logout_time ? \Carbon\Carbon::parse($task->logout_time)->format(' h:i A') : 'Not Logged Out' }}</td>
                                     </tr>
                                 @endforeach
