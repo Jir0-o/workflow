@@ -146,11 +146,14 @@
                                                                 @endif
                                                             </td>
                                                             <td>{{ $log->ip_address }}</td>
-                                                            <td>@if ($log->status == 0)
-                                                                <span class="badge bg-success">Logged In</span>
-                                                            @else
-                                                                <span class="badge bg-danger">Logged Out</span>
-                                                            @endif
+                                                            <td>
+                                                                @if ($log->status == 0)
+                                                                    <span class="badge bg-success">Logged In</span>
+                                                                @elseif ($log->status == 1 && $log->is_active == 1)
+                                                                    <span class="badge bg-warning">Logged Out (Browser Changed)</span>
+                                                                @elseif ($log->status == 1)
+                                                                    <span class="badge bg-danger">Logged Out</span>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 <!-- Action buttons for each log -->
@@ -252,11 +255,14 @@
                                                                 @endif
                                                             </td>
                                                             <td>{{ $log->ip_address }}</td>
-                                                            <td>@if ($log->status == 0)
-                                                                <span class="badge bg-success">Logged In</span>
-                                                            @else
-                                                                <span class="badge bg-danger">Logged Out</span>
-                                                            @endif
+                                                            <td>
+                                                                @if ($log->status == 0)
+                                                                    <span class="badge bg-success">Logged In</span>
+                                                                @elseif ($log->status == 1 && $log->is_active == 1)
+                                                                    <span class="badge bg-warning">Logged Out (Browser Changed)</span>
+                                                                @elseif ($log->status == 1)
+                                                                    <span class="badge bg-danger">Logged Out</span>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 <div class="dropdown">
@@ -342,7 +348,9 @@
                                         <td>
                                             @if ($log->status == 0)
                                                 <span class="badge bg-success">Logged In</span>
-                                            @else
+                                            @elseif ($log->status == 1 && $log->is_active == 1)
+                                                <span class="badge bg-warning">Logged Out (Browser Changed)</span>
+                                            @elseif ($log->status == 1)
                                                 <span class="badge bg-danger">Logged Out</span>
                                             @endif
                                         </td>

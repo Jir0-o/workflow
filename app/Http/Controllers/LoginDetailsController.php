@@ -12,6 +12,13 @@ use Illuminate\Http\Request;
 
 class LoginDetailsController extends Controller
 {
+    public function __construct(){
+        $this->middleware('permission:View User login Details',['only'=>['index']]);
+        $this->middleware('permission:Edit Login Details',['only'=>['edit']]);
+        $this->middleware('permission:Delete Login Details',['only'=>['destroy']]);
+        $this->middleware('permission:View Login Report',['only'=>['loginReport']]);
+        $this->middleware('permission:View Login Report',['only'=>['loginReportView']]);
+    }
     /**
      * Display a listing of the resource.
      */
