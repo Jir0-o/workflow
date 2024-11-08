@@ -76,6 +76,34 @@
             </div>
         </div>
     </div>
+
+       <!-- New User Activity Card -->
+    <div class="col mb-4">
+        <div class="card total-activity-hover" style="height: 135px;">
+            <div class="d-flex justify-content-between mb-3">
+                <div class="card-body">
+                    <h6 class="d-block text-500 font-medium mb-3">USER ACTIVITY</h6>
+                    <div id="user_activity" class="text-900 fs-6">
+                        <!-- Populate each user's login details and time here -->
+                        @foreach ($activeUsers as $users)
+                            <div>
+                                <strong>{{ $user->name }}:</strong> 
+                                Logged in at {{ \Carbon\Carbon::parse($users->login_time)->format('d F Y, h:i A') }}
+                                <span id="duration-{{ $user->id }}" class="text-muted">
+                                    (Active: <span class="active-time" data-id="{{ $users->id }}" data-start="{{ \Carbon\Carbon::parse($users->login_time)->timestamp }}">00:00:00</span>)
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-center rounded"
+                     style="width: 2.5rem; height: 2.5rem; margin-top: 10px; margin-right: 5px">
+                    <i class='bx bx-time-five'></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 @can('Dashboard Task View')
@@ -241,6 +269,44 @@
 
 <script>
 $(document).ready(function() {
+    // Function to format seconds into HH:MM:SS
+    function formatTime(seconds) {
+        let hrs = Math.floor(seconds / 3600);
+        let mins = Math.floor((seconds % 3600) / 60);
+        let secs = seconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Update each user's active time every second
+    setInterval(function () {
+        $('.active-time').each(function () {
+            const userId = $(this).data('id');
+            const startTime = $(this).data('start');
+            const currentTime = Math.floor(Date.now() / 1000);
+            const activeDuration = currentTime - startTime;
+
+            // Update the displayed active time
+            $(this).text(formatTime(activeDuration));
+
+            // Send an Ajax request to update `login_hour` in the database
+            $.ajax({
+                url: "{{ route('updateLoginTime') }}",
+                type: 'POST',
+                data: {
+                    login_id: userId,
+                    active_seconds: activeDuration,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    // Optionally, handle success feedback
+                },
+                error: function () {
+                    console.log('Error updating login time');
+                }
+            });
+        });
+    }, 1000); // Update every second
+
     calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: ['timeline', 'dayGrid', 'timeGrid', 'interaction'],
@@ -255,6 +321,8 @@ $(document).ready(function() {
         selectable: true,
     });
     calendar.render();
+    
 });
+
 </script>
 @endsection

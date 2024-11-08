@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\asign_task;
+use App\Models\Notification;
 use App\Models\Task;
 use App\Models\TitleName;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Title;
+use Spatie\Permission\Models\Role;
 
 class AsignTaskController extends Controller
 {
@@ -36,6 +39,31 @@ class AsignTaskController extends Controller
                 $task->message = 'Time Expired';
                 $task->status = 'incomplete';
                 $task->save();
+
+            // Find the role by name
+            $role = Role::where('name', 'Super Admin')->first();
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role not found.',
+                ], 404);
+            }
+            // Get the authenticated user
+            $authUser = Auth::user();
+
+            // Retrieve all users with the "Super Admin" role
+            $superAdminUsers = User::role($role->name)->get();
+
+            // Create and send notifications to all "Super Admin" users
+            foreach ($superAdminUsers as $superAdminUser) {
+                Notification::create([ // Assuming you're using custom notifications model
+                    'title' => "{$authUser->name} incompleted task",
+                    'text' => "{$authUser->name} has failed to complete a task.",
+                    'from_user_id' => $authUser->id,
+                    'to_user_id' => $superAdminUser->id,
+                    'link' => route('asign_tasks.index'),
+                ]);
+            }
             }
             if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isAfter($startOfToday)) {
                 $task->submit_by_date = null;
@@ -84,6 +112,8 @@ class AsignTaskController extends Controller
             'user_id' => 'required|array|min:1',
             'user_id.*' => 'exists:users,id',
         ]);
+
+        $user = Auth::user();
     
         foreach ($request -> user_id as $id) {
             $task = new Task();
@@ -94,18 +124,28 @@ class AsignTaskController extends Controller
             $task->user_id = $id;
             $task->save();
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Task created successfully',
-                'data' => [
-                    'task_id' => $task->id,
-                    'title' => $task->title_name_id,
-                    'description' => $task->description,
-                    'submit_date' => $task->submit_date,
-                    'user_id' => $id,
-                ],
-            ]);
+            // Format the submit date
+            $submitDateFormatted = Carbon::parse($request->last_submit_date)->locale('en')->isoFormat('DD MMMM YYYY');
+            $notification = new Notification();
+            $notification->title = 'New Task has assigned to you';
+            $notification->from_user_id = $user->id;
+            $notification->to_user_id = $id;
+            $notification->link = route('tasks.index');
+            $notification->text = "You have a new task, please complete it by {$submitDateFormatted} or it will mark as incomplete.";
+            $notification->save();
         }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Task created successfully',
+            'data' => [
+                'task_id' => $task->id,
+                'title' => $task->title_name_id,
+                'description' => $task->description,
+                'submit_date' => $task->submit_date,
+                'user_id' => $id,
+            ],
+        ]);
 
     } catch (\Exception $e) {
         Log::error('Error creating project: '.$e->getMessage());
@@ -185,6 +225,17 @@ class AsignTaskController extends Controller
             }
             $task->admin_message = 'Task Edited by Admin';
             $task->save();
+
+            $authUser = Auth::user();
+            $userId = User::find($request->task_user_id);
+
+            Notification::create([ // Assuming you're using custom notifications model
+                'title' => "{$authUser->name} Task edited your task",
+                'text' => "{$authUser->name} has edited your task. Please check your Pending Task tab",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $userId->id,
+                'link' => route('asign_tasks.index'),
+                ]);
     
             // Return JSON response for AJAX
             return response()->json([
@@ -218,6 +269,7 @@ class AsignTaskController extends Controller
     $task->status = 'incomplete';
     $task->save();
 
+    
     return back()->with('success', 'Task marked as Incompleted successfully.');
 }
 public function completed($id)

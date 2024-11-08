@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailLogin;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
@@ -19,6 +20,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $userId = auth()->id();
         $Today = Carbon::today();
+        $activeUsers = DetailLogin::where('user_id', $userId)->get();
 
         $pendingCount = Task::where('status', 'pending')->count();
         $completeCount = Task::where('status', 'completed')->count();
@@ -29,7 +31,7 @@ class DashboardController extends Controller
         $pendingAdminTasks = Task::where('status', 'pending')->whereDate('created_at', $Today)->with('user')->orderBy('created_at', 'desc')->get();
         $completeAdminTasks = Task::where('status', 'completed')->with('user')->orderBy('submit_by_date', 'desc')->get();
 
-        return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks','user'));
+        return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks','user','activeUsers'));
     }
 
     /**

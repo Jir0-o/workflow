@@ -1,5 +1,11 @@
 @extends('layouts.master')
 @section('content')
+
+<style>
+    .pinned {
+    color: red;
+    }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <h4 class="py-2 m-4"><span class="text-muted fw-light">User Login Details</span></h4>
 
@@ -35,7 +41,7 @@
                             <div class="mb-3">
                                 <label for="editStatus">Status</label>
                                 <select id="editStatus" name="status" class="form-control" required>
-                                    <option value="0">Loggged In</option>
+                                    <option value="0">Logged In</option>
                                     <option value="1">Logged Out</option>
                                 </select>
                             </div>
@@ -48,48 +54,49 @@
         </div>
 
 
-            <!-- Nav tabs -->
-            <div class="container">
-                <div class="row justify-content-center">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
-                                type="button" role="tab" aria-controls="home" aria-selected="true">
-                                Today's Login
-                                <span class="badge bg-primary"> {{$loginCount}}</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
-                                type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                All Login
-                                <span class="badge bg-primary">{{$allLoginCount}}</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="current-tab" data-bs-toggle="tab" data-bs-target="#current"
-                                type="button" role="tab" aria-controls="current" aria-selected="false">
-                                Current User Status
-                                <span class="badge bg-primary">{{$loginCount}}</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="inactive-tab" data-bs-toggle="tab" data-bs-target="#inactive"
-                                type="button" role="tab" aria-controls="inactive" aria-selected="false">
-                                Not Login Today
-                                <span class="badge bg-primary">{{$missingInDetailsLoginsCount}}</span>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+        <!-- Nav tabs -->
+        <div class="container">
+            <div class="row justify-content-center">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">
+                            Today's Login
+                            <span class="badge bg-primary"> {{$loginCount}}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
+                            type="button" role="tab" aria-controls="profile" aria-selected="false">
+                            All Login
+                            <span class="badge bg-primary">{{$allLoginCount}}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="current-tab" data-bs-toggle="tab" data-bs-target="#current"
+                            type="button" role="tab" aria-controls="current" aria-selected="false">
+                            Current User Status
+                            <span class="badge bg-primary">{{$loginCount}}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="inactive-tab" data-bs-toggle="tab" data-bs-target="#inactive"
+                            type="button" role="tab" aria-controls="inactive" aria-selected="false">
+                            Not Login Today
+                            <span class="badge bg-primary">{{$missingInDetailsLoginsCount}}</span>
+                        </button>
+                    </li>
+                </ul>
             </div>
+        </div>
 
             <!-- Tab panes -->
             <div class="tab-content">
                 <div class="tab-pane active" id="Pending" role="tabpanel" aria-labelledby="home-tab">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h5>Today's Login</h5>
+                            <i class="pin-icon" data-tab-id="home-tab" style="cursor: pointer;">📌</i>
                         </div>
                         <div class="table-responsive text-nowrap p-3">
                             <table id="datatable1" class="table">
@@ -196,8 +203,9 @@
         <!-- All Login Tab -->
         <div class="tab-pane" id="Incomplete" role="tabpanel" aria-labelledby="profile-tab">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>All Login</h5>
+                    <i class="pin-icon" data-tab-id="profile-tab" style="cursor: pointer;">📌</i>
                 </div>
                 <div class="table-responsive text-nowrap p-3">
                     <table id="datatable2" class="table">
@@ -304,8 +312,9 @@
         <!-- Current Login Tab -->
         <div class="tab-pane" id="current" role="tabpanel" aria-labelledby="current-tab">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>All Login</h5>
+                    <i class="pin-icon" data-tab-id="current-tab" style="cursor: pointer;">📌</i>
                 </div>
                 <div class="table-responsive text-nowrap p-3">
                     <table id="datatable3" class="table">
@@ -388,8 +397,9 @@
 
         <div class="tab-pane" id="inactive" role="tabpanel" aria-labelledby="inactive-tab">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>Not Logged In Today</h5>
+                    <i class="pin-icon" data-tab-id="inactive-tab" style="cursor: pointer;">📌</i>
                 </div>
                 <div class="table-responsive text-nowrap p-3">
                     <table id="datatable4" class="table">
@@ -429,11 +439,9 @@
 <script>
 $(document).ready(function () {
     $(document).on('click', '.edit-button', function () {
-        console.log("Edit button clicked");
 
         const logId = $(this).data('id'); // Get the data-id from the button
         const editUrl = `{{ route('login_details.edit', ':id') }}`.replace(':id', logId);
-        console.log("Edit URL: ", editUrl);
 
         // Fetch the log data using AJAX
         $.ajax({
@@ -553,6 +561,54 @@ $(document).ready(function () {
     });
 });
 });
+    const pinnedTabId = localStorage.getItem("pinnedTab");
+
+    // Check if a tab is pinned and set it as active
+    if (pinnedTabId && document.querySelector(`#${pinnedTabId}`)) {
+        // Remove 'active' class from all tabs and tab panes
+        $(".nav-link, .tab-pane").removeClass("active");
+
+        // Set the saved tab as active
+        $(`#${pinnedTabId}`).addClass("active");
+
+        const targetPaneId = $(document.querySelector(`#${pinnedTabId}`)).data("bs-target");
+
+        // Ensure the target pane exists before adding 'active' class
+        if (targetPaneId && document.querySelector(targetPaneId)) {
+            $(targetPaneId).addClass("active");
+        } else {
+            console.warn(`Target pane for pinned tab ID ${pinnedTabId} not found.`);
+        }
+    } else {
+        // If no pinned tab or invalid pinned tab, make the first tab active by default
+        $("#home-tab").addClass("active");
+        $("#Pending").addClass("active");
+    }
+
+    // Handle click on the pin icon
+    $(".pin-icon").on("click", function () {
+        const tabId = $(this).data("tab-id");
+        localStorage.setItem("pinnedTab", tabId); // Save the pinned tab to local storage
+        
+        // Display a notification for pinning
+        Toastify({
+            text: "Tab pinned successfully!",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#4CAF50", // Green background for success
+        }).showToast();
+    });
+
+    // Handle tab click (for normal tab switching without pinning)
+    $(".nav-link").on("click", function () {
+        if (!$(this).hasClass("active")) {
+            $(".nav-link").removeClass("active");
+            $(this).addClass("active");
+            localStorage.removeItem("pinnedTab"); // Clear pinned tab if switching manually
+        }
+    });
+
 });
 
 </script>

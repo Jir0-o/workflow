@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AsignTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginDetailsController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectTitleController;
 use App\Http\Controllers\ReportController;
@@ -62,5 +64,18 @@ Route::middleware([
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
 
     Route::get('/settings',[SettingsController::class, 'index'])->name('settings');
+
+    //Notification Route
+    Route::get('/notifications/count', [NotificationController::class, 'notificationCount'])->name('notifications.count');
+    // In your routes/web.php
+    Route::delete('/notifications/delete/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.delete');
+    Route::post('/notifications/clear', [NotificationController::class, 'clearNotifications'])->name('notifications.clear');
+    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications.get');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+    Route::post('/activity', [ActivityController::class, 'store']);
+
+    Route::post('/update-login-time', [ActivityController::class, 'updateLoginTime'])->name('updateLoginTime');
 
 });

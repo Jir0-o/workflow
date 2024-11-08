@@ -1,5 +1,15 @@
 @extends('layouts.master')
 @section('content')
+
+<style>
+.cke_notification_message,
+.cke_notifications_area,
+.cke_button__about_icon,
+.cke_button__about {
+    display: none !important;
+}
+</style>
+    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <h4 class="py-2 m-4"><span class="text-muted fw-light">Assign Task</span></h4>
 

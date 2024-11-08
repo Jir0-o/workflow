@@ -5,12 +5,16 @@ namespace App\Listeners;
 use App\Models\DetailLogin;
 use App\Models\DetailsLogin;
 use App\Models\LoginInfo;
+use App\Models\Notification;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+
 
 class LogLoginInfo
 {
@@ -88,5 +92,29 @@ class LogLoginInfo
             'ip_address' => request()->getClientIp(),
             'status' => 0,
         ]);
+
+        $role = Role::where('name', 'Super Admin')->first();
+        if (!$role) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Role not found.',
+            ], 404);
+        }
+
+        // Retrieve all users with the "Super Admin" role
+        $superAdminUsers = User::role($role->name)->get();
+
+        $authUser = Auth::user();
+
+        // Create and send notifications to all "Super Admin" users
+        foreach ($superAdminUsers as $superAdminUser) {
+        Notification::create([ // Assuming you're using custom notifications model
+            'title' => "{$authUser->name} has logged in",
+            'text' => "{$authUser->name} has logged in. Login time: " . Carbon::now()->format('d F Y, h:i:s A'),
+            'from_user_id' => $authUser->id,
+            'to_user_id' => $superAdminUser->id,
+            'link' => route('login_details.index'),
+            ]);
+        }
     }
 }

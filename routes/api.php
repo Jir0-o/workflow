@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Api\SanctumAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,8 @@ Route::group(['prefix'=>'auth'], function(){
     Route::post('/login', [SanctumAuthController::class, 'login']);
     Route::post('/logout', [SanctumAuthController::class, 'logout'])->middleware('auth:sanctum');
 });
+
+Route::post('/activity', [ActivityController::class, 'store']);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

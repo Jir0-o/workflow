@@ -67,7 +67,11 @@
     {{-- select2 --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
+    <!-- Include Toastr CSS in the <head> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
 
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <!-- Page CSS -->
 
     <!-- Helpers -->
@@ -80,6 +84,7 @@
     <link href="
     https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.min.css
     " rel="stylesheet">
+    
   <!-- Include Select2 JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
@@ -113,6 +118,8 @@
       <div class="layout-overlay layout-menu-toggle"></div>
     </div>
     <!-- / Layout wrapper -->
+    <!-- Toastify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
@@ -148,8 +155,6 @@
     {{-- sweet Alart --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
     {{-- Full Calendar JS --}}
      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
@@ -174,6 +179,11 @@
   <!-- Include CKEditor JS -->
   <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 
+  <!-- Include Toastr JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+  <!-- Toastify JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/Toastify.min.js"></script>
     {{-- sweet Alart --}}
 
   <script src="
