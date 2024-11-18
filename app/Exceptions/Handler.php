@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -27,4 +28,12 @@ class Handler extends ExceptionHandler
             //
         });
     }
+    public function render($request, Throwable $exception)
+{
+    if ($exception instanceof UnauthorizedException) {
+        return redirect()->route('dashboard.index')->with('error', 'You do not have permission to access this page.');
+    }
+
+    return parent::render($request, $exception);
+}
 }

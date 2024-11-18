@@ -18,20 +18,20 @@ class CheckMidnightLogout
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
- 
+
         public function handle($request, Closure $next)
         {
             if (Auth::check()) {
                 $user = Auth::user();
                 $loginInfo = DetailLogin::where('user_id', $user->id)->first();
-    
+
                 if ($loginInfo) {
                     $loginDate = Carbon::parse($loginInfo->login_date)->toDateString();
                     $currentDate = Carbon::now()->toDateString();
-    
+
                     // Check if it's a new day since the last login
                     if ($loginDate !== $currentDate) {
-                        Auth::guard('web')->logout(); 
+                        Auth::guard('web')->logout();
                         return redirect()->route('login')->withErrors(['message' => 'You login session has expired. Please log in again.']);
                     }
                 }

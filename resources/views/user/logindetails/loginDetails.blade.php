@@ -13,47 +13,6 @@
     <div class="col-12 col-md-12 col-lg-12">
         <div class="card p-lg-4 p-2">
 
-        <!-- Edit Login Details Modal -->
-        <div class="modal fade" id="editLoginModal" tabindex="-1" aria-labelledby="editLoginModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editLoginModalLabel">Edit Login Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editLoginForm" method="POST">
-                            <meta name="csrf-token" content="{{ csrf_token() }}">
-                            @method('PUT')
-                            <input type="hidden" id="logId" name="log_id">
-                            <div class="mb-3">
-                                <label for="editDate">Login Date</label>
-                                <input id="editDate" name="login_date" type="date" required class="form-control" placeholder="Date">
-                            </div>
-                            <div class="mb-3">
-                                <label for="editTime">Login Time</label>
-                                <input id="editTime" name="login_time" type="time"  class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="editLogTime">Logout Time</label>
-                                <input id="editLogTime" name="login_time" type="time"  class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="editStatus">Status</label>
-                                <select id="editStatus" name="status" class="form-control" required>
-                                    <option value="0">Logged In</option>
-                                    <option value="1">Logged Out</option>
-                                </select>
-                            </div>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         <!-- Nav tabs -->
         <div class="container">
             <div class="row justify-content-center">
@@ -89,6 +48,47 @@
                 </ul>
             </div>
         </div>
+
+               <!-- Edit Login Details Modal -->
+               <div class="modal fade" id="editLoginModal" tabindex="-1" aria-labelledby="editLoginModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editLoginModalLabel">Edit Login Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editLoginForm" method="POST">
+                                <meta name="csrf-token" content="{{ csrf_token() }}">
+                                @method('PUT')
+                                <input type="hidden" id="logId" name="log_id">
+                                <div class="mb-3">
+                                    <label for="editDate">Login Date</label>
+                                    <input id="editDate" name="login_date" type="date" required class="form-control" placeholder="Date">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editTime">Login Time</label>
+                                    <input id="editTime" name="login_time" type="time"  class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editLogTime">Logout Time</label>
+                                    <input id="editLogTime" name="login_time" type="time"  class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editStatus">Status</label>
+                                    <select id="editStatus" name="status" class="form-control" required>
+                                        <option value="0">Logged In</option>
+                                        <option value="1">Logged Out</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
 
             <!-- Tab panes -->
             <div class="tab-content">
@@ -126,6 +126,7 @@
                                                             <th>Login Date</th>
                                                             <th>Login Time</th>
                                                             <th>Logout Time</th>
+                                                            <th>Total login Time</th>
                                                             <th>IP Address</th>
                                                             <th>Current Status</th>
                                                             <th>Actions</th>
@@ -152,6 +153,10 @@
                                                                     Not Logged Out yet
                                                                 @endif
                                                             </td>
+                                                            <td>
+                                                                <span class="login-hour" data-id="{{ $log->id }}"></span>
+                                                                <span class="countdown-timer" id="countdown-{{ $log->id }}">{{ $log->login_hour }}</span>
+                                                            </td>
                                                             <td>{{ $log->ip_address }}</td>
                                                             <td>
                                                                 @if ($log->status == 0)
@@ -170,7 +175,7 @@
                                                                     </button>
                                                                     <div class="dropdown-menu">
                                                                         @can('Edit Login Details')
-                                                                        <a class="dropdown-item edit-button" id="logId" href="javascript:void(0);" data-id="{{ $log->id }}">
+                                                                        <a class="dropdown-item edit-button" href="javascript:void(0);" data-id="{{ $log->id }}">
                                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                                         </a>
                                                                         @endcan      
@@ -248,18 +253,24 @@
                                                             <td>{{ $key + 1 }}</td>
                                                             <td>
                                                                 @if ($log->login_time)
-                                                                    {{ \Carbon\Carbon::parse($log->login_time)->format('h:i A')}}
-                                                                    <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                                                    {{ \Carbon\Carbon::parse($log->login_time)->format('h:i A') }}
+                                                                    @if (\Carbon\Carbon::parse($log->login_date)->diffInDays() < 1)
+                                                                        <small>({{ \Carbon\Carbon::parse($log->login_time)->diffForHumans() }})</small>
+                                                                        @else
+                                                                        <small>({{ round(\Carbon\Carbon::parse($log->login_date)->diffInDays()) }} days ago)</small>
+                                                                    @endif
                                                                 @else
-                                                                    <span class="">Logged In From Another Browser</span>
+                                                                    <span>Logged In From Another Browser</span>
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                @if($log->logout_time)
+                                                                @if ($log->logout_time)
                                                                     {{ \Carbon\Carbon::parse($log->logout_time)->format('h:i A') }}
-                                                                    <small>({{ \Carbon\Carbon::parse($log->logout_time)->diffForHumans() }})</small>
+                                                                    @if (\Carbon\Carbon::parse($log->login_date)->diffInDays() < 1)
+                                                                        <small>({{ \Carbon\Carbon::parse($log->logout_time)->diffForHumans() }})</small>
+                                                                    @endif
                                                                 @else
-                                                                    Not Logged Out yet
+                                                                    <span>Not Logged Out yet</span>
                                                                 @endif
                                                             </td>
                                                             <td>{{ $log->ip_address }}</td>
@@ -279,7 +290,7 @@
                                                                     </button>
                                                                     <div class="dropdown-menu">
                                                                         @can('Edit Login Details')
-                                                                        <a class="dropdown-item edit-button" id="logId" href="javascript:void(0);" data-id="{{ $log->id }}">
+                                                                        <a class="dropdown-item edit-button" href="javascript:void(0);" data-id="{{ $log->id }}">
                                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                                         </a>
                                                                         @endcan
@@ -313,7 +324,7 @@
         <div class="tab-pane" id="current" role="tabpanel" aria-labelledby="current-tab">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>All Login</h5>
+                    <h5>Current Login Status</h5>
                     <i class="pin-icon" data-tab-id="current-tab" style="cursor: pointer;">📌</i>
                 </div>
                 <div class="table-responsive text-nowrap p-3">
@@ -370,7 +381,7 @@
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     @can('Edit Login Details')
-                                                    <a class="dropdown-item edit-button" id="logId" href="javascript:void(0);" data-id="{{ $log->id }}">
+                                                    <a class="dropdown-item edit-button" href="javascript:void(0);" data-id="{{ $log->id }}">
                                                         <i class="bx bx-edit-alt me-1"></i> Edit
                                                     </a>
                                                     @endcan
@@ -438,8 +449,7 @@
 
 <script>
 $(document).ready(function () {
-    $(document).on('click', '.edit-button', function () {
-
+    $('.edit-button').on('click', function () {
         const logId = $(this).data('id'); // Get the data-id from the button
         const editUrl = `{{ route('login_details.edit', ':id') }}`.replace(':id', logId);
 
@@ -483,6 +493,7 @@ $(document).ready(function () {
                 alert('Failed to retrieve log data');
             }
         });
+    });
 
     $('#editLoginForm').on('submit', function (e) {
     e.preventDefault(); // Prevent default form submission
@@ -560,7 +571,6 @@ $(document).ready(function () {
         }
     });
 });
-});
     const pinnedTabId = localStorage.getItem("pinnedTab");
 
     // Check if a tab is pinned and set it as active
@@ -587,8 +597,8 @@ $(document).ready(function () {
 
     // Handle click on the pin icon
     $(".pin-icon").on("click", function () {
-        const tabId = $(this).data("tab-id");
-        localStorage.setItem("pinnedTab", tabId); // Save the pinned tab to local storage
+        const tabId1 = $(this).data("tab-id");
+        localStorage.setItem("pinnedTab", tabId1); // Save the pinned tab to local storage
         
         // Display a notification for pinning
         Toastify({
@@ -609,6 +619,50 @@ $(document).ready(function () {
         }
     });
 
+     // Start the timer for each active login row
+     $('.login-hour').each(function() {
+        const loginInfoId = $(this).data('id');
+        const countdownElement = $(`#countdown-${loginInfoId}`);
+        const initialLoginHour = countdownElement.text(); // Get the existing login_hour from the database display
+
+        // Use Laravel's route helper to generate the URL for the named route
+        const url = `{{ route('get.login.hour', ':id') }}`.replace(':id', loginInfoId);
+
+        // Fetch the initial login_hour from the server
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                if (response.login_hour && !response.error) {
+                    // The condition matches, start the countdown
+                    let [hours, minutes, seconds] = response.login_hour.split(':').map(Number);
+                    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+                    // Start the timer to increment login_hour every second
+                    setInterval(() => {
+                        totalSeconds++;
+
+                        // Calculate hours, minutes, and seconds
+                        const displayHours = Math.floor(totalSeconds / 3600);
+                        const displayMinutes = Math.floor((totalSeconds % 3600) / 60);
+                        const displaySeconds = totalSeconds % 60;
+
+                        // Format and display updated time
+                        const formattedTime = 
+                            `${String(displayHours).padStart(2, '0')}:${String(displayMinutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
+                        countdownElement.text(formattedTime);
+                    }, 1000); // Update every second
+                } else {
+                    // Condition does not match, display existing login_hour from database without starting countdown
+                    countdownElement.text(initialLoginHour);
+                }
+            },
+            error: function() {
+                // Handle actual AJAX error (e.g., network issue)
+                countdownElement.text(initialLoginHour); // Default back to initial data instead of showing error
+            }
+        });
+    });
 });
 
 </script>

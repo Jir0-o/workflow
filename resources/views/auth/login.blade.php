@@ -59,21 +59,23 @@
                                             </div>
                                         </div>
                                         <div class="d-flex flex-row align-items-center mt-2">
-                                            @if ($errors->any())
-                                                <div class="alert alert-danger">
-                                                    <ul>
-                                                        @foreach ($errors->all() as $error)
-                                                            <li>{{ $error }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
+                                            @if (session('error'))
+                                            <div class="alert alert-danger">
+                                                {{ session('error') }}
+                                            </div>
+                                        @endif
+                                        
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul>
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
                                         </div>
                                         <div class="flex items-center justify-end mt-4">
-                                            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                href="{{ route('register') }}">
-                                                {{ __('Don\'t have an account?? click to Register') }}
-                                            </a>
 
                                             <x-button class="ms-4">
                                                 {{ __('Login') }}
@@ -91,5 +93,18 @@
         </div>
         @include('backend.partials.footer')
     </section>
+
+    <script>
+            // Check for error message in localStorage
+            const errorMessage = localStorage.getItem('login_error');
+
+        if (errorMessage) {
+            // Display the error message (here it's shown as an alert, but you can customize this)
+            alert(errorMessage);
+
+            // Optionally remove the error message from localStorage after displaying it
+            localStorage.removeItem('login_error');
+        }
+    </script>
 @endsection
 

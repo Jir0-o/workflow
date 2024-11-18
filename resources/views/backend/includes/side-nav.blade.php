@@ -80,6 +80,11 @@
                         @can('View Assign Task')
                         <li class="menu-item">
                             <a href="{{ route('asign_tasks.index') }}" class="menu-link">
+                                <div data-i18n="Without menu">Manage Work Plan</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('asign_tasks.index') }}" class="menu-link">
                                 <div data-i18n="Without menu">Assign Task</div>
                             </a>
                         </li>
@@ -104,12 +109,17 @@
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-calendar-check"></i>
-                        <div data-i18n="Layouts">Today's Work Plan</div>
+                        <div data-i18n="Layouts">Task Manage</div>
                     </a>
                     <ul class="menu-sub">
                         <li class="menu-item">
-                            <a href="{{ route('tasks.index') }}" class="menu-link">
+                            <a href="{{ route('work_plan.index') }}" class="menu-link">
                                 <div data-i18n="Without navbar">Work Plan</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('tasks.index') }}" class="menu-link">
+                                <div data-i18n="Without navbar">Your Task</div>
                             </a>
                         </li>
                     </ul>
@@ -139,6 +149,24 @@
                     </ul>
                 </li>
                 @endcan
+                <li class="menu-item">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-user-check"></i>
+                        <div data-i18n="Layouts">Other Tabs</div>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('notice.index') }}" class="menu-link">
+                                <div data-i18n="Without menu">Notice Board</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('loginReport.view') }}" class="menu-link">
+                                <div data-i18n="Without navbar">Application</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 @can('View Role Permission Menu')
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text"> Role and Permission</span>

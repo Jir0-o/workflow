@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LoginInfo;
 use Illuminate\Http\Request;
 use App\Models\Activity;
 use App\Models\DetailLogin;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
@@ -25,20 +28,65 @@ class ActivityController extends Controller
     }
 
     public function updateLoginTime(Request $request)
-{
-    $login = DetailLogin::where('id', $request->login_id)->first();
-
-    if ($login) {
+    {
+        $login = DetailLogin::where('id', $request->login_id)->first();
+    
         // Format active time to HH:MM:SS based on `active_seconds` received
         $activeDuration = gmdate('H:i:s', $request->active_seconds);
+        $activeSeconds = $request->active_seconds;
+    
+        if ($login) {
+            // Update DetailLogin
+            DetailLogin::where('id', $request->login_id)
+                ->update(['login_hour' => $activeDuration, 'updated_at' => now()]);
+    
+            // Update LoginInfo if status is 0
+            LoginInfo::where('user_id', $login->user_id)
+                ->where('status', 0)
+                ->where('login_date', $login->login_date)
+                ->update([
+                    'login_hour' => $activeDuration,
+                    'updated_at' => now()
+                ]);
+    
+            return response()->json(['login_hour' => $activeDuration,
+                                    'active_seconds' => $activeSeconds
+                                ]);
+        }
+    
+        return response()->json(['error' => 'Login session not found'], 404);
+    }
 
-        DetailLogin::where('id', $request->login_id)
-            ->update(['login_hour' => $activeDuration, 'updated_at' => now()]);
+    public function getAllActiveSessions($id)
+    {
+        $activeSession = LoginInfo::where('status', 0)
+            ->where('id', $id)
+            ->first(['id', 'login_hour']);
+    
+        if ($activeSession) {
+            return response()->json(['login_hour' => $activeSession->login_hour]);
+        }
+    
+        return response()->json(['error' => 'Session not found'], 404);
+    }
 
-        return response()->json(['login_hour' => $activeDuration]);
+    public function updateLogoutTime(Request $request)
+    {
+        $loginId = Auth::user()->id;
+        $todayDate = Carbon::today()->toDateString();
+    
+        $logoutReason = $request->input('logout_reason');
+            // Update LoginInfo if status is 0
+            LoginInfo::where('user_id', $loginId)
+                ->where('status', 0)
+                ->where('login_date', $todayDate)
+                ->update([
+                    'logout_reason' => $logoutReason,
+                    'updated_at' => now()
+                ]);
+    
+            return response()->json(['logout_reason' => $logoutReason]);
     }
     
-    return response()->json(['error' => 'Login session not found'], 404);
-}
 
 }

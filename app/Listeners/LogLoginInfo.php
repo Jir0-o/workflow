@@ -75,8 +75,8 @@ class LogLoginInfo
             'name' => $user->name,
             'email_address' => $user->email,
             'user_id' => $user->id,
-            'login_time' => Carbon::now(), 
-            'login_date' => Carbon::now(),
+            'login_time' => Carbon::now()->format('H:i:s'), // Stores in 'HH:mm:ss' format
+            'login_date' => Carbon::now()->format('Y-m-d'),
             'ip_address' => request()->getClientIp(),
             'status' => 0,
         ]);
@@ -87,8 +87,8 @@ class LogLoginInfo
             'name' => $user->name,
             'email_address' => $user->email,
             'user_id' => $user->id,
-            'login_time' => Carbon::now(), 
-            'login_date' => Carbon::now(),
+            'login_time' => Carbon::now()->format('H:i:s'), // Stores in 'HH:mm:ss' format
+            'login_date' => Carbon::now()->format('Y-m-d'),
             'ip_address' => request()->getClientIp(),
             'status' => 0,
         ]);

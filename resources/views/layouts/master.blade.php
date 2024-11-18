@@ -169,6 +169,11 @@
         new DataTable('#datatable2');
         new DataTable('#datatable3');
         new DataTable('#datatable4');
+        new DataTable('#datatable5');
+        new DataTable('#datatable6');
+        new DataTable('#datatable7');
+        new DataTable('#datatable8');
+        new DataTable('#datatable9');
     </script>
   <!-- Include jQuery first -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -182,13 +187,51 @@
   <!-- Include Toastr JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-  <!-- Toastify JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/Toastify.min.js"></script>
     {{-- sweet Alart --}}
 
   <script src="
 https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.all.min.js
 "></script>
+
+<script>
+  // Function to format seconds into HH:MM:SS
+  function formatTime(seconds) {
+      let hrs = Math.floor(seconds / 3600);
+      let mins = Math.floor((seconds % 3600) / 60);
+      let secs = seconds % 60;
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  // Update each user's active time every 10 seconds
+  setInterval(function () {
+      $('.active-time').each(function () {
+          const userId = $(this).data('id');
+          const startTime = $(this).data('start');
+          const currentTime = Math.floor(Date.now() / 1000);
+          const activeDuration = currentTime - startTime;
+
+          // Update the displayed active time
+          $(this).text(formatTime(activeDuration));
+
+          // Send an Ajax request to update `login_hour` in the database
+          $.ajax({
+              url: "{{ route('updateLoginTime') }}",
+              type: 'POST',
+              data: {
+                  login_id: userId,
+                  active_seconds: activeDuration,
+                  _token: '{{ csrf_token() }}'
+              },
+              success: function (response) {
+                  // Optionally, handle success feedback
+              },
+              error: function () {
+                  console.log('Error updating login time');
+              }
+          });
+      });
+  }, 10000); // Update every 10 seconds for performance
+</script>
 
   </body>
 </html>

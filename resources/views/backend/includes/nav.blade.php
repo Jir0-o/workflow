@@ -36,7 +36,40 @@
     .notification-read {
     opacity: 0.6; /* Adjust this value for the desired fade effect */
     }
+    /* Dark mode styling */
+    body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+    /* Additional styles for specific elements in dark mode */
+    body.dark-mode .navbar {
+        background-color: #333333;
+    }
+    body.dark-mode .dropdown-menu {
+        background-color: #444444;
+        color: #ffffff;
+    }
     </style>
+
+<div class="modal fade" id="logoutReasonModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Logout Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="logout-reason" class="form-control" placeholder="Enter your reason for logging out"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submitLogout()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Navbar -->
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
@@ -59,27 +92,34 @@
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <meta name="csrf-token" content="{{ csrf_token() }}">
 
-            <!-- Notification Icon with Count and Dropdown -->
-            <li class="nav-item dropdown lh-1 me-4 position-relative">
-                <a href="#" id="notification-icon" class="text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-bell"></i>
-                    <span id="notification-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle">0</span>
-                </a>
-        
-                <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="notification-icon" style="width: 350px; max-height: 400px; overflow-y: auto;">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="dropdown-header">Notifications</h6>
-                        <div>
-                            <button class="btn btn-sm btn-link text-primary" id="mark-all-read">Mark All as Read</button>
-                            <button class="btn btn-sm btn-link text-danger" id="clear-notifications">Clear All</button>
-                        </div>
-                    </div>
-        
-                    <div id="notification-list">
-                        <p class="text-center text-muted">No new notifications</p>
+        <!-- Notification Icon with Count and Dropdown -->
+        <li class="nav-item dropdown lh-1 me-4 position-relative">
+            <!-- Dark Mode Toggle Icon -->
+            <a href="javascript:void(0);" id="dark-mode-toggle" class="nav-item lh-1 me-3 text-decoration-none">
+                <i class="fas fa-moon"></i>
+            </a>
+
+            <!-- Notification Icon -->
+            <a href="#" id="notification-icon" class="text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+                <span id="notification-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle">0</span>
+            </a>
+
+            <!-- Notification Dropdown Menu -->
+            <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="notification-icon" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="dropdown-header">Notifications</h6>
+                    <div>
+                        <button class="btn btn-sm btn-link text-primary" id="mark-all-read">Mark All as Read</button>
+                        <button class="btn btn-sm btn-link text-danger" id="clear-notifications">Clear All</button>
                     </div>
                 </div>
-            </li>
+
+                <div id="notification-list">
+                    <p class="text-center text-muted">No new notifications</p>
+                </div>
+            </div>
+        </li>
         
             <!-- User Name -->
             <li class="nav-item lh-1 me-3">
@@ -130,13 +170,10 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a id="logout-button" class="dropdown-item" href="javascript:void(0);">
                             <i class="bx bx-power-off me-2"></i>
                             <span class="align-middle">Log Out</span>
                         </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            {{ csrf_field() }}
-                        </form>
                     </li>
                 </ul>
             </li>
@@ -146,12 +183,80 @@
 </nav>
 
 <script>
+function submitLogout() {
+    const reason = $('#logout-reason').val();
+
+    $.ajax({
+        url: "{{ route('updateLogoutTime') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            logout_reason: reason
+        },
+        success: function() {
+            // After successfully updating the logout reason, log out the user
+            $.ajax({
+                url: "{{ route('logout') }}", // Laravel Fortify logout route
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}" // CSRF token required for logout
+                },
+                success: function() {
+                    // Redirect to login page after successful logout
+                    window.location.href = "{{ route('login') }}";
+                },
+                error: function() {
+                    alert("Error logging out. Please try again.");
+                }
+            });
+        },
+        error: function() {
+            alert("Error updating logout reason. Please try again.");
+        }
+    });
+}
+
+</script>
+
+<script>
 $(document).ready(function () {
+
 // Define the markAsRead route template to use in JavaScript
 const markAsReadUrlTemplate = "{{ route('notifications.markAsRead', ':id') }}";
 
 // Ensure markAsRead is available globally
 $(document).ready(function() {
+
+    const $toggleIcon = $('#dark-mode-toggle');
+    const darkModeClass = 'dark-mode';
+    
+    // Apply dark mode if user has previously enabled it
+    if (localStorage.getItem('theme') === darkModeClass) {
+        $('body').addClass(darkModeClass);
+        $toggleIcon.html('<i class="fas fa-sun"></i>');
+    } else {
+        $toggleIcon.html('<i class="fas fa-moon"></i>');
+    }
+    
+    // Toggle dark mode on icon click
+    $toggleIcon.on('click', function () {
+        $('body').toggleClass(darkModeClass);
+        
+        // Update the icon based on the current mode
+        if ($('body').hasClass(darkModeClass)) {
+            $toggleIcon.html('<i class="fas fa-sun"></i>');
+            localStorage.setItem('theme', darkModeClass);
+        } else {
+            $toggleIcon.html('<i class="fas fa-moon"></i>');
+            localStorage.removeItem('theme');
+        }
+    });
+
+    // Stop the dropdown from closing when clicking inside it
+    $('.dropdown-menu').on('click', function (e) {
+        e.stopPropagation();
+    });
+    
     window.markAsRead = function(notificationId, element) {
         console.log("Marking as read for Notification ID:", notificationId);
 
@@ -321,7 +426,24 @@ $('#clear-notifications').on('click', function() {
     });
 });
 
- 
+$('#logout-button').on('click', function (e) {
+    e.preventDefault();
+    
+    const currentTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
+    const hours = new Date(currentTime).getHours();
+
+    if (hours < 18) {  // Before 6 pm
+        $('#logoutReasonModal').modal('show');  // Show reason modal
+    } else {
+        // Show instant feedback to user
+        $('#logout-button').text('Logging Out...'); 
+        
+        // Perform logout in the background
+        $.post("{{ route('logout') }}", { _token: "{{ csrf_token() }}" }, function() {
+            window.location.href = "{{ route('login') }}";
+        });
+    }
+});
 });
 
 </script>

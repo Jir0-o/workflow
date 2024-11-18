@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AsignTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginDetailsController;
+use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectTitleController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WorkPlanController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -36,6 +38,8 @@ Route::middleware([
     Route::resource('project_title', ProjectTitleController::class);
     Route::resource('report', ReportController::class);
     Route::resource('login_details', LoginDetailsController::class);
+    Route::resource('notice', NoticeController::class);
+    Route::resource('work_plan', WorkPlanController::class);
 
 
     Route::get('details_login' ,[LoginDetailsController::class, 'detailsLogin'])->name('details_login.edit');
@@ -44,16 +48,22 @@ Route::middleware([
     Route::get('/login/report/view', [LoginDetailsController::class, 'loginReportView'])->name('loginReport.view');
 
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
-    Route::patch('/tasks/{task}/extend', [TaskController::class, 'extend'])->name('tasks.extend');
+    Route::put('/tasks/{task}/extend', [TaskController::class, 'extend'])->name('tasks.extend');
     Route::patch('/tasks/{task}/redo', [TaskController::class, 'redo'])->name('tasks.redo');
     Route::patch('/tasks/{task}/cancel', [TaskController::class, 'cancel'])->name('tasks.cancel');
 
+    //workplan route
+    Route::patch('/work_plan/{task}/complete', [WorkPlanController::class, 'complete'])->name('work_plan.complete');
+    Route::put('/work_plan/{task}/extend', [WorkPlanController::class, 'extend'])->name('work_plan.extend');
+    Route::patch('/work_plan/{task}/redo', [WorkPlanController::class, 'redo'])->name('work_plan.redo');
+    Route::patch('/work_plan/{task}/cancel', [WorkPlanController::class, 'cancel'])->name('work_plan.cancel');
+    Route::get('/work_plan/{task}/show', [WorkPlanController::class, 'getTask'])->name('work_plan.show');
 
     Route::patch('/project_title/{project_title}/complete', [ProjectTitleController::class, 'complete'])->name('project.complete');
     Route::patch('/project_title/{project_title}/drop', [ProjectTitleController::class, 'drop'])->name('project.drop');
     Route::patch('/project_title/{project_title}/running', [ProjectTitleController::class, 'running'])->name('project.running');
     Route::get('/project_title/{project_title}/edit', [ProjectTitleController::class, 'newEdit'])->name('edit.project_title');
- 
+
 
     Route::patch('/tasks/{task}/completed', [AsignTaskController::class, 'completed'])->name('asign_tasks.complete');
     Route::patch('/tasks/{task}/pendingdate', [AsignTaskController::class, 'pendingdate'])->name('asign_tasks.pendingdate');
@@ -77,5 +87,12 @@ Route::middleware([
     Route::post('/activity', [ActivityController::class, 'store']);
 
     Route::post('/update-login-time', [ActivityController::class, 'updateLoginTime'])->name('updateLoginTime');
+    Route::get('/getActiveSession/{id}', [ActivityController::class, 'getAllActiveSessions'])->name('get.login.hour');
+    Route::post('/update-logout-time', [ActivityController::class, 'updateLogoutTime'])->name('updateLogoutTime');
+
+
+    //notice route
+    Route::PATCH('/notice/{notice}/end', [NoticeController::class, 'noticeEnd'])->name('notice.end');
+    Route::PATCH('/notice/{notice}/start', [NoticeController::class, 'noticeStart'])->name('notice.start');
 
 });

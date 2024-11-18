@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+{{-- @extends('layouts.guest')
 @section('content')
     <section class="vh-100" style="background-color: #eee;">
         <div class="container h-100">
@@ -161,4 +161,4 @@
             </div>
         </form>
     </x-authentication-card>
-</x-guest-layout> --}}
+</x-guest-layout> --}} --}}

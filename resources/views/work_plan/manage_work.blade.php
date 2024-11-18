@@ -11,7 +11,7 @@
 </style>
     
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<h4 class="py-2 m-4"><span class="text-muted fw-light">Assign Task</span></h4>
+<h4 class="py-2 m-4"><span class="text-muted fw-light">Assign Work Plan</span></h4>
 
 <div class="row mt-5">
     <div class="col-12">
@@ -26,10 +26,6 @@
                     <div class="modal-body">
                         <form id="assignTaskForm">
                             @csrf
-                            <div class="mb-3">
-                                <label for="main_title">Task Title</label>
-                                <input id="main_title" name="main_title" type="text" required class="form-control" placeholder="Write a task title">
-                            </div>
                             <div class="mb-3">
                                 <label for="task_title">Project Title</label>
                                 <div class="d-flex align-items-center">
@@ -57,6 +53,13 @@
                             <div class="mb-3">
                                 <label for="task_description">Task Description</label>
                                 <textarea id="task_description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="work_status">Work Status</label>
+                                <select id="work_submit_status" name="work_status" class="form-control">
+                                    <option value="Work From Home">Work From Home</option>
+                                    <option value="Work From Office">Work From Office</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="last_submit_date">Last Submit Date</label>
@@ -134,10 +137,6 @@
                     @method('PUT')
                     
                     <input type="hidden" id="edit_task_id" name="task_id">
-                    <div class="mb-3">
-                        <label for="main_task_title">Task Title</label>
-                        <input id="main_task_title" name="main_task_title" type="text" required class="form-control" placeholder="Write a task title">
-                    </div>
 
                     <div class="mb-3">
                         <label for="title">Select Title</label>
@@ -166,6 +165,14 @@
                         <label for="last_submit_date">Due Date</label>
                         <input id="Edit_last_submit_date" name="last_submit_date" type="date" class="form-control">
                     </div>
+                    <div class="mb-3">
+                        <label for="work_status">Work Status</label>
+                        <select id="work_status" name="work_status" class="form-control">
+                            <option value="Work From Home">Work From Home</option>
+                            <option value="Work From Office">Work From Office</option>
+                        </select>
+                    </div>
+
                     <div class="mb-3">
                         <label for="status">Task Status</label>
                         <select id="status" name="status" class="form-control" required>
@@ -199,10 +206,6 @@
                     @method('PUT')
                     
                     <input type="hidden" id="edit_submit_task_id" name="task_id">
-                    <div class="mb-3">
-                        <label for="submit_task_title">Task Title</label>
-                        <input id="submit_task_title" name="submit_task_title" type="text" required class="form-control" placeholder="Write a task title">
-                    </div>
 
                     <div class="mb-3">
                         <label for="Submit_title">Select Title</label>
@@ -235,6 +238,14 @@
                     <div class="mb-3">
                         <label for="submit_submit_date">Submitted Date</label>
                         <input id="submit_submit_date" name="submit_date" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="submit_work_status">Work Status</label>
+                        <select id="submit_work_status" name="work_status" class="form-control">
+                            <option value="Work From Home">Work From Home</option>
+                            <option value="Work From Office">Work From Office</option>
+                        </select>
                     </div>
 
                     <div class="mb-3">
@@ -322,13 +333,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -338,13 +349,13 @@
                                         @foreach($pendingTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title }}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -421,13 +432,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -436,13 +447,13 @@
                                         @foreach($incompleteTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title ?? 'No task title selected' }}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y') : 'Task Incomplete' }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -530,13 +541,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -545,13 +556,13 @@
                                         @foreach($completeTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title ?? 'No task title selected' }}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -630,13 +641,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>User Name</th>
                                             <th>Project Title</th>
                                             <th>Task</th>
                                             <th>Suggestion</th>
+                                            <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -645,13 +656,13 @@
                                         @foreach($inprogressTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title }}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
                                             <td>{!!($task->message) !!}</td>
+                                            <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -899,7 +910,6 @@ $(document).ready(function(){
             // Create a new FormData object
             let formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
-            formData.append('task_title', $('#main_title').val());
             formData.append('title', $('#task_title').val());
             formData.append('description', CKEDITOR.instances['task_description'].getData());
             formData.append('last_submit_date', $('#last_submit_date').val());
@@ -956,11 +966,11 @@ $(document).ready(function(){
             data: {
                 _token: $('input[name="_token"]').val(),
                 task_user_id: $('#submit_user_id').val(),
-                task_title: $('#submit_task_title').val(),
                 title: $('#Submit_title').val(),
                 description: CKEDITOR.instances.submit_description.getData(),
                 last_submit_date: $('#submit_last_submit_date').val(),
                 submit_by_date: $('#submit_submit_date').val(),
+                work_status: $('#submit_work_status').val(),
                 status: $('#submit_status').val(),
             },
             success: function(response) {
@@ -1011,10 +1021,10 @@ $(document).ready(function(){
             data: {
                 _token: $('input[name="_token"]').val(),
                 task_user_id: $('#user_id').val(),
-                task_title: $('#main_task_title').val(),
                 title: $('#title').val(),
                 description: CKEDITOR.instances.description.getData(),
                 last_submit_date: $('#Edit_last_submit_date').val(),
+                work_status: $('#work_status').val(),
                 status: $('#status').val(),
             },
             success: function(response) {
@@ -1066,7 +1076,6 @@ $(document).ready(function(){
                 if (response.status) {
                     console.log(response);
                     $('#edit_task_id').val(taskId);
-                    $('#main_task_title').val(response.data.tasks.task_title);
                     $('#title').val(response.data.tasks.title_name_id);
                     $('#user_id').val(response.data.tasks.user_id);
                     CKEDITOR.instances.description.setData(response.data.tasks.description);
@@ -1105,12 +1114,12 @@ $(document).ready(function(){
         success: function(response) {
             if (response.status) {
                 $('#edit_submit_task_id').val(taskId);
-                $('#submit_task_title').val(response.data.tasks.task_title);
                 $('#Submit_title').val(response.data.tasks.title_name_id);
                 $('#submit_user_id').val(response.data.tasks.user_id);
                 CKEDITOR.instances.submit_description.setData(response.data.tasks.description);
                 $('#submit_last_submit_date').val(response.data.tasks.submit_date); 
                 $('#submit_submit_date').val(response.data.tasks.submit_by_date); 
+                $('#submit_work_status').val(response.data.tasks.work_status);
                 $('#submit_status').val(response.data.tasks.status);
 
                 $('#editSubmittedTaskModal').modal('show');

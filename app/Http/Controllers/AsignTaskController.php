@@ -86,10 +86,10 @@ class AsignTaskController extends Controller
         $incompleteCount = Task::where('status', 'incomplete')->count();
         $inprogressCount = Task::where('status', 'in_progress')->count();
 
-        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->orderBy('created_at', 'desc')->get();
+        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
         $completeTasks = Task::where('status', 'completed')->with('user','title_name')->orderBy('submit_by_date', 'desc')->get();
-        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->latest()->get();
-        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->latest()->get();
+        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
+        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
     
         return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount','users','title'));
     }
@@ -109,6 +109,7 @@ class AsignTaskController extends Controller
         try {
         $request->validate([
             'description' => 'required',
+            'task_title' => 'required',
             'user_id' => 'required|array|min:1',
             'user_id.*' => 'exists:users,id',
         ]);
@@ -117,6 +118,7 @@ class AsignTaskController extends Controller
     
         foreach ($request -> user_id as $id) {
             $task = new Task();
+            $task->task_title = $request->task_title;
             $task->title_name_id = $request->title;
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
@@ -206,14 +208,25 @@ class AsignTaskController extends Controller
     {
         $request->validate([
             'description' => 'required',
+            'task_title' => 'required',
+
         ]);
+
+        //today's date
+        $currentDate = Carbon::now()->toDateString();
     
         try {
             $task = Task::findOrFail($id);
+            $task->task_title = $request->task_title;
             $task->user_id = $request->task_user_id;
             $task->title_name_id = $request->title;
             $task->description = $request->description;
-            $task->submit_date = $request->last_submit_date;
+
+            if ($request->last_submit_date == $task->submit_date) {
+                $task->submit_date = $currentDate;
+            }else{
+                $task->submit_date = $request->last_submit_date;
+            }
             if ($request->submit_by_date) {
                 $task->submit_by_date = $request->submit_by_date;
             }

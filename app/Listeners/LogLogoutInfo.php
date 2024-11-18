@@ -67,7 +67,6 @@ foreach ($todayDateUserIds as $loginInfo) {
         $status = 0;
         $loginHour = '00:00:00';
     }
-
     // Update the loginInfo record
     $loginInfo->update([
         'logout_time' => $logoutTime,

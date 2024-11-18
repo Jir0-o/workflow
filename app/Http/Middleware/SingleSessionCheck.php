@@ -24,10 +24,11 @@ class SingleSessionCheck
 
             // Check if the stored session ID matches the current session
             if ($user->session_id !== $sessionToken) {
-                Auth::guard('web')->logout();  // Log out the user if the session ID does not match
-                return redirect()->route('login')->withErrors([
-                    'message' => 'You have been logged out due to a new login from another device.'
-                ]);
+            session()->flash('error', 'You have been logged out due to a new login from another device.');
+            Auth::guard('web')->logout();
+        
+            // Redirect to login page with the error message
+            return redirect()->route('login')->withErrors('error', 'You have been logged out due to a new login from another device.');
             }
         }
         return $next($request);

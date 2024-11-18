@@ -16,7 +16,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\ModelHasRole;
 use Spatie\Permission\Traits\HasRoles;
 
-class TaskController extends Controller
+class WorkPlanController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,9 +30,9 @@ class TaskController extends Controller
     public function index()
     {
 
-        $tasks = Task::all();
+        $tasks = WorkPlan::all();
         $userId = auth()->id();
-        $startOfToday = Carbon::today();
+        $startOfToday = Carbon::today(); 
 
         foreach ($tasks as $task) {
             if ($task->status == 'pending' && Carbon::parse($task->submit_date)->isBefore($startOfToday)) {
@@ -77,27 +77,24 @@ class TaskController extends Controller
 
         }
         //Create Work Plan
-        $titles = TitleName::where('status', 'in_progress')->get();
-
-        //dropdown task
-        $taskDropdown = WorkPlan::all();
+        $titles = Task::where('status', 'pending')->get();
         //count
-        $pendingCount = Task::where('user_id', $userId)->where('status', 'pending')->count();
-        $completeCount = Task::where('user_id', $userId)->where('status', 'completed')->count();
-        $incompleteCount = Task::where('user_id', $userId)->where('status', 'incomplete')->count();
-        $inprogressCount = Task::where('user_id', $userId)->where('status', 'in_progress')->count();
+        $pendingCount = WorkPlan::where('user_id', $userId)->where('status', 'pending')->count();
+        $completeCount = WorkPlan::where('user_id', $userId)->where('status', 'completed')->count();
+        $incompleteCount = WorkPlan::where('user_id', $userId)->where('status', 'incomplete')->count();
+        $inprogressCount = WorkPlan::where('user_id', $userId)->where('status', 'in_progress')->count();
 
 
 
-        $pendingTasks = Task::where('user_id', $userId)->where('status', 'pending')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-        $completedTasks = Task::where('user_id', $userId)->where('status', 'completed')->with('user','title_name')->orderBy('submit_by_date', 'desc')->get();
-        $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-        $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-    
-        return view('user.task', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount','tasks','userId','titles','taskDropdown'));
+        $pendingTasks = WorkPlan::where('user_id', $userId)->where('status', 'pending')->with('user','task')->orderBy('updated_at', 'desc')->get();
+        $completedTasks = WorkPlan::where('user_id', $userId)->where('status', 'completed')->with('user','task')->orderBy('submit_by_date', 'desc')->get();
+        $incompletedTasks = WorkPlan::where('user_id', $userId)->where('status', 'incomplete')->with('user','task')->orderBy('updated_at', 'desc')->get();
+        $requestedTasks = WorkPlan::where('user_id', $userId)->where('status', 'in_progress')->with('user','task')->orderBy('updated_at', 'desc')->get();
+
+        return view('work_plan.work_plan', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount','tasks','userId','titles'));
 
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -113,8 +110,7 @@ class TaskController extends Controller
     {
         // Validate the incoming request
         $request->validate([
-            'title' => 'required', 
-            'task_title' => 'required',
+            'title' => 'required',
             'description' => 'required',
             'last_submit_date' => 'required|date',
         ]);
@@ -128,8 +124,8 @@ class TaskController extends Controller
 
     try {
         // Create a new task
-        $task = new Task();
-        $task->task_title = $request->task_title;
+        $task = new WorkPlan();
+        $task->task_id = $request->title;
         $task->user_id = $authUser->id;
         $task->title_name_id = $request->title;
         $task->description = $request->description;
@@ -165,7 +161,7 @@ class TaskController extends Controller
     }
     }
 }
-    
+
     /**
      * Display the specified resource.
      */
@@ -179,8 +175,8 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        $task = Task::find($id);
-        return view('user.edit_task', compact('task','id'));
+        $task = WorkPlan::find($id);
+        return view('uwork_plan.work_plan', compact('task','id'));
     }
 
     /**
@@ -209,7 +205,7 @@ class TaskController extends Controller
         $authUser = auth()->user();
 
         // Find task by ID
-        $task = Task::findOrFail($id); // Will automatically throw 404 if task not found
+        $task = WorkPlan::findOrFail($id); // Will automatically throw 404 if task not found
         $task->message = $request->message;
         $task->status = 'in_progress'; // Ensure the status is updated
         $task->save();
@@ -227,7 +223,7 @@ class TaskController extends Controller
                 'link' => route('asign_tasks.index'),
             ]);
         }
-    
+
             // Return success response
             return response()->json([
                 'status' => true,
@@ -245,7 +241,7 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        $task = Task::find($id);
+        $task = WorkPlan::find($id);
         $task->delete();
 
         // Find the role by name
@@ -273,13 +269,13 @@ class TaskController extends Controller
                 'link' => route('asign_tasks.index'),
             ]);
         }
- 
+
         return back()->with('success', 'Task deleted successfully.');
     }
     public function complete($id)
 {
 
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
     $task->save();
@@ -309,14 +305,14 @@ class TaskController extends Controller
             'link' => route('asign_tasks.index'),
         ]);
     }
-    
+
 
     return back()->with('success', 'Task marked as completed successfully.');
 }
 
 public function extend(Request $request, $id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $extension_reason = $request->input('extension_reason');
 
     // Get the current message and append the new reason
@@ -359,7 +355,7 @@ public function extend(Request $request, $id)
 }
 public function redo($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->submit_date = Carbon::now();
     $task->submit_by_date = null;
     $task->status = 'pending';
@@ -396,7 +392,7 @@ public function redo($id)
 }
 public function cancel($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->message = 'Request Cancel';
     $task->status = 'incomplete';
     $task->save();
@@ -431,7 +427,7 @@ public function cancel($id)
 }
 public function incompleted($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->status = 'incomplete';
     $task->save();
 
@@ -462,5 +458,15 @@ public function incompleted($id)
     }
 
     return back()->with('success', 'Task incompleted .');
+}
+public function getTask($id)
+{
+    $tasks = WorkPlan::where('task_id', $id)->get();  // Use `get()` to retrieve a collection of tasks
+
+    if ($tasks->isEmpty()) {
+        return response()->json(['message' => 'No tasks found'], 404);
+    }
+
+    return response()->json($tasks);  // Return a collection of tasks as JSON
 }
 }

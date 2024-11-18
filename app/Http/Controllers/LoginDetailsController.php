@@ -66,6 +66,7 @@ class LoginDetailsController extends Controller
     
         // All logins
         $AllLogin = LoginInfo::latest()->get();
+        
     
         return view('user.logindetails.loginDetails', compact(
             'loginToday', 'loginCount', 'allLoginCount', 'AllLogin', 'currentLogin', 
