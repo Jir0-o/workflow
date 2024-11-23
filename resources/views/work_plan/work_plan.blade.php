@@ -16,7 +16,7 @@
     {{-- @include('sweetalert::alert') --}}
     <div class="row mt-5">
         <div class="col-12 col-md-12 col-lg-12">
-            <div class="card p-lg-4 p-2">
+            <div class="card p-lg-4 p-2"> 
                 {{-- Reason to Extend Task --}}    
                 <div class="modal fade" id="reasonTaskModal" tabindex="-1" aria-labelledby="reasonTaskModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -55,14 +55,22 @@
                                 <div class="mb-3">
                                     <label for="title">Select Title</label>
                                     <select id="title" name="title" class="form-control" required>
-                                        <option value="">Select your task</option>
-                                        @foreach($titles as $title)
-                                            @if(in_array($userId, explode(',', $title->user_id)))
-                                                <option value="{{ $title->id }}">
-                                                    {{ $title->task_title }}
-                                                </option>
-                                            @endif
-                                        @endforeach
+                                        @php
+                                            $assignedTasks = $titles->filter(function ($title) use ($userId) {
+                                                return in_array($userId, explode(',', $title->user_id)) && !empty($title->task_title);
+                                            });
+                                        @endphp
+                                
+                                        @if($assignedTasks->isNotEmpty())
+                                            <option value="">Select your task</option>
+                                            @foreach($assignedTasks as $task)
+                                                <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                            @endforeach
+                                        @else
+                                            <option value="" disabled selected>
+                                                You have not created any task or no task has been assigned to you.
+                                            </option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -115,49 +123,40 @@
                 <div class="container">
                     <div class="row justify-content-center">
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            @can('View Work Plan Pending')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
-                                    Pending Work Plan
+                                    Pending Plan
                                     <span class="badge bg-primary"> {{ $pendingCount }}</span>
                                 </button>
                             </li>
-                            @endcan
-                            @can('View Work Plan Incomplete')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Incomplete Work Plan
+                                    Incomplete Plan
                                     <span class="badge bg-primary"> {{ $incompleteCount }}</span>
                                 </button>
                             </li>
-                            @endcan
-                            @can('View Work Plan Completed')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Completed Work Plan
+                                    Completed Plan
                                     <span class="badge bg-primary"> {{ $completeCount }}</span>
                                 </button>
                             </li>
-                            @endcan
-                            @can('View Work Plan Requested')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Requested"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Requested Work Plan
+                                    Requested Plan
                                     <span class="badge bg-primary"> {{ $inprogressCount }}</span>
                                 </button>
                             </li>
-                            @endcan
                         </ul>
                     </div>
                 </div>
 
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    @can('View Work Plan Pending')
                     <div class="tab-pane active" id="Pending" role="tabpanel" aria-labelledby="home-tab">
                         <div class="card">
                             <div class="card-header">
@@ -165,7 +164,7 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Pending Work Plan</h5>
                                     </div>
-
+                                     @can('Create Work Plan')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
@@ -174,6 +173,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
 
@@ -182,12 +182,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
-                                            <th>Project Title</th>
-                                            <th>Work Plan</th>
                                             <th>Work Status</th>
+                                            <th>Extend Reason</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -198,12 +199,29 @@
                                         @foreach($pendingTasks as $key => $pendingTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $pendingTask->task->task_title ?? 'No project title selected'  }}</td>
+                                            <td>{!!($pendingTask->description) !!}</td>
                                             <td>{{ $pendingTask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $pendingTask->submit_by_date ? \Carbon\Carbon::parse($pendingTask->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
-                                            <td>{{ $pendingTask->task->task_title ?? 'No project title selected'  }}</td>
-                                            <td>{!!($pendingTask->description) !!}</td>
                                             <td>{{ $pendingTask->work_status }}</td>
+                                            <td>
+                                                @php
+                                                    // Explode the reason_message field
+                                                    $reasons = explode('|', $pendingTask->reason_message);
+                                                    $reason_count = count($reasons);
+                                                @endphp
+                                                @if ($pendingTask->reason_message !== null)
+                                                <ul>
+                                                    @foreach($reasons as $key => $reason)
+                                                        <li>{!! $reason !!}</li>
+                                                    @endforeach
+                                                </ul>
+                                                <p>Total: {{ $reason_count }}</p>
+                                                @else
+                                                <p>No reasons available</p>
+                                                @endif
+                                            </td>
                                             <td>{{ $pendingTask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>
@@ -251,7 +269,6 @@
                             </div>
                         </div>
                     </div>
-                    @endcan
 
                     <div class="tab-pane" id="Incomplete" role="tabpanel" aria-labelledby="profile-tab">
                         <div class="card">
@@ -260,15 +277,16 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Incomplete Work Plan</h5>
                                     </div>
-
+                                    @can('Create Work Plan')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#createTaskModal">
-                                                Create Task
+                                                Create Work Plan
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
 
@@ -277,11 +295,11 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
-                                            <th>Project Title</th>
-                                            <th>Work Plan</th>
                                             <th>Work Status</th>
                                             <th>Extend Reason</th>
                                             <th>Status</th>
@@ -294,11 +312,11 @@
                                         @foreach($incompletedTasks as $key => $incompletedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $incompletedtask->task->task_title ?? 'No project title selected' }}</td>
+                                            <td>{!! ($incompletedtask->description) !!}</td>
                                             <td>{{ $incompletedtask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $incompletedtask->submit_by_date ? \Carbon\Carbon::parse($incompletedtask->submit_by_date)->format('d F Y, h:i A') : 'Task incompleted' }}</td>
-                                            <td>{{ $incompletedtask->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! ($incompletedtask->description) !!}</td>
                                             <td>{{ $incompletedtask->work_status }}</td>
                                             <td>
                                                 @php
@@ -375,15 +393,16 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Completed Work Plan</h5>
                                     </div>
-
+                                    @can('Create Work Plan')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#createTaskModal">
-                                                Create Task
+                                                Create Work Plan
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
 
@@ -392,12 +411,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
-                                            <th>Project Title</th>
-                                            <th>Work Plan</th>
                                             <th>Work Status</th>
+                                            <th>Extend Reason</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -408,12 +428,29 @@
                                         @foreach($completedTasks as $key => $completedtask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $completedtask->task->task_title  ?? 'No project title selected' }}</td>
+                                            <td>{!!($completedtask->description) !!}</td>
                                             <td>{{ $completedtask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
-                                            <td>{{ $completedtask->title_name->project_title  ?? 'No project title selected' }}</td>
-                                            <td>{!!($completedtask->description) !!}</td>
                                             <td>{{ $completedtask->work_status }}</td>
+                                            <td>
+                                                @php
+                                                    // Explode the reason_message field
+                                                    $reasons = explode('|', $completedtask->reason_message);
+                                                    $reason_count = count($reasons);
+                                                @endphp
+                                                @if ($completedtask->reason_message !== null)
+                                                <ul>
+                                                    @foreach($reasons as $key => $reason)
+                                                        <li>{!! $reason !!}</li>
+                                                    @endforeach
+                                                </ul>
+                                                <p>Total: {{ $reason_count }}</p>
+                                                @else
+                                                <p>No reasons available</p>
+                                                @endif
+                                            </td>
                                             <td>{{ $completedtask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>
@@ -422,7 +459,7 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <form id="complete-task-form-{{ $completedtask->id }}" action="{{ route('tasks.redo', $completedtask->id) }}" method="POST">
+                                                        <form id="complete-task-form-{{ $completedtask->id }}" action="{{ route('work_plan.redo', $completedtask->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="button" class="dropdown-item" onclick="confirmCompletedTask({{ $completedtask->id }})">
@@ -465,15 +502,16 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Requested Work Plan</h5>
                                     </div>
-
+                                    @can('Create Work Plan')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#createTaskModal">
-                                                Create Task
+                                                Create Work Plan
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
 
@@ -482,12 +520,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Project Title</th>
-                                            <th>Work Plan</th>
                                             <th>Your Message</th>
                                             <th>Work Status</th>
+                                            <th>Extend Reason</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -498,12 +537,29 @@
                                         @foreach($requestedTasks as $key => $requestedTask)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $requestedTask->task->task_title  ?? 'No project title selected' }}</td>
+                                            <td>{!!($requestedTask->description) !!}</td>
                                             <td>{{ $requestedTask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $requestedTask->title_name->project_title  ?? 'No project title selected' }}</td>
-                                            <td>{!!($requestedTask->description) !!}</td>
                                             <td>{!!($requestedTask->message) !!}</td>
                                             <td>{{ $requestedTask->work_status }}</td>
+                                            <td>
+                                                @php
+                                                    // Explode the reason_message field
+                                                    $reasons = explode('|', $requestedTask->reason_message);
+                                                    $reason_count = count($reasons);
+                                                @endphp
+                                                @if ($requestedTask->reason_message !== null)
+                                                <ul>
+                                                    @foreach($reasons as $key => $reason)
+                                                        <li>{!! $reason !!}</li>
+                                                    @endforeach
+                                                </ul>
+                                                <p>Total: {{ $reason_count }}</p>
+                                                @else
+                                                <p>No reasons available</p>
+                                                @endif
+                                            </td>
                                             <td>{{ $requestedTask->status }}</td>
                                             @can('Work Plan Allow Action')
                                             <td>
@@ -512,7 +568,7 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <form id="request-task-form-{{ $requestedTask->id }}" action="{{ route('tasks.cancel', $requestedTask->id) }}" method="POST">
+                                                        <form id="request-task-form-{{ $requestedTask->id }}" action="{{ route('work_plan.cancel', $requestedTask->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $requestedTask->id }})">

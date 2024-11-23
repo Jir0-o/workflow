@@ -77,7 +77,7 @@ class WorkPlanController extends Controller
 
         }
         //Create Work Plan
-        $titles = Task::where('status', 'pending')->get();
+        $titles = Task::where('status', 'pending')->where('user_id', $userId)->get();
         //count
         $pendingCount = WorkPlan::where('user_id', $userId)->where('status', 'pending')->count();
         $completeCount = WorkPlan::where('user_id', $userId)->where('status', 'completed')->count();
@@ -461,12 +461,12 @@ public function incompleted($id)
 }
 public function getTask($id)
 {
-    $tasks = WorkPlan::where('task_id', $id)->get();  // Use `get()` to retrieve a collection of tasks
+    $tasks = WorkPlan::where('task_id', $id)->get();
 
     if ($tasks->isEmpty()) {
-        return response()->json(['message' => 'No tasks found'], 404);
+        return response()->json([], 200); 
     }
 
-    return response()->json($tasks);  // Return a collection of tasks as JSON
+    return response()->json($tasks, 200); 
 }
 }

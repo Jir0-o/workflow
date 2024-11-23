@@ -22,9 +22,9 @@ class TaskController extends Controller
      * Display a listing of the resource.
      */
     public function __construct(){
-        $this->middleware('permission:View Work Plan',['only'=>['index']]);
-        $this->middleware('permission:Create Work Plan',['only'=>['create']]);
-        $this->middleware('permission:Work Plan Allow Action',['only'=>['update','complete','extend','redo','cancel']]);
+        $this->middleware('permission:View Task Details',['only'=>['index']]);
+        $this->middleware('permission:Create Task Details',['only'=>['create']]);
+        $this->middleware('permission:Task Details Allow Action',['only'=>['update','complete','extend','redo','cancel']]);
 
     }
     public function index()

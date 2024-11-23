@@ -4,7 +4,7 @@
 
 <div class="row mt-5">
     <div class="col-12">
-        <div class="card">
+        <div class="card"> 
             <div class="card-header">
                 <h5>Create User</h5>
             </div>
@@ -43,6 +43,10 @@
                                 <option value="{{ $item->name}}">{{ $item->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_picture">Profile Picture</label>
+                        <input id="profile_picture" name="profile_picture" type="file" class="form-control" accept="image/*">
                     </div>
                     <a href="/settings" class="btn btn-secondary">Back</a>
                     <button type="submit" class="btn btn-primary">Create User</button>

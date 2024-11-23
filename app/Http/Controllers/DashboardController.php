@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailLogin;
 use App\Models\Notice;
+use App\Models\Notification;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -22,6 +25,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $userId = auth()->id();
         $Today = Carbon::today();
+        
         $activeUsers = DetailLogin::where('user_id', $userId)->get();
 
         $pendingCount = Task::where('status', 'pending')->count();
@@ -42,14 +46,102 @@ class DashboardController extends Controller
             $endDate = $noticeDates->end_date ? Carbon::parse($noticeDates->end_date) : null;
         
             if (($endDate && Carbon::now()->startOfDay()->isAfter($endDate->endOfDay())) || is_null($endDate)) {
-                // If end_date is null or today is strictly after the end date, set status to 1
                 $noticeDates->status = 1;
             } else {
-                // Otherwise, keep status as 0
                 $noticeDates->status = 0;
             }
         
             $noticeDates->save();
+        }
+
+        $startOfToday = Carbon::today();
+
+        foreach ($tasks as $task) {
+            if ($task->status == 'pending' && Carbon::parse($task->submit_date)->isBefore($startOfToday)) {
+                $task->message = 'Time Expired';
+                $task->status = 'incomplete';
+                $task->save();
+            // Find the role by name
+            $role = Role::where('name', 'Super Admin')->first();
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role not found.',
+                ], 404);
+            }
+            // Get the authenticated user
+            $authUser = Auth::user();
+
+            // Retrieve all users with the "Super Admin" role
+            $superAdminUsers = User::role($role->name)->get();
+
+            // Create and send notifications to all "Super Admin" users
+            foreach ($superAdminUsers as $superAdminUser) {
+                Notification::create([ // Assuming you're using custom notifications model
+                    'title' => "{$authUser->name} incompleted task",
+                    'text' => "{$authUser->name} has failed to complete a task.",
+                    'from_user_id' => $authUser->id,
+                    'to_user_id' => $superAdminUser->id,
+                    'link' => route('asign_tasks.index'),
+                ]);
+            }
+            }
+            if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isAfter($startOfToday)) {
+                $task->submit_by_date = null;
+                $task->status = 'pending';
+                $task->save();
+            }
+            if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isSameDay($startOfToday)) {
+                $task->submit_by_date = null;
+                $task->status = 'pending';
+                $task->save();
+            }
+
+        }
+
+        //workPlan Task Incomplete
+        $Worktasks = WorkPlan::all();
+        foreach ($Worktasks as $task) {
+            if ($task->status == 'pending' && Carbon::parse($task->submit_date)->isBefore($startOfToday)) {
+                $task->message = 'Time Expired';
+                $task->status = 'incomplete';
+                $task->save();
+            // Find the role by name
+            $Workrole = Role::where('name', 'Super Admin')->first();
+            if (!$Workrole) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role not found.',
+                ], 404);
+            }
+            // Get the authenticated user
+            $authWorkUser = Auth::user();
+
+            // Retrieve all users with the "Super Admin" role
+            $superWorkAdminUsers = User::role($Workrole->name)->get();
+
+            // Create and send notifications to all "Super Admin" users
+            foreach ($superWorkAdminUsers as $superAdminUser) {
+                Notification::create([ // Assuming you're using custom notifications model
+                    'title' => "{$authWorkUser->name} incompleted A workplan",
+                    'text' => "{$authWorkUser->name} has failed to complete a workplan.",
+                    'from_user_id' => $authWorkUser->id,
+                    'to_user_id' => $superAdminUser->id,
+                    'link' => route('manage_work.index'),
+                ]);
+            }
+            }
+            if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isAfter($startOfToday)) {
+                $task->submit_by_date = null;
+                $task->status = 'pending';
+                $task->save();
+            }
+            if ($task->status == 'incomplete' && Carbon::parse($task->submit_date)->isSameDay($startOfToday)) {
+                $task->submit_by_date = null;
+                $task->status = 'pending';
+                $task->save();
+            }
+
         }
 
 

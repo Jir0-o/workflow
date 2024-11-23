@@ -188,7 +188,7 @@
 
 
 
-@can('Dashboard Task View')
+{{-- @can('Dashboard Task View')
 <div class="row mb-4">
     <div class="col-12 col-md-6 col-lg-6">
         <!-- Roles -->
@@ -342,7 +342,7 @@
         </div>
     </div>
 </div>
-@endcan
+@endcan --}}
 
 
 <div class="card p-3">
@@ -358,44 +358,26 @@
         button.textContent = isCollapsed ? '🔽' : '▶️';
     }
 
-$(document).ready(function() {
-    // Function to format seconds into HH:MM:SS
-    function formatTime(seconds) {
-        let hrs = Math.floor(seconds / 3600);
-        let mins = Math.floor((seconds % 3600) / 60);
-        let secs = seconds % 60;
-        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
+    $(document).ready(function () {
+        // Function to format seconds into HH:MM:SS
+        function formatTime(seconds) {
+            let hrs = Math.floor(seconds / 3600);
+            let mins = Math.floor((seconds % 3600) / 60);
+            let secs = seconds % 60;
+            return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
-    // Update each user's active time every second
-    setInterval(function () {
-        $('.active-time').each(function () {
-            const userId = $(this).data('id');
-            const startTime = $(this).data('start');
-            const currentTime = Math.floor(Date.now() / 1000);
-            const activeDuration = currentTime - startTime;
+        // Update each user's active time every second
+        setInterval(function () {
+            $('.active-time').each(function () {
+                const startTime = $(this).data('start'); // Start time from login_time
+                const currentTime = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+                const activeDuration = currentTime - startTime; // Calculate duration since login_time
 
-            // Update the displayed active time
-            $(this).text(formatTime(activeDuration));
-
-            // Send an Ajax request to update `login_hour` in the database
-            $.ajax({
-                url: "{{ route('updateLoginTime') }}",
-                type: 'POST',
-                data: {
-                    login_id: userId,
-                    active_seconds: activeDuration,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    // Optionally, handle success feedback
-                },
-                error: function () {
-                    console.log('Error updating login time');
-                }
+                // Update the displayed active time
+                $(this).text(formatTime(activeDuration));
             });
-        });
-    }, 1000); // Update every second
+        }, 1000); // Update every second
 
     calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {

@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AsignTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginDetailsController;
+use App\Http\Controllers\ManageWorkController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
@@ -40,6 +41,7 @@ Route::middleware([
     Route::resource('login_details', LoginDetailsController::class);
     Route::resource('notice', NoticeController::class);
     Route::resource('work_plan', WorkPlanController::class);
+    Route::resource('manage_work', ManageWorkController::class);
 
 
     Route::get('details_login' ,[LoginDetailsController::class, 'detailsLogin'])->name('details_login.edit');
@@ -59,6 +61,13 @@ Route::middleware([
     Route::patch('/work_plan/{task}/cancel', [WorkPlanController::class, 'cancel'])->name('work_plan.cancel');
     Route::get('/work_plan/{task}/show', [WorkPlanController::class, 'getTask'])->name('work_plan.show');
 
+    //manage work route
+    Route::patch('/manage_work/{task}/completed', [ManageWorkController::class, 'completed'])->name('manage_work.complete');
+    Route::patch('/manage_work/{task}/pendingdate', [ManageWorkController::class, 'pendingdate'])->name('manage_work.pendingdate');
+    Route::patch('/manage_work/{task}/requested', [ManageWorkController::class, 'requested'])->name('manage_work.requested');
+    Route::patch('/manage_work/{task}/incomplete', [ManageWorkController::class, 'incomplete'])->name('manage_work.incomplete');
+
+    
     Route::patch('/project_title/{project_title}/complete', [ProjectTitleController::class, 'complete'])->name('project.complete');
     Route::patch('/project_title/{project_title}/drop', [ProjectTitleController::class, 'drop'])->name('project.drop');
     Route::patch('/project_title/{project_title}/running', [ProjectTitleController::class, 'running'])->name('project.running');
@@ -86,6 +95,7 @@ Route::middleware([
 
     Route::post('/activity', [ActivityController::class, 'store']);
 
+    Route::post('/update-nev-login-time', [ActivityController::class, 'updateNeverLoginTime'])->name('updateNevLoginTime');
     Route::post('/update-login-time', [ActivityController::class, 'updateLoginTime'])->name('updateLoginTime');
     Route::get('/getActiveSession/{id}', [ActivityController::class, 'getAllActiveSessions'])->name('get.login.hour');
     Route::post('/update-logout-time', [ActivityController::class, 'updateLogoutTime'])->name('updateLogoutTime');
@@ -94,5 +104,6 @@ Route::middleware([
     //notice route
     Route::PATCH('/notice/{notice}/end', [NoticeController::class, 'noticeEnd'])->name('notice.end');
     Route::PATCH('/notice/{notice}/start', [NoticeController::class, 'noticeStart'])->name('notice.start');
+    
 
 });

@@ -17,7 +17,7 @@
     <div class="col-12">
         <!-- Main Assign Task Modal -->
         <div class="modal fade" id="assignTaskModal" tabindex="-1" aria-labelledby="assignTaskModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="assignTaskModalLabel">Assign Task</h5>
@@ -74,7 +74,7 @@
 
         <!-- Sub-modal for Create Project -->
         <div class="modal fade" id="createProjectModal" tabindex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content"> 
                     <div class="modal-header">
                         <h5 class="modal-title" id="createProjectModalLabel">Create Project</h5>
@@ -122,7 +122,7 @@
 
 <!-- Edit assign task Modal -->
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editTaskModalLabel">Edit Assign Task</h5>
@@ -149,12 +149,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="user_id">User Name</label>
-                        <select id="user_id" name="task_user_id" class="form-control" required>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                            @endforeach
-                        </select>
+                        <label for="edit_user_id">User Name</label>
+                        <select id="edit_user_id" name="user_id[]" class="form-control" multiple="multiple" required></select>
                     </div>
 
                     <div class="mb-3">
@@ -176,7 +172,7 @@
                         </select>
                     </div>
                 </form>
-            </div>
+            </div> 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="updateTaskBtn" class="btn btn-primary">Update Task</button>
@@ -187,7 +183,7 @@
 
 <!-- Edit Submitted Assign Task Modal -->
 <div class="modal fade" id="editSubmittedTaskModal" tabindex="-1" aria-labelledby="editSubmittedTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editSubmittedTaskModalLabel">Edit Assign Task</h5>
@@ -212,16 +208,10 @@
                             @endforeach
                         </select>
                     </div>
-
                     <div class="mb-3">
                         <label for="submit_user_id">User Name</label>
-                        <select id="submit_user_id" name="task_user_id" class="form-control">
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                            @endforeach
-                        </select>
+                        <select id="submit_user_id" name="user_id[]" class="form-control" multiple="multiple" required></select>
                     </div>
-
                     <div class="mb-3">
                         <label for="submit_description">Task Description</label>
                         <textarea id="submit_description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
@@ -323,12 +313,11 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -339,12 +328,18 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->task_title }}</td>
-                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
-                                            <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                @foreach(explode(',', $task->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -422,12 +417,11 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -437,12 +431,18 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->task_title ?? 'No task title selected' }}</td>
-                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y') : 'Task Incomplete' }}</td>
-                                            <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                @foreach(explode(',', $task->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -531,12 +531,12 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -546,12 +546,19 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->task_title ?? 'No task title selected' }}</td>
+                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                @foreach(explode(',', $task->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -631,11 +638,11 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Suggestion</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -646,11 +653,18 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $task->task_title }}</td>
-                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->user->name }}</td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                @foreach(explode(',', $task->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{!!($task->message) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -712,7 +726,7 @@
                     function confirmDeleteTask(DeleteTaskId) {
                         Swal.fire({
                             title: 'Are you sure?',
-                            text: "Do you want to delete this task?",
+                            text: "Do you want to delete this task? All work plan related to this task will be deleted",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
@@ -834,6 +848,25 @@ $(document).ready(function(){
                 width: '100%'
                 });
             });
+
+            // Initialize select2 for edit task is shown
+            $('#editTaskModal').on('shown.bs.modal', function() {
+            $('#edit_user_id').select2({
+                placeholder: 'Select User',
+                allowClear: true,
+                width: '100%'
+                });
+            });
+
+            // Initialize select2 for submit edit task is shown
+            $('#editSubmittedTaskModal').on('shown.bs.modal', function() {
+            $('#submit_user_id').select2({
+                placeholder: 'Select User',
+                allowClear: true,
+                width: '100%'
+                });
+            });
+
         $('.dropdown-submenu a.test').on("click", function(e){
             $(this).next('ul').toggle();
             e.stopPropagation();
@@ -948,8 +981,6 @@ $(document).ready(function(){
 
     $('#updateSubmitTaskBtn').on('click', function() {
         const updateUrl = $(this).data('url');
-        console.log("Update URL:", updateUrl); // Check if the URL is correct
-
         $.ajax({
             url: updateUrl,
             type: 'PUT',
@@ -966,7 +997,6 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.status) {
                     $('#editSubmittedTaskModal').modal('hide'); // Close modal
-                    console.log("Task updated successfully"); // For debugging
 
                     // Show SweetAlert success notification
                     Swal.fire({
@@ -1010,7 +1040,7 @@ $(document).ready(function(){
             type: 'PUT',
             data: {
                 _token: $('input[name="_token"]').val(),
-                task_user_id: $('#user_id').val(),
+                task_user_id: $('#edit_user_id').val(),
                 task_title: $('#main_task_title').val(),
                 title: $('#title').val(),
                 description: CKEDITOR.instances.description.getData(),
@@ -1068,7 +1098,6 @@ $(document).ready(function(){
                     $('#edit_task_id').val(taskId);
                     $('#main_task_title').val(response.data.tasks.task_title);
                     $('#title').val(response.data.tasks.title_name_id);
-                    $('#user_id').val(response.data.tasks.user_id);
                     CKEDITOR.instances.description.setData(response.data.tasks.description);
                     $('#Edit_last_submit_date').val(response.data.tasks.submit_date);
                     $('#work_status').val(response.data.tasks.work_status);
@@ -1078,6 +1107,13 @@ $(document).ready(function(){
                     } else {
                         $('#status').val(response.data.tasks.status).closest('.mb-3').show();
                     }
+
+                    // Populate users select field
+                    $('#edit_user_id').empty();
+                    response.data.users.forEach(user => {
+                        const isSelected = response.data.assignedUsers.includes(user.id.toString()) ? 'selected' : '';
+                        $('#edit_user_id').append(`<option value="${user.id}" ${isSelected}>${user.name}</option>`);
+                    });
 
                     // Show modal
                     $('#editTaskModal').modal('show');
@@ -1107,11 +1143,16 @@ $(document).ready(function(){
                 $('#edit_submit_task_id').val(taskId);
                 $('#submit_task_title').val(response.data.tasks.task_title);
                 $('#Submit_title').val(response.data.tasks.title_name_id);
-                $('#submit_user_id').val(response.data.tasks.user_id);
                 CKEDITOR.instances.submit_description.setData(response.data.tasks.description);
                 $('#submit_last_submit_date').val(response.data.tasks.submit_date); 
                 $('#submit_submit_date').val(response.data.tasks.submit_by_date); 
                 $('#submit_status').val(response.data.tasks.status);
+                // Populate users select field
+                $('#submit_user_id').empty();
+                response.data.users.forEach(user => {
+                    const isSelected = response.data.assignedUsers.includes(user.id.toString()) ? 'selected' : '';
+                    $('#submit_user_id').append(`<option value="${user.id}" ${isSelected}>${user.name}</option>`);
+                });
 
                 $('#editSubmittedTaskModal').modal('show');
 

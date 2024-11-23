@@ -17,7 +17,7 @@
     <div class="row mt-5">
         <!-- Modal -->
             <div class="modal fade" id="createProjectModal" tabindex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="createProjectModalLabel">Create Project</h5>
@@ -503,7 +503,7 @@
                                             function confirmDeleteTask(DeleteTaskId) {
                                                 Swal.fire({
                                                     title: 'Are you sure?',
-                                                    text: "Do you want to Delete this project?",
+                                                    text: "Do you want to Delete this project? All related tasks and work plan will be deleted.",
                                                     icon: 'warning',
                                                     showCancelButton: true,
                                                     confirmButtonColor: '#3085d6',

@@ -87,6 +87,43 @@ class ActivityController extends Controller
     
             return response()->json(['logout_reason' => $logoutReason]);
     }
-    
+
+    public function updateNeverLoginTime(Request $request)
+    {
+        $login = DetailLogin::where('user_id', auth()->id())->where('status', 0)->first();
+
+        if ($login) {
+            // Get current login_hour and calculate difference
+            $previousLoginHour = Carbon::parse($login->login_time); 
+            $currentTime = now();
+            $timeDifferenceInSeconds = $previousLoginHour->diffInSeconds($currentTime); 
+
+            $totalSeconds = $timeDifferenceInSeconds + $request->active_seconds;
+            $newLoginHour = gmdate('H:i:s', $totalSeconds);
+
+            // Update DetailLogin
+            $login->update([
+                'login_hour' => $newLoginHour,
+                'updated_at' => $currentTime,
+            ]);
+
+            // Update LoginInfo
+            LoginInfo::where('user_id', auth()->id())
+                ->where('status', 0)
+                ->whereDate('login_date', $login->login_date)
+                ->update([
+                    'login_hour' => $newLoginHour,
+                    'updated_at' => $currentTime,
+                ]);
+
+            return response()->json([
+                'login_hour' => $newLoginHour,
+                'time_difference' => $timeDifferenceInSeconds,
+                'active_seconds' => $totalSeconds,
+            ]);
+        }
+
+        return response()->json(['error' => 'Login session not found'], 404);
+    }
 
 }

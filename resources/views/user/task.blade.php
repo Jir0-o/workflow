@@ -8,6 +8,7 @@
 .cke_button__about {
     display: none !important;
 }
+
 </style>
     
 
@@ -19,7 +20,7 @@
             <div class="card p-lg-4 p-2">
                 {{-- Reason to Extend Task --}}
                 <div class="modal fade" id="reasonTaskModal" tabindex="-1" aria-labelledby="reasonTaskModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="reasonTaskModalLabel">Extend Task</h5>
@@ -59,14 +60,22 @@
                                 <div class="mb-3">
                                     <label for="title">Select Title</label>
                                     <select id="title" name="title" class="form-control" required>
-                                        <option value="">Select project Title</option>
-                                        @foreach($titles as $title)
-                                            @if(in_array($userId, explode(',', $title->user_id)))
-                                                <option value="{{ $title->id }}">
-                                                    {{ $title->project_title }}
-                                                </option>
-                                            @endif
-                                        @endforeach
+                                        @php
+                                            $assignedTitles = $titles->filter(function ($title) use ($userId) {
+                                                return in_array($userId, explode(',', $title->user_id)) && !empty($title->project_title);
+                                            });
+                                        @endphp
+                                
+                                        @if($assignedTitles->isNotEmpty())
+                                            <option value="">Select Project Title</option>
+                                            @foreach($assignedTitles as $title)
+                                                <option value="{{ $title->id }}">{{ $title->project_title }}</option>
+                                            @endforeach
+                                        @else
+                                            <option value="" disabled selected>
+                                                No project has been assigned to you. Please contact your team leader.
+                                            </option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -89,31 +98,21 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="taskTableModalLabel">Task Details</h5>
+                            <h5 class="modal-title" id="taskTableModalLabel">Work Plans</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <table id="datatable5" class="table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Task ID</th>
+                                        <th>SL</th>
                                         <th>Description</th>
+                                        <th>Start Date</th>
                                         <th>Submit Date</th>
-                                        <th>Submit By Date</th>
-                                        <th>Message</th>
-                                        <th>Admin Message</th>
-                                        <th>Reason Message</th>
-                                        <th>Work Status</th>
-                                        <th>User ID</th>
-                                        <th>Title Name ID</th>
                                         <th>Status</th>
-                                        <th>Created At</th>
-                                        <th>Updated At</th>
                                     </tr>
                                 </thead>
                                 <tbody id="taskTableBody">
-                                    <!-- Dynamic rows will be inserted here -->
                                 </tbody>
                             </table>
                         </div>
@@ -126,7 +125,7 @@
 
             <!-- Edit Task Modal -->
             <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="editTaskModalLabel">Message to Edit</h5>
@@ -151,7 +150,7 @@
                 <div class="container">
                     <div class="row justify-content-center">
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            @can('View Work Plan Pending')
+                            @can('View Task Details Pending')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
@@ -160,7 +159,7 @@
                                 </button>
                             </li>
                             @endcan
-                            @can('View Work Plan Incomplete')
+                            @can('View Task Details Incomplete')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
@@ -169,7 +168,7 @@
                                 </button>
                             </li>
                             @endcan
-                            @can('View Work Plan Completed')
+                            @can('View Task Details Completed')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
@@ -178,7 +177,7 @@
                                 </button>
                             </li>
                             @endcan
-                            @can('View Work Plan Requested')
+                            @can('View Task Details Requested')
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Requested"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
@@ -193,7 +192,7 @@
 
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    @can('View Work Plan Pending')
+                    @can('View Task Details Pending')
                     <div class="tab-pane active" id="Pending" role="tabpanel" aria-labelledby="home-tab">
                         <div class="card">
                             <div class="card-header">
@@ -201,7 +200,7 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Pending Task</h5>
                                     </div>
-                                    
+                                    @can('Create Task Details')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
@@ -210,6 +209,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
 
@@ -219,13 +219,13 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Status</th>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <th>Actions</th>
                                             @endcan
                                         </tr>
@@ -235,13 +235,20 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $pendingTask->task_title }}</td>
-                                            <td>{{ $pendingTask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $pendingTask->submit_by_date ? \Carbon\Carbon::parse($pendingTask->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $pendingTask->title_name->project_title ?? 'No project title selected'  }}</td>
                                             <td>{!!($pendingTask->description) !!}</td>
+                                            <td>
+                                                @foreach(explode(',', $pendingTask->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $pendingTask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $pendingTask->status }}</td>
-                                            @can('Work Plan Allow Action') 
+                                            @can('Task Details Allow Action') 
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -299,7 +306,7 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Incomplete Task</h5>
                                     </div>
-                                    
+                                    @can('Create Task Details')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
@@ -308,6 +315,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -317,14 +325,14 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Extend Reason</th>
                                             <th>Status</th>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <th>Actions</th>
                                             @endcan
                                         </tr>
@@ -334,11 +342,18 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $incompletedtask->task_title ?? 'No task title selected' }}</td>
-                                            <td>{{ $incompletedtask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $incompletedtask->submit_by_date ? \Carbon\Carbon::parse($incompletedtask->submit_by_date)->format('d F Y, h:i A') : 'Task incompleted' }}</td>
                                             <td>{{ $incompletedtask->title_name->project_title ?? 'No project title selected' }}</td>
                                             <td>{!! ($incompletedtask->description) !!}</td>
+                                            <td>
+                                                @foreach(explode(',', $incompletedtask->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $incompletedtask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
                                             <td>
                                                 @php
                                                     // Explode the reason_message field
@@ -357,7 +372,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ $incompletedtask->status }}</td>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -414,7 +429,7 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Completed Task</h5>
                                     </div>
-                                    
+                                    @can('Create Task Details')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
@@ -423,6 +438,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -432,13 +448,14 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Status</th>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <th>Actions</th>
                                             @endcan
                                         </tr>
@@ -448,13 +465,21 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $completedtask->task_title  ?? 'No task title selected' }}</td>
+                                            <td>{{ $completedtask->title_name->project_title  ?? 'No project title selected' }}</td>
+                                            <td>{!!($completedtask->description) !!}</td>
+                                            <td>
+                                                @foreach(explode(',', $completedtask->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
                                             <td>{{ $completedtask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
-                                            <td>{{ $completedtask->title_name->project_title  ?? 'No project title selected' }}</td>
-                                            <td>{!!($completedtask->description) !!}</td>
                                             <td>{{ $completedtask->status }}</td>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -504,7 +529,7 @@
                                     <div class="col-12 col-md-6">
                                         <h5>Requested Task</h5>
                                     </div>
-                                    
+                                    @can('Create Task Details')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
@@ -513,6 +538,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -522,13 +548,14 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Task Title</th>
+                                            <th>Project Title</th>
+                                            <th>Task Details</th>
+                                            <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Your Message</th>
                                             <th>Status</th>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <th>Actions</th>
                                             @endcan
                                         </tr>
@@ -538,13 +565,21 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $requestedTask->task_title }}</td>
-                                            <td>{{ $requestedTask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $requestedTask->title_name->project_title  ?? 'No project title selected' }}</td>
                                             <td>{!!($requestedTask->description) !!}</td>
+                                            <td>
+                                                @foreach(explode(',', $requestedTask->user_id) as $userId)
+                                                @php
+                                                    $user = App\Models\User::find($userId);
+                                                @endphp
+                                                 {{ $user->name ?? 'No user assigned' }}<br>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $requestedTask->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
                                             <td>{!!($requestedTask->message) !!}</td>
                                             <td>{{ $requestedTask->status }}</td>
-                                            @can('Work Plan Allow Action')
+                                            @can('Task Details Allow Action')
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -680,47 +715,64 @@
             });
         });
 
-    $(".show-task-details").click(function () {
+        $(".show-task-details").click(function () {
     const taskId = $(this).data("task-id");
 
-    // Fetch task details via AJAX
+    if (!$.fn.DataTable) {
+        console.error("DataTables is not loaded!");
+        return;
+    }
+
+    // Destroy the DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable("#datatable5")) {
+        $("#datatable5").DataTable().destroy();
+    }
+
     $.ajax({
         url: "{{ route('work_plan.show', ':id') }}".replace(':id', taskId),
         method: "GET",
         success: function (data) {
-            // Check if the response contains tasks (array of tasks)
-            if (Array.isArray(data) && data.length > 0) {
-                // Populate the table body
-                const tbody = $("#taskTableBody");
-                tbody.empty();  
+            const tbody = $("#taskTableBody");
+            tbody.empty();
 
-                // Loop through each task and create a row for the table
+            // Check if data is empty or not
+            if (Array.isArray(data) && data.length > 0) {
                 data.forEach(task => {
                     tbody.append(`
                         <tr>
-                            <td>${task.id}</td>
-                            <td>${task.task_id}</td>
+                            <td>${data.indexOf(task) + 1}</td>
                             <td>${task.description || 'N/A'}</td>
                             <td>${task.submit_date || 'N/A'}</td>
-                            <td>${task.submit_by_date || 'N/A'}</td>
-                            <td>${task.message || 'N/A'}</td>
-                            <td>${task.admin_message || 'N/A'}</td>
-                            <td>${task.reason_message || 'N/A'}</td>
-                            <td>${task.work_status || 'N/A'}</td>
-                            <td>${task.user_id || 'N/A'}</td>
-                            <td>${task.title_name_id || 'N/A'}</td>
-                            <td>${task.status}</td>
-                            <td>${task.created_at}</td>
-                            <td>${task.updated_at}</td>
+                            <td>${task.submit_by_date || 'Not yet Submitted'}</td>
+                            <td>${task.status || 'N/A'}</td>
                         </tr>
                     `);
                 });
-
-                // Show the modal
-                $("#taskTableModal").modal("show");
             } else {
-                alert("No tasks found.");
+                // Render a full row with colspan to avoid DataTables warnings
+                tbody.append(`
+                    <tr>
+                            <td></td>
+                            <td></td>
+                            <td>No Data Available</td>
+                            <td></td>
+                            <td></td>
+                    </tr>
+                `);
             }
+
+            // Reinitialize DataTable
+            $('#datatable5').DataTable({
+                scrollX: true, // Enable horizontal scrolling
+                order: [[0, 'desc']],
+                searching: true,
+                paging: true,
+                ordering: true,
+                pageLength: 10
+            });
+
+            // Show the modal
+            $("#taskTableModal").modal("show");
         },
         error: function (xhr, status, error) {
             console.error("Error fetching task data:", error);
@@ -729,38 +781,7 @@
     });
 });
 
-$('#datatable5').DataTable({
-        processing: true,  // Show processing indicator
-        serverSide: true,  // Enable server-side processing
-        ajax: {
-            url: "{{ route('tasks.index') }}",
-            type: 'GET',
-            dataSrc: function (json) {
-                return json.data; 
-            }
-        },
-        columns: [
-            { data: 'id', name: 'id' },
-            { data: 'task_id', name: 'task_id' },
-            { data: 'description', name: 'description' },
-            { data: 'submit_date', name: 'submit_date' },
-            { data: 'submit_by_date', name: 'submit_by_date' },
-            { data: 'message', name: 'message' },
-            { data: 'admin_message', name: 'admin_message' },
-            { data: 'reason_message', name: 'reason_message' },
-            { data: 'work_status', name: 'work_status' },
-            { data: 'user_id', name: 'user_id' },
-            { data: 'title_name_id', name: 'title_name_id' },
-            { data: 'status', name: 'status' },
-            { data: 'created_at', name: 'created_at' },
-            { data: 'updated_at', name: 'updated_at' }
-        ],
-        order: [[0, 'desc']],  // Default sorting by the first column (ID)
-        searching: true,       // Enable search
-        paging: true,          // Enable pagination
-        ordering: true,        // Enable sorting
-        pageLength: 10         // Set default rows per page
-    });
+
 
         
     // Handle form submission via AJAX

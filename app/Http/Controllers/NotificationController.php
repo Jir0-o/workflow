@@ -42,7 +42,7 @@ class NotificationController extends Controller
     {
         try {
         $user = Auth::user();
-        $notifications = Notification::where('to_user_id', $user->id)->latest()->get();
+        $notifications = Notification::where('to_user_id', $user->id)->with('user')->latest()->get();
 
         return response()->json([
             'status' => true,

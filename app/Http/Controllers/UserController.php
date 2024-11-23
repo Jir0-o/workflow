@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -39,23 +40,36 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
-            'role' => 'required|array' 
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $user->syncRoles($request->role);
-
-        return redirect()->route('settings')->with('success', 'User created successfully.');
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|confirmed',
+                'role' => 'required|array',
+                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+    
+            $profilePicturePath = null;
+    
+            if ($request->hasFile('profile_picture')) {
+                $profilePicturePath = $request->file('profile_picture')->store('profile-photos', 'public');
+            }
+    
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'profile_photo_path' => $profilePicturePath,
+            ]);
+    
+            $user->syncRoles($request->role);
+    
+            return response()->json(['message' => 'User created successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to create user.', 'error' => $e->getMessage()], 500);
+        }
     }
+    
 
     /**
      * Display the specified resource.
@@ -70,9 +84,23 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $roles = Role::with('permissions')->latest()->get();
-        $user = User::find($id);
-        return view('user.create.edit',compact('user','roles'));
+        try {
+            $roles = Role::all()->pluck('name'); 
+            $user = User::findOrFail($id); 
+    
+            return response()->json([
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'roles' => $user->roles->pluck('name'),
+                    'profile_picture_url' => $user->profile_photo_path ? Storage::url($user->profile_photo_path) : 'https://via.placeholder.com/50',
+                ],
+                'roles' => $roles,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch user data.'], 500);
+        }
     }
 
     /**
@@ -80,27 +108,40 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|confirmed', 
-            'role' => 'required|array'
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'password' => 'nullable|confirmed',
+                'role' => 'required|array',
+                'profile_picture' => 'nullable|image|max:2048', // Ensure the key matches
+            ]);
     
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
+            $user = User::findOrFail($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
     
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+    
+            if ($request->hasFile('profile_picture')) {
+                // Save new profile picture
+                $profilePicturePath = $request->file('profile_picture')->store('profile-photos', 'public');
+                $user->profile_photo_path = $profilePicturePath;
+            }
+    
+            $user->syncRoles($request->role);
+            $user->save();
+    
+            return response()->json(['success' => 'User updated successfully.']);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('User Update Failed:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to update user.'], 500);
         }
-    
-        $user->syncRoles($request->role);
-        $user->save();
-
-        return redirect()->route('settings')->with('success', 'User updated successfully.');
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */

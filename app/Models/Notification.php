@@ -18,4 +18,7 @@ class Notification extends Model
         'updated_at',
     ];
     use HasFactory;
+    public function User(){
+        return $this->belongsTo(User::class , 'from_user_id');
+    }
 }

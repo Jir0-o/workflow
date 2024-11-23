@@ -45,4 +45,5 @@
         </div>
     </div>
 </x-app-layout>
+
 @endsection

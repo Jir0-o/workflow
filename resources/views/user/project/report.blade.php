@@ -5,7 +5,7 @@
 <div class="row mt-5">
     <div class="col-12">
         {{-- {{dd($oldInput)}} --}}
-        {{-- Users --}}
+        {{-- Users --}} 
         <div class="card">
             <div class="card-header">
                 <h5>Create Report</h5>
@@ -37,7 +37,7 @@
                             <select id="title_name_id" name="title_name_id" class="form-control">
                                 <option value="">Select Project Title</option>
                                 @foreach($titles as $title)
-                                    <option value="{{ $title->id }}" {{ old('title_name_id', $oldInput['title_name_id'] ?? '') == $title->id ? 'selected' : '' }}>{{ $title->project_title }}</option>
+                                    <option value="{{ $title->id }}" {{ old('task_title', $oldInput['task_title'] ?? '') == $title->id ? 'selected' : '' }}>{{ $title->project_title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -78,7 +78,7 @@
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="col_project_title" data-column="5" checked>
-                                <label class="form-check-label" for="col_project_title">Project Title</label>
+                                <label class="form-check-label" for="col_project_title">Task Title</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="col_description" data-column="6" checked>
@@ -146,7 +146,7 @@
                                 <th class="column-create-date">Start Date</th>
                                 <th class="column-submit-date">Due Date</th>
                                 <th class="column-submitted-date">Submitted Date</th>
-                                <th class="column-project-title">Project Title</th>
+                                <th class="column-project-title">Task Title</th>
                                 <th class="column-description">Description</th>
                                 <th class="column-assigned-user">Assigned User</th>
                                 {{-- <th class="column-task-message">Task Message</th>
@@ -162,7 +162,7 @@
                                     <td class="column-create-date">{{ \Carbon\Carbon::parse($task->created_at)->format('d F Y, h:i A') }}</td>
                                     <td class="column-submit-date">{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                     <td class="column-submitted-date">{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Not Submitted' }}</td>
-                                    <td class="column-project-title">{{ $task->title_name->project_title ?? 'N/A' }}</td>
+                                    <td class="column-project-title">{{ $task->task->task_title ?? 'N/A' }}</td>
                                     <td class="column-description">{!! $task->description !!}</td>
                                     <td class="column-assigned-user">{{ $task->user->name }}</td>
                                     {{-- <td class="column-task-message">{!! $task->message ?? 'N/A' !!}</td>

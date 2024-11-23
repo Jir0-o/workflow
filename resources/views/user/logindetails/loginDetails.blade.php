@@ -103,6 +103,7 @@
                                 <thead>
                                     <tr>
                                         <th>SL</th>
+                                        <th>Image</th>
                                         <th>User Name</th>
                                         <th>Email Address</th>
                                         <th>Logs</th>
@@ -112,6 +113,13 @@
                                     @foreach($loginToday->groupBy('email_address') as $email => $userLogs)
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
+                                        <td>
+                                            @if ($userLogs->first()->user->profile_photo_path)
+                                            <img src="{{ Storage::url($userLogs->first()->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            @else
+                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                            @endif
+                                        </td>
                                         <td>{{ $userLogs->first()->name }}</td>
                                         <td>{{ $email }}</td>
                                         <td>
@@ -123,6 +131,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>SL</th>
+                                                            <th>Image</th>
                                                             <th>Login Date</th>
                                                             <th>Login Time</th>
                                                             <th>Logout Time</th>
@@ -136,6 +145,13 @@
                                                         @foreach($userLogs as $key => $log)
                                                         <tr>
                                                             <td>{{ $key + 1 }}</td>
+                                                            <td>
+                                                                @if ($log->user->profile_photo_path)
+                                                                <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                                                @else
+                                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                                @endif
+                                                            </td>
                                                             <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
                                                             <td>
                                                                 @if ($log->login_time)
@@ -217,6 +233,7 @@
                         <thead>
                             <tr>
                                 <th>SL</th>
+                                <th>Image</th>
                                 <th>User Name</th>
                                 <th>Email Address</th>
                                 <th>Login/logout Date</th>
@@ -228,6 +245,13 @@
                                 @foreach($userLogsByEmail->groupBy('login_date') as $loginDate => $userLogs)
                                     <tr>
                                         <td>{{ $loop->parent->index + 1 }}</td>
+                                        <td>
+                                            @if ($userLogs->first() && $userLogs->first()->user && $userLogs->first()->user->profile_photo_path)
+                                            <img src="{{ Storage::url($userLogs->first()->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            @else
+                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                            @endif
+                                        </td>
                                         <td>{{ $userLogs->first()->name }}</td>
                                         <td>{{ $email }}</td>
                                         <td>{{ \Carbon\Carbon::parse($loginDate)->format('d F Y') }}</td>
@@ -240,6 +264,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>SL</th>
+                                                            <th>Photo</th>
                                                             <th>Login Time</th>
                                                             <th>Logout Time</th>
                                                             <th>IP Address</th>
@@ -251,6 +276,13 @@
                                                         @foreach($userLogs as $key => $log)
                                                         <tr>
                                                             <td>{{ $key + 1 }}</td>
+                                                            <td>
+                                                                @if ($log->user && $log->user->profile_photo_path)
+                                                                <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                                            @else
+                                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                            @endif
+                                                            </td>
                                                             <td>
                                                                 @if ($log->login_time)
                                                                     {{ \Carbon\Carbon::parse($log->login_time)->format('h:i A') }}
@@ -332,6 +364,7 @@
                         <thead>
                             <tr>
                                 <th>SL</th>
+                                <th>Image</th>
                                 <th>User Name</th>
                                 <th>Email Address</th>
                                 <th>Login Date</th>
@@ -346,6 +379,13 @@
                                 @foreach($userLogsByEmail as $key => $log)
                                     <tr>
                                         <td>{{ $loop->parent->index + $loop->index + 1 }}</td>
+                                       <td>
+                                       @if ($log->user->profile_photo_path)
+                                       <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                       @else
+                                           <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                       @endif
+                                       </td>
                                         <td>{{ $log->name }}</td>
                                         <td>{{ $email }}</td>
                                         <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
@@ -417,6 +457,7 @@
                         <thead>
                             <tr>
                                 <th>SL</th>
+                                <th>Image</th>
                                 <th>User Name</th>
                                 <th>Email Address</th>
                                 {{-- <th>Login Date</th>
@@ -429,6 +470,13 @@
                                 @foreach($userLogsByEmail as $key => $log)
                                     <tr>
                                         <td>{{ $loop->parent->index + $loop->index + 1 }}</td>
+                                        <td>
+                                            @if ($log->user && $log->user->profile_photo_path)
+                                            <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                        @else
+                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                        @endif
+                                        </td>
                                         <td>{{ $log->name }}</td>
                                         <td>{{ $email }}</td>
                                         {{-- <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
@@ -475,9 +523,9 @@ $(document).ready(function () {
 
                     // Check if logout_time is null and conditionally hide or show the input
                     if (localLogLoginTime) {
-                        $('#editLogTime').val(localLogLoginTime).closest('.mb-3').show(); // Show the field if logout_time exists
+                        $('#editLogTime').val(localLogLoginTime).closest('.mb-3').show(); 
                     } else {
-                        $('#editLogTime').val('').closest('.mb-3').hide(); // Hide the field if logout_time is null
+                        $('#editLogTime').val('').closest('.mb-3').hide(); 
                     }
 
                     // Set the logId in the form's data-id attribute

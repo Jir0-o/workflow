@@ -30,6 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
         'session_id',
+        'profile_photo_path'
     ];
 
     /**
@@ -66,6 +67,12 @@ class User extends Authenticatable
     }
     public function title_name(){
         return $this->hasMany(TitleName::class);
+    }
+    public function notification(){
+        return $this->hasMany(Notification::class);
+    }
+    public function loginInfo(){
+        return $this->hasMany(LoginInfo::class);
     }
     
 }

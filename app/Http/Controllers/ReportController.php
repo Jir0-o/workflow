@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TitleName;
 use App\Models\User;
+use App\Models\WorkPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -15,9 +16,9 @@ class ReportController extends Controller
      */
     public function index()
     {
-        $projects = Task::orderBy('created_at', 'desc')->get();
+        $projects = WorkPlan::orderBy('created_at', 'desc')->get();
         $users = User::all();
-        $titles = TitleName::all();
+        $titles = Task::all();
         return view('user.project.report', compact('projects', 'users','titles'));
     }
 
@@ -32,16 +33,16 @@ class ReportController extends Controller
             'title_name_id' => 'nullable',
         ]);
     
-        $projects = Task::orderBy('created_at', 'desc')->get();
+        $projects = WorkPlan::orderBy('created_at', 'desc')->get();
         $users = User::all();
-        $titles = TitleName::all();
+        $titles = Task::all();
     
 
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
 
         $dateField = $request->date_criteria;
-        $query = Task::whereBetween($dateField, [$startDate, $endDate]);
+        $query = WorkPlan::whereBetween($dateField, [$startDate, $endDate]);
     
         if ($request->filled('title_name_id')) {
             $query->where('title_name_id', $request->title_name_id);
@@ -57,7 +58,7 @@ class ReportController extends Controller
     
         $tasks = $query->get();
         $selectedUser = $request->filled('user') ? User::find($request->user) : null;
-        $selectedTitle = $request->filled('title_name_id') ? TitleName::find($request->title_name_id) : null;
+        $selectedTitle = $request->filled('title_name_id') ? Task::find($request->title_name_id) : null;
 
         $oldInput = $request->all(); 
         $startDate = Carbon::parse($oldInput['start_date']);

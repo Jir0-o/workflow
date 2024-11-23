@@ -36,6 +36,12 @@ class LoginDetailsController extends Controller
         $detailsLoginUserIds = DetailLogin::whereDate('login_date', $todayDate)
             ->pluck('user_id')
             ->unique();
+
+        //detailed logins
+        // $detailedLogins = DetailLogin::pluck(column: 'user_id')->unique();
+
+        // All logins
+        $AllLogin = LoginInfo::with('user')->latest()->get();
     
         $userIds = User::pluck('id')->unique();
     
@@ -53,7 +59,7 @@ class LoginDetailsController extends Controller
         $missingInDetailsLoginsCount = $missingInDetailsLoginsDetails->count();
     
         // Login information for today
-        $loginToday = LoginInfo::whereDate('login_date', $todayDate)->latest()->get();
+        $loginToday = LoginInfo::whereDate('login_date', $todayDate)->with('user')->latest()->get();
     
         // Latest login for each email address (subquery to get unique email logins for today)
         $subQuery = LoginInfo::select('email_address')
@@ -61,11 +67,9 @@ class LoginDetailsController extends Controller
             ->groupBy('email_address')
             ->havingRaw('MAX(created_at) = created_at');
     
-        $currentLogin = LoginInfo::whereIn('email_address', $subQuery)->get();
+        $currentLogin = LoginInfo::whereIn('email_address', $subQuery)->with('user')->latest()->get();
         $loginCount = $currentLogin->count();
     
-        // All logins
-        $AllLogin = LoginInfo::latest()->get();
         
     
         return view('user.logindetails.loginDetails', compact(

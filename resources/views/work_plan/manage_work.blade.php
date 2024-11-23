@@ -15,28 +15,40 @@
 
 <div class="row mt-5">
     <div class="col-12">
-        <!-- Main Assign Task Modal -->
+        <!-- Main Assign work plan Modal -->
         <div class="modal fade" id="assignTaskModal" tabindex="-1" aria-labelledby="assignTaskModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="assignTaskModalLabel">Assign Task</h5>
+                        <h5 class="modal-title" id="assignTaskModalLabel">Assign Work</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="assignTaskForm">
                             @csrf
                             <div class="mb-3">
-                                <label for="task_title">Project Title</label>
+                                <label for="task_title">Task Title</label>
                                 <div class="d-flex align-items-center">
                                     <select id="task_title" name="title" class="form-control" style="width: calc(100% - 30px);">
-                                        <option value="">Select title</option>
-                                        @foreach($title as $tit)
-                                            <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
-                                        @endforeach
+                                        @php
+                                        $assignedTasks = $title->filter(function ($titles) {
+                                            return !empty($titles->task_title); // Only check if the task title is not empty
+                                        });
+                                        @endphp
+                                
+                                        @if($assignedTasks->isNotEmpty())
+                                            <option value="">Select your task</option>
+                                            @foreach($assignedTasks as $task)
+                                                <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                            @endforeach
+                                        @else
+                                            <option value="" disabled selected>
+                                                No tasks are available. Create a new task first to create Work Plan
+                                            </option>
+                                        @endif
                                     </select>
-                                    <!-- Button to open Create Project Sub-Modal -->
-                                    <button type="button" class="btn btn-link p-0 ml-2" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                                    <!-- Button to open Create Task Sub-Modal -->
+                                    <button type="button" class="btn btn-link p-0 ml-2" data-bs-toggle="modal" data-bs-target="#newAssignTaskModal">
                                         <i class="fas fa-plus-circle" style="font-size: 24px; color: #007bff;"></i>
                                     </button>
                                 </div>
@@ -51,7 +63,7 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="task_description">Task Description</label>
+                                <label for="task_description">Work Description</label>
                                 <textarea id="task_description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
                             </div>
                             <div class="mb-3">
@@ -77,7 +89,7 @@
 
         <!-- Sub-modal for Create Project -->
         <div class="modal fade" id="createProjectModal" tabindex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content"> 
                     <div class="modal-header">
                         <h5 class="modal-title" id="createProjectModalLabel">Create Project</h5>
@@ -123,12 +135,69 @@
     </div>
 </div>
 
+    <!-- sub modal for Assign Task Modal -->
+    <div class="modal fade" id="newAssignTaskModal" tabindex="-1" aria-labelledby="newAssignTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newassignTaskModalLabel">Assign Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newAssignTaskForm">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="work_title">Task Title</label>
+                            <input id="work_title" name="work_title" type="text" required class="form-control" placeholder="Write a task title">
+                        </div>
+                        <div class="mb-3">
+                            <label for="work_task_title">Project Title</label>
+                            <div class="d-flex align-items-center">
+                                <select id="work_task_title" name="work_task_title" class="form-control" style="width: calc(100% - 30px);">
+                                    <option value="">Select title</option>
+                                    @foreach($projectTitle as $tit)
+                                        <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
+                                    @endforeach
+                                </select>
+                                <!-- Button to open Create Project Sub-Modal -->
+                                <button type="button" class="btn btn-link p-0 ml-2" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                                    <i class="fas fa-plus-circle" style="font-size: 24px; color: #007bff;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="work_user_id">User Name</label>
+                            <select id="work_user_id" name="user_id[]" class="form-control work_model_select2" multiple="multiple" required>
+                                <option value="">Select User</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach 
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="work_description">Task Description</label>
+                            <textarea id="work_description" name="work_description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="work_submit_date">Last Submit Date</label>
+                            <input id="work_submit_date" name="work_submit_date" type="date" class="form-control" value="{{ date('Y-m-d') }}">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="saveWorkBtn" class="btn btn-primary">Create Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <!-- Edit assign task Modal -->
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editTaskModalLabel">Edit Assign Task</h5>
+                <h5 class="modal-title" id="editTaskModalLabel">Edit Assign Work</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -141,9 +210,22 @@
                     <div class="mb-3">
                         <label for="title">Select Title</label>
                         <select id="title" name="title" class="form-control" required>
-                            @foreach($title as $tit)
-                                <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
-                            @endforeach
+                            @php
+                            $assignedTasks = $title->filter(function ($titles) {
+                                return !empty($titles->task_title); // Only check if the task title is not empty
+                            });
+                            @endphp
+                    
+                            @if($assignedTasks->isNotEmpty())
+                                <option value="">Select your task</option>
+                                @foreach($assignedTasks as $task)
+                                    <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                @endforeach
+                            @else
+                                <option value="" disabled selected>
+                                    No tasks are available. Create a new task first to assign Work Plan
+                                </option>
+                            @endif
                         </select>
                     </div>
 
@@ -157,7 +239,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="description">Task Description</label>
+                        <label for="description">Work Description</label>
                         <textarea id="description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
                     </div>
 
@@ -186,7 +268,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="updateTaskBtn" class="btn btn-primary">Update Task</button>
+                <button type="button" id="updateTaskBtn" class="btn btn-primary">Update Work Plan</button>
             </div>
         </div>
     </div>
@@ -194,10 +276,10 @@
 
 <!-- Edit Submitted Assign Task Modal -->
 <div class="modal fade" id="editSubmittedTaskModal" tabindex="-1" aria-labelledby="editSubmittedTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editSubmittedTaskModalLabel">Edit Assign Task</h5>
+                <h5 class="modal-title" id="editSubmittedTaskModalLabel">Edit Assign Work Plan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -210,9 +292,22 @@
                     <div class="mb-3">
                         <label for="Submit_title">Select Title</label>
                         <select id="Submit_title" name="title" class="form-control" required>
-                            @foreach($title as $tit)
-                                <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
-                            @endforeach
+                            @php
+                            $assignedTasks = $title->filter(function ($titles) {
+                                return !empty($titles->task_title); // Only check if the task title is not empty
+                            });
+                            @endphp
+                    
+                            @if($assignedTasks->isNotEmpty())
+                                <option value="">Select your task</option>
+                                @foreach($assignedTasks as $task)
+                                    <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                @endforeach
+                            @else
+                                <option value="" disabled selected>
+                                    No tasks are available. Create a new task first to create Work Plan
+                                </option>
+                            @endif
                         </select>
                     </div>
 
@@ -226,7 +321,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="submit_description">Task Description</label>
+                        <label for="submit_description">Work Description</label>
                         <textarea id="submit_description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
                     </div>
 
@@ -261,7 +356,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="updateSubmitTaskBtn" class="btn btn-primary">Update Task</button>
+                <button type="button" id="updateSubmitTaskBtn" class="btn btn-primary">Update Work Plan</button>
             </div>
         </div>
     </div>
@@ -279,28 +374,28 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
-                                    Pending Task 
+                                    Pending Work Plan
                                     <span class="badge bg-primary"> {{ $pendingCount }}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Incomplete Task
+                                    Incomplete Work Plan
                                     <span class="badge bg-primary"> {{ $incompleteCount }}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Complete"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Completed Task
+                                    Completed Work Plan
                                     <span class="badge bg-primary"> {{ $completeCount }}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#Request"
                                     type="button" role="tab" aria-controls="messages" aria-selected="false">
-                                    Requested Task
+                                    Requested Work Plan
                                     <span class="badge bg-primary"> {{ $inprogressCount }}</span>
                                 </button>
                             </li>
@@ -315,16 +410,18 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Pending Task</h5>
+                                        <h5>Pending Work Plan</h5>
                                     </div>
+                                    @can('Manage Work Create')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignTaskModal">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Work Plan
                                             </a>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -333,12 +430,11 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>User Name</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -349,12 +445,11 @@
                                         @foreach($pendingTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
+                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -363,16 +458,21 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
+                                                        @can('Manage Work Edit')
                                                         <a href="javascript:void(0);" class="dropdown-item editTaskModal" data-bs-toggle="modal" data-task-id="{{ $task->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
-                                                        </a>                                                        
-                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST">
+                                                        </a>                                                       
+                                                        @endcan      
+                                                        @can('Manage Work Delete')                                                
+                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('manage_work.destroy', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="button" class="dropdown-item" onclick="confirmDeleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form>
+                                                        @endcan
+                                                        @can('Manage Work Change Status')
                                                         <div class="dropdown-divider"></div>
                                                         <div class="dropdown-submenu">
                                                             <a class="dropdown-item test" href="#" id="dropdownStatusLink">
@@ -380,7 +480,7 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.complete', $task->id) }}" method="POST">
+                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('manage_work.complete', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
@@ -389,7 +489,7 @@
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('asign_tasks.requested', $task->id) }}" method="POST">
+                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('manage_work.requested', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
@@ -399,9 +499,10 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
+                                                        @endcan
                                                     </div>
                                                 </div>                                                           
-                                        </tr>
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -414,16 +515,18 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Incomplete Task</h5>
+                                        <h5>Incomplete Work Plan</h5>
                                     </div>
+                                    @can('Manage Work Create')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignTaskModal">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Work Plan
                                             </a>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -432,12 +535,11 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>User Name</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>Submitted Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -447,12 +549,11 @@
                                         @foreach($incompleteTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
+                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y') : 'Task Incomplete' }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -461,16 +562,21 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
+                                                        @can('Manage Work Edit')
                                                         <a href="javascript:void(0);" class="dropdown-item editTaskModal" data-bs-toggle="modal" data-task-id="{{ $task->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>    
-                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST">
+                                                        @endcan
+                                                        @can('Manage Work Delete')
+                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('manage_work.destroy', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="button" class="dropdown-item" onclick="confirmDeleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form>
+                                                        @endcan
+                                                        @can('Manage Work Change Status')
                                                         <div class="dropdown-divider"></div>
                                                         <!-- Right-aligned dropdown for Change Status -->
                                                         <div class="dropdown-submenu">
@@ -479,7 +585,7 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST">
+                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('manage_work.pendingdate', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
@@ -488,7 +594,7 @@
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.complete', $task->id) }}" method="POST">
+                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('manage_work.complete', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
@@ -497,7 +603,7 @@
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('asign_tasks.requested', $task->id) }}" method="POST">
+                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('manage_work.requested', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
@@ -507,6 +613,7 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
+                                                        @endcan
                                                     </div>
                                                 </div>
                                             </td>
@@ -523,16 +630,18 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Completed Task</h5>
+                                        <h5>Completed Work Plan</h5>
                                     </div>
+                                    @can('Manage Work Create')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignTaskModal">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Work Plan
                                             </a>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -541,12 +650,12 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>User Name</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
                                             <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -556,12 +665,12 @@
                                         @foreach($completeTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $task->user->name }}</td>
+                                            <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
+                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -570,16 +679,21 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
+                                                        @can('Manage Work Edit')
                                                         <a href="javascript:void(0);" class="dropdown-item editSubmitTaskModal" data-bs-toggle="modal" data-task-id="{{ $task->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                                         </a>   
-                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.destroy', $task->id) }}" method="POST">
+                                                        @endcan
+                                                        @can('Manage Work Delete')
+                                                        <form id="delete-task-form-{{ $task->id }}" action="{{ route('manage_work.destroy', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="button" class="dropdown-item" onclick="confirmDeleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Delete
                                                             </button>
                                                         </form>
+                                                        @endcan
+                                                        @can('Manage Work Change Status')
                                                         <div class="dropdown-divider"></div>
                                                         <!-- Right-aligned dropdown for Change Status -->
                                                         <div class="dropdown-submenu">
@@ -588,7 +702,7 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST">
+                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('manage_work.pendingdate', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
@@ -597,7 +711,7 @@
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('asign_tasks.requested', $task->id) }}" method="POST">
+                                                                    <form id="requested-task-form-{{ $task->id }}" action="{{ route('manage_work.requested', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmRequestedTask({{ $task->id}})">
@@ -607,6 +721,7 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
+                                                        @endcan
                                                     </div>
                                                 </div>
                                             </td>
@@ -623,16 +738,18 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Requested Task</h5>
+                                        <h5>Requested Work Plan</h5>
                                     </div>
+                                    @can('Manage Work Create')
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
                                             <!-- Button trigger modal -->
                                             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignTaskModal">
-                                                <i class="bx bx-edit-alt me-1"></i> Assign Task
+                                                <i class="bx bx-edit-alt me-1"></i> Assign Work Plan
                                             </a>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
                             
@@ -641,12 +758,12 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>User Name</th>
+                                            <th>Task Title</th>
+                                            <th>Work Plan</th>
+                                            <th>Suggestion</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
-                                            <th>User Name</th>
-                                            <th>Project Title</th>
-                                            <th>Task</th>
-                                            <th>Suggestion</th>
                                             <th>Work Status</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -656,12 +773,12 @@
                                         @foreach($inprogressTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                            <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
+                                            <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
                                             <td>{!!($task->message) !!}</td>
+                                            <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $task->work_status }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -670,16 +787,19 @@
                                                         <i class="bx bx-dots-vertical-rounded"></i>
                                                     </button>
                                                     <div class="dropdown-menu">
+                                                        @can('Manage Work Accept/Reject')
                                                         <a href="javascript:void(0);" class="dropdown-item editTaskModal" data-bs-toggle="modal" data-task-id="{{ $task->id }}">
                                                             <i class="bx bx-edit-alt me-1"></i> Accept
                                                         </a>
-                                                        <form id="incomplete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.incomplete', $task->id) }}" method="POST">
+                                                        <form id="incomplete-task-form-{{ $task->id }}" action="{{ route('manage_work.incomplete', $task->id) }}" method="POST">
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="button" class="dropdown-item" onclick="confirmIncompleteTask({{ $task->id}})">
                                                                 <i class="bx bx-trash me-1"></i> Reject
                                                             </button>
                                                         </form>
+                                                        @endcan
+                                                        @can('Manage Work Change Status')
                                                         <div class="dropdown-divider"></div>
                                                         <!-- Right-aligned dropdown for Change Status -->
                                                         <div class="dropdown-submenu">
@@ -688,7 +808,7 @@
                                                             </a>
                                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownStatusLink">
                                                                 <li>
-                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('asign_tasks.pendingdate', $task->id) }}" method="POST">
+                                                                    <form id="pending-task-form-{{ $task->id }}" action="{{ route('manage_work.pendingdate', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
@@ -697,7 +817,7 @@
                                                                     </form>
                                                                 </li>
                                                                 <li>
-                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('asign_tasks.complete', $task->id) }}" method="POST">
+                                                                    <form id="complete-task-form-{{ $task->id }}" action="{{ route('manage_work.complete', $task->id) }}" method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmCompleteTask({{ $task->id}})">
@@ -707,6 +827,7 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
+                                                        @endcan
                                                     </div>
                                                 </div>
                                             </td>
@@ -827,6 +948,7 @@ $(document).ready(function(){
     CKEDITOR.replace('task_description');
     CKEDITOR.replace('description');
     CKEDITOR.replace('submit_description');
+    CKEDITOR.replace('work_description');
 
             // Initialize select2 when modal is shown
             $('#createProjectModal').on('shown.bs.modal', function() {
@@ -845,6 +967,16 @@ $(document).ready(function(){
                 width: '100%'
                 });
             });
+
+            // Initialize select2 for assign task is shown
+            $('#newAssignTaskModal').on('shown.bs.modal', function() {
+            $('.work_model_select2').select2({
+                placeholder: 'Select User',
+                allowClear: true,
+                width: '100%'
+                });
+            });
+
         $('.dropdown-submenu a.test').on("click", function(e){
             $(this).next('ul').toggle();
             e.stopPropagation();
@@ -921,7 +1053,7 @@ $(document).ready(function(){
             });
 
             $.ajax({
-                url: "{{ route('asign_tasks.store') }}",
+                url: "{{ route('manage_work.store') }}",
                 type: "POST",
                 data: formData,
                 processData: false,
@@ -954,6 +1086,59 @@ $(document).ready(function(){
                 }
             });
         });
+
+    // Handle Task creation form submission
+    $('#saveWorkBtn').on('click', function(e) {
+        e.preventDefault();
+
+        // Create a new FormData object
+        let formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('task_title', $('#work_title').val());
+        formData.append('title', $('#work_task_title').val());
+        formData.append('description', CKEDITOR.instances['work_description'].getData());  // Same ID for description
+        formData.append('last_submit_date', $('#work_submit_date').val());  // Updated to match the new ID
+        formData.append('work_status', $('#work_submit_status').val());  // Same ID for work status
+
+        // Append selected user IDs from modal
+        $('#work_user_id').val().forEach(userId => {  // Updated to match the new ID
+            formData.append('user_id[]', userId);
+        });
+
+        $.ajax({
+            url: "{{ route('asign_tasks.store') }}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#newAssignTaskModal').modal('hide');  // Updated to match the new modal ID
+                Swal.fire({
+                    title: 'Task Created!',
+                    text: 'Your Task was created successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                });
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error creating the task.',
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+    });
 
 
     $('#updateSubmitTaskBtn').on('click', function() {
@@ -1066,8 +1251,8 @@ $(document).ready(function(){
   // Edit button click handler
   $('.editTaskModal').on('click', function() {
         const taskId = $(this).data('task-id');
-        const editUrl = `{{ route('asign_tasks.edit', ':id') }}`.replace(':id', taskId);
-        const updateNewUrl = `{{ route('asign_tasks.update', ':id') }}`.replace(':id', taskId);
+        const editUrl = `{{ route('manage_work.edit', ':id') }}`.replace(':id', taskId);
+        const updateNewUrl = `{{ route('manage_work.update', ':id') }}`.replace(':id', taskId);
 
         $.ajax({
             url: editUrl,
@@ -1105,8 +1290,8 @@ $(document).ready(function(){
 
     $('.editSubmitTaskModal').on('click', function() {
     const taskId = $(this).data('task-id');
-    const editUrl = `{{ route('asign_tasks.edit', ':id') }}`.replace(':id', taskId);
-    const updateSubmitUrl = `{{ route('asign_tasks.update', ':id') }}`.replace(':id', taskId);
+    const editUrl = `{{ route('manage_work.edit', ':id') }}`.replace(':id', taskId);
+    const updateSubmitUrl = `{{ route('manage_work.update', ':id') }}`.replace(':id', taskId);
 
     $.ajax({
         url: editUrl,

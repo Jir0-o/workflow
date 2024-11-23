@@ -16,22 +16,22 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Role;
 
-class AsignTaskController extends Controller
+class ManageWorkController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */ 
     public function __construct(){
-        $this->middleware('permission:View Assign Task',['only'=>['index']]);
-        $this->middleware('permission:Create Assign task',['only'=>['create']]);
-        $this->middleware('permission:Edit Assign Task',['only'=>['edit']]);
-        $this->middleware('permission:Delete Assign Task',['only'=>['destroy']]);
-        $this->middleware('permission:Change Status',['only'=>['incomplete','completed','requested','pendingdate']]);
-
+        $this->middleware('permission:View manage work plan',['only'=>['index']]);
+        $this->middleware('permission:Manage Work Create',['only'=>['create']]);
+        $this->middleware('permission:Manage Work Edit',['only'=>['edit']]);
+        $this->middleware('permission:Manage Work Delete',['only'=>['destroy']]);
+        $this->middleware('permission:Manage Work Change Status', ['only' => ['incomplete', 'completed', 'requested', 'pendingdate']]);
+        $this->middleware('permission:Manage Work Accept/Reject', ['only' => ['incomplete', 'completed', 'requested', 'pendingdate']]);
     }
     public function index()
     {   
-        $tasks = Task::all();
+        $tasks = WorkPlan::all();
 
         $startOfToday = Carbon::today();
 
@@ -80,19 +80,20 @@ class AsignTaskController extends Controller
 
   
         $users = User::all(); 
-        $title = TitleName::all();
+        $title = Task::where('status', 'pending')->get();
+        $projectTitle = TitleName::where('status', 'in_progress')->get();
         //count
-        $pendingCount = Task::where('status', 'pending')->count();
-        $completeCount = Task::where('status', 'completed')->count();
-        $incompleteCount = Task::where('status', 'incomplete')->count();
-        $inprogressCount = Task::where('status', 'in_progress')->count();
+        $pendingCount = WorkPlan::where('status', 'pending')->count();
+        $completeCount = WorkPlan::where('status', 'completed')->count();
+        $incompleteCount = WorkPlan::where('status', 'incomplete')->count();
+        $inprogressCount = WorkPlan::where('status', 'in_progress')->count();
 
-        $pendingTasks = Task::where('status', 'pending')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-        $completeTasks = Task::where('status', 'completed')->with('user','title_name')->orderBy('submit_by_date', 'desc')->get();
-        $incompleteTasks = Task::where('status', 'incomplete')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-        $inprogressTasks = Task::where('status', 'in_progress')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
+        $pendingTasks = WorkPlan::where('status', 'pending')->with('user','task')->orderBy('updated_at', 'desc')->get();
+        $completeTasks = WorkPlan::where('status', 'completed')->with('user','task')->orderBy('submit_by_date', 'desc')->get();
+        $incompleteTasks = WorkPlan::where('status', 'incomplete')->with('user','task')->orderBy('updated_at', 'desc')->get();
+        $inprogressTasks = WorkPlan::where('status', 'in_progress')->with('user','task')->orderBy('updated_at', 'desc')->get();
     
-        return view('user.asign_task', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount','users','title'));
+        return view('work_plan.manage_work', compact('pendingTasks', 'completeTasks', 'incompleteTasks','inprogressTasks','pendingCount','incompleteCount','completeCount','inprogressCount','users','title','projectTitle'));
     }
 
     /**
@@ -110,23 +111,23 @@ class AsignTaskController extends Controller
         try {
         $request->validate([
             'description' => 'required',
-            'task_title' => 'required',
+            'title'=> 'required',
             'user_id' => 'required|array|min:1',
             'user_id.*' => 'exists:users,id',
         ]);
 
         $user = Auth::user();
     
-            $task = new Task();
-            $task->task_title = $request->task_title;
+        foreach ($request -> user_id as $id) {
+            $task = new WorkPlan();
+            $task->task_id = $request->title;
             $task->title_name_id = $request->title;
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
             $task->work_status = $request->work_status;
-            $task->user_id = implode(',', $request->user_id);
+            $task->user_id = $id;
             $task->save();
 
-            foreach ($request -> user_id as $id) {
             // Format the submit date
             $submitDateFormatted = Carbon::parse($request->last_submit_date)->locale('en')->isoFormat('DD MMMM YYYY');
             $notification = new Notification();
@@ -176,10 +177,9 @@ class AsignTaskController extends Controller
     public function edit(string $id)
     {
         try {
-            $task = Task::findOrFail($id); // Retrieve task
+            $task = WorkPlan::findOrFail($id); // Retrieve task
             $users = User::all();
-            $titles = TitleName::all();
-            $assignedUsers = explode(',', $task ->user_id);
+            $titles = Task::all();
     
             return response()->json([
                 'status' => true,
@@ -188,7 +188,6 @@ class AsignTaskController extends Controller
                     'tasks' => $task,
                     'users' => $users,
                     'title' => $titles,
-                    'assignedUsers'=> $assignedUsers
                 ]
             ], 200);
     
@@ -211,7 +210,6 @@ class AsignTaskController extends Controller
     {
         $request->validate([
             'description' => 'required',
-            'task_title' => 'required',
 
         ]);
 
@@ -219,14 +217,9 @@ class AsignTaskController extends Controller
         $currentDate = Carbon::now()->toDateString();
     
         try {
-            $task = Task::find($id);
-            $task->task_title = $request->task_title;
-            // Convert the array of user IDs to a comma-separated string
-            if (is_array($request->task_user_id)) {
-                $task->user_id = implode(',', $request->task_user_id);
-            } else {
-                $task->user_id = $request->task_user_id; 
-            }
+            $task = WorkPlan::findOrFail($id);
+            $task->task_id = $request->title;
+            $task->user_id = $request->task_user_id;
             $task->title_name_id = $request->title;
             $task->description = $request->description;
 
@@ -248,17 +241,15 @@ class AsignTaskController extends Controller
             $task->save();
 
             $authUser = Auth::user();
-            $users = User::whereIn('id', $request->task_user_id)->get();
-            
-            foreach ($users as $user) {
-                Notification::create([
-                    'title' => "{$authUser->name} Task edited your task",
-                    'text' => "{$authUser->name} has edited your task. Please check your Pending Task tab",
-                    'from_user_id' => $authUser->id,
-                    'to_user_id' => $user->id, // Use individual user ID
-                    'link' => route('asign_tasks.index'),
+            $userId = User::find($request->task_user_id);
+
+            Notification::create([ // Assuming you're using custom notifications model
+                'title' => "{$authUser->name} Task edited your task",
+                'text' => "{$authUser->name} has edited your task. Please check your Pending Task tab",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $userId->id,
+                'link' => route('asign_tasks.index'),
                 ]);
-            }
     
             // Return JSON response for AJAX
             return response()->json([
@@ -280,13 +271,7 @@ class AsignTaskController extends Controller
      */
     public function destroy(string $id)
     {
-    
-        $workPlan = WorkPlan::where('task_id', $id)->get();
-        foreach ($workPlan as $work) {
-            $work->delete();
-        }
-
-       $task = Task::find($id);
+       $task = WorkPlan::find($id);
        $task->delete();
 
        return back()->with('success', 'Task deleted successfully.');
@@ -294,7 +279,7 @@ class AsignTaskController extends Controller
     }
     public function incomplete($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->status = 'incomplete';
     $task->save();
 
@@ -303,7 +288,7 @@ class AsignTaskController extends Controller
 }
 public function completed($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
     $task->save();
@@ -312,7 +297,7 @@ public function completed($id)
 }
 public function requested($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->status = 'in_progress';
     $task->save();
 
@@ -320,7 +305,7 @@ public function requested($id)
 }
 public function pendingdate($id)
 {
-    $task = Task::findOrFail($id);
+    $task = WorkPlan::findOrFail($id);
     $task->submit_date = Carbon::now();
     $task->submit_by_date = null;
     $task->status = 'pending';

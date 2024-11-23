@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -92,5 +94,41 @@ class RoleController extends Controller
         $permission->delete();
  
         return back()->with('success', 'Role deleted successfully.');
+    }
+
+    public function userUpdate(Request $request, string $id)
+    {
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'password' => 'nullable|confirmed',
+                'role' => 'required|array',
+                'profile_picture' => 'nullable|image|max:2048', // Ensure the key matches
+            ]);
+    
+            $user = User::findOrFail($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+    
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+    
+            if ($request->hasFile('profile_picture')) {
+                // Save new profile picture
+                $profilePicturePath = $request->file('profile_picture')->store('profile-photos', 'public');
+                $user->profile_photo_path = $profilePicturePath;
+            }
+    
+            $user->syncRoles($request->role);
+            $user->save();
+    
+            return response()->json(['success' => 'User updated successfully.']);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('User Update Failed:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to update user.'], 500);
+        }
     }
 }

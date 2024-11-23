@@ -50,6 +50,11 @@
         background-color: #444444;
         color: #ffffff;
     }
+
+    .layout-navbar a {
+        text-decoration: none !important;
+    }
+
     </style>
 
 <div class="modal fade" id="logoutReasonModal" tabindex="-1" role="dialog">
@@ -130,7 +135,11 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="template/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                    @if (Auth::user()->profile_photo_path)
+                        <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                    @else
+                        <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                    @endif
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -139,7 +148,11 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <img src="template/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                                    @if (Auth::user()->profile_photo_path)
+                                        <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                    @else
+                                        <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                    @endif
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
@@ -180,6 +193,17 @@
             <!--/ User Dropdown -->
         </ul>
     </div>
+    {{-- <div id="nev_user_activity" class="d-none">
+        @foreach ($activeUsers as $users)
+            <div>
+                <strong>{{ $users->name }}:</strong> 
+                Logged in at {{ \Carbon\Carbon::parse($users->login_time)->format('d F Y, h:i A') }}
+                <span id="nev-duration-{{ $users->id }}" class="text-muted">
+                    (Active: <span class="active-nev-time" data-nev_id="{{ $users->id }}" data-nev_start="{{ \Carbon\Carbon::parse($users->login_time)->timestamp }}">00:00:00</span>)
+                </span>
+            </div>
+        @endforeach
+    </div> --}}
 </nav>
 
 <script>
@@ -194,15 +218,13 @@ function submitLogout() {
             logout_reason: reason
         },
         success: function() {
-            // After successfully updating the logout reason, log out the user
             $.ajax({
-                url: "{{ route('logout') }}", // Laravel Fortify logout route
+                url: "{{ route('logout') }}", 
                 type: "POST",
                 data: {
-                    _token: "{{ csrf_token() }}" // CSRF token required for logout
+                    _token: "{{ csrf_token() }}" 
                 },
                 success: function() {
-                    // Redirect to login page after successful logout
                     window.location.href = "{{ route('login') }}";
                 },
                 error: function() {
@@ -221,7 +243,7 @@ function submitLogout() {
 <script>
 $(document).ready(function () {
 
-// Define the markAsRead route template to use in JavaScript
+
 const markAsReadUrlTemplate = "{{ route('notifications.markAsRead', ':id') }}";
 
 // Ensure markAsRead is available globally
@@ -258,7 +280,6 @@ $(document).ready(function() {
     });
     
     window.markAsRead = function(notificationId, element) {
-        console.log("Marking as read for Notification ID:", notificationId);
 
         // Replace ':id' with the actual notification ID
         const url = markAsReadUrlTemplate.replace(':id', notificationId);
@@ -313,11 +334,15 @@ $(document).ready(function() {
                         <div class="d-flex justify-content-between align-items-center mb-2 ${readClass}">
                             <a href="${notification.link}" class="text-decoration-none text-dark" 
                                onclick="markAsRead(${notification.id}, this)" style="flex-grow: 1;">
-                                <div class="me-2">
-                                    <i class="fas fa-user-circle text-primary me-2"></i> 
-                                    <strong>${notification.title}</strong>
-                                    <p class="mb-1" style="font-size: 0.9em; color: #555;">${notification.text}</p>
-                                    <small class="text-muted">${createdAt}</small>
+                                <div class="d-flex align-items-center">
+                                    <!-- User Image -->
+                                   <img src="${notification.user.profile_photo_path ? '{{ Storage::url('') }}' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
+                                    alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <strong>${notification.title}</strong>
+                                        <p class="mb-1" style="font-size: 0.9em; color: #555;">${notification.text}</p>
+                                        <small class="text-muted">${createdAt}</small>
+                                    </div>
                                 </div>
                             </a>
                             <button class="btn btn-sm btn-light text-danger" onclick="deleteNotification(${notification.id})">
@@ -382,7 +407,6 @@ function updateNotificationCount() {
         url: notificationCountUrl,
         type: 'GET',
         success: function (data) {
-            console.log(data);
             const count = data.data.count; // Get the notification count
             const notificationCountElement = $('#notification-count');
             
@@ -447,4 +471,87 @@ $('#logout-button').on('click', function (e) {
 });
 
 </script>
+
+{{-- <script>
+    $(document).ready(function() {
+    // Function to format seconds into HH:MM:SS
+    function formatTime(seconds) {
+        let hrs = Math.floor(seconds / 3600);
+        let mins = Math.floor((seconds % 3600) / 60);
+        let secs = seconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Counter to track intervals
+    let ajaxCounter = 0;
+
+    // Update each user's active time every second
+    setInterval(function () {
+        $('.active-nev-time').each(function () {
+            const userId = $(this).data('nev-id');
+            const startTime = $(this).data('nev-start');
+            const currentTime = Math.floor(Date.now() / 1000);
+            const activeDuration = currentTime - startTime;
+
+            // Update the displayed active time
+            $(this).text(formatTime(activeDuration));
+
+            // Increment the counter
+            ajaxCounter++;
+
+            // Send an Ajax request every 10 seconds
+            if (ajaxCounter % 10 === 0) {
+                $.ajax({
+                    url: "{{ route('updateLoginTime') }}",
+                    type: 'POST',
+                    data: {
+                        login_id: userId,
+                        active_seconds: activeDuration,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        // Optionally, handle success feedback
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        });
+    }, 1000); // Update every second
+    });
+</script> --}}
+<script>
+    $(document).ready(function () {
+        let activeSeconds = 0; // Initialize active seconds
+
+        function updateLoginTime() {
+            activeSeconds += 10; // Increment by 10 seconds
+
+            $.ajax({
+                url: "{{ route('updateNevLoginTime') }}", // Named route
+                type: "POST",
+                data: {
+                    active_seconds: activeSeconds, // Send current active seconds
+                    _token: "{{ csrf_token() }}" // CSRF token for security
+                },
+                success: function (response) {
+                    if (response.login_hour) {
+
+                    } else {
+                        console.error(response.error || 'Failed to update login time');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        // Call the function every 10 seconds
+        setInterval(updateLoginTime, 10000);
+    });
+</script>
+
+
+
 

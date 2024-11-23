@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TitleName;
 use App\Models\User;
+use App\Models\WorkPlan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -191,11 +192,23 @@ class ProjectTitleController extends Controller
      */
     public function destroy(string $id)
     {
-        $task = TitleName::find($id);
-        $task->delete();
- 
+        // Get all tasks associated with the project title
+        $titleIDs = Task::where('title_name_id', $id)->pluck('id');
+    
+        // Get all work plans associated with those tasks and delete them
+        WorkPlan::whereIn('task_id', $titleIDs)->delete();
+    
+        // Delete all tasks associated with the project title
+        Task::where('title_name_id', $id)->delete();
+    
+        // Finally, delete the project itself
+        $titleName = TitleName::find($id);
+        if ($titleName) {
+            $titleName->delete();
+        }
+    
         return back()->with('success', 'Project deleted successfully.');
-    }
+    }    
     public function complete($id)
     {
     
