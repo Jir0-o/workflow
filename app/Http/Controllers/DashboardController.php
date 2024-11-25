@@ -37,8 +37,7 @@ class DashboardController extends Controller
         $pendingAdminTasks = Task::where('status', 'pending')->whereDate('created_at', $Today)->with('user')->orderBy('created_at', 'desc')->get();
         $completeAdminTasks = Task::where('status', 'completed')->with('user')->orderBy('submit_by_date', 'desc')->get();
 
-        $notice = Notice::where('status', 0)->get();
-        $noticeUser = Notice::where('status', 0)->where('user_id', $userId)->get();
+        $notice = Notice::where('status', 0)->with('user')->get();
 
         $noticeDate = Notice::all();
 
@@ -53,6 +52,7 @@ class DashboardController extends Controller
         
             $noticeDates->save();
         }
+
 
         $startOfToday = Carbon::today();
 
@@ -145,7 +145,7 @@ class DashboardController extends Controller
         }
 
 
-        return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks','user','activeUsers','notice','noticeUser'));
+        return view('dashboard',compact('tasks','pendingCount','completeCount','pendingUserTasks','completeUserTasks','pendingAdminTasks','completeAdminTasks','user','activeUsers','notice'));
     }
 
     /**

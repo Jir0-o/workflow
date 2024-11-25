@@ -22,4 +22,7 @@ class Notice extends Model
         'end_date' => 'datetime',
         'notice_date' => 'datetime'
     ];
+    public function User(){
+        return $this->belongsTo(User::class);
+    }
 }

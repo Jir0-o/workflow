@@ -114,10 +114,13 @@
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>
-                                            @if ($userLogs->first()->user->profile_photo_path)
-                                            <img src="{{ Storage::url($userLogs->first()->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            @php
+                                                $profilePath = $userLogs->first()->user->profile_photo_path;
+                                            @endphp
+                                            @if ($profilePath)
+                                                <img src="{{ asset('storage/' . $profilePath) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                             @else
-                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
                                             @endif
                                         </td>
                                         <td>{{ $userLogs->first()->name }}</td>
@@ -147,9 +150,9 @@
                                                             <td>{{ $key + 1 }}</td>
                                                             <td>
                                                                 @if ($log->user->profile_photo_path)
-                                                                <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                                                    <img src="{{ asset('storage/' . $log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                                                 @else
-                                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                                    <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
                                                                 @endif
                                                             </td>
                                                             <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
@@ -246,10 +249,13 @@
                                     <tr>
                                         <td>{{ $loop->parent->index + 1 }}</td>
                                         <td>
-                                            @if ($userLogs->first() && $userLogs->first()->user && $userLogs->first()->user->profile_photo_path)
-                                            <img src="{{ Storage::url($userLogs->first()->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            @php
+                                                $profilePath = $userLogs->first()->user->profile_photo_path;
+                                            @endphp
+                                            @if ($profilePath)
+                                                <img src="{{ asset('storage/' . $profilePath) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                             @else
-                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
                                             @endif
                                         </td>
                                         <td>{{ $userLogs->first()->name }}</td>
@@ -277,11 +283,11 @@
                                                         <tr>
                                                             <td>{{ $key + 1 }}</td>
                                                             <td>
-                                                                @if ($log->user && $log->user->profile_photo_path)
-                                                                <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
-                                                            @else
+                                                                @if ($userLogs->first() && $userLogs->first()->user && $userLogs->first()->user->profile_photo_path)
+                                                                <img src="{{ asset('storage/' . $userLogs->first()->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                                                @else
                                                                 <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
-                                                            @endif
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 @if ($log->login_time)
@@ -379,13 +385,13 @@
                                 @foreach($userLogsByEmail as $key => $log)
                                     <tr>
                                         <td>{{ $loop->parent->index + $loop->index + 1 }}</td>
-                                       <td>
-                                       @if ($log->user->profile_photo_path)
-                                       <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
-                                       @else
-                                           <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
-                                       @endif
-                                       </td>
+                                        <td>
+                                            @if ($log->user->profile_photo_path)
+                                                <img src="{{ asset('storage/' . $log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            @else
+                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                            @endif
+                                        </td>
                                         <td>{{ $log->name }}</td>
                                         <td>{{ $email }}</td>
                                         <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
@@ -472,10 +478,10 @@
                                         <td>{{ $loop->parent->index + $loop->index + 1 }}</td>
                                         <td>
                                             @if ($log->user && $log->user->profile_photo_path)
-                                            <img src="{{ Storage::url($log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
-                                        @else
-                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
-                                        @endif
+                                                <img src="{{ asset('storage/' . $log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            @else
+                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                            @endif
                                         </td>
                                         <td>{{ $log->name }}</td>
                                         <td>{{ $email }}</td>

@@ -34,9 +34,9 @@
     }
 
     .notification-read {
-    opacity: 0.6; /* Adjust this value for the desired fade effect */
+    opacity: 0.6; 
     }
-    /* Dark mode styling */
+
     body.dark-mode {
         background-color: #121212;
         color: #ffffff;
@@ -111,7 +111,7 @@
             </a>
 
             <!-- Notification Dropdown Menu -->
-            <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="notification-icon" style="width: 350px; max-height: 400px; overflow-y: auto;">
+            <div class="dropdown-menu dropdown-menu-end p-3 notification-dropdown" aria-labelledby="notification-icon" style="width: 350px; max-height: 400px; overflow-y: auto;">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h6 class="dropdown-header">Notifications</h6>
                     <div>
@@ -135,11 +135,11 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                    @if (Auth::user()->profile_photo_path)
-                        <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
-                    @else
-                        <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
-                    @endif
+                        @if (Auth::user()->profile_photo_path)
+                            <img src="{{ ('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                        @else
+                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                        @endif
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -148,11 +148,11 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                    @if (Auth::user()->profile_photo_path)
-                                        <img src="{{ Storage::url(Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
-                                    @else
-                                        <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
-                                    @endif
+                                        @if (Auth::user()->profile_photo_path)
+                                            <img src="{{ ('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                        @else
+                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
@@ -274,8 +274,8 @@ $(document).ready(function() {
         }
     });
 
-    // Stop the dropdown from closing when clicking inside it
-    $('.dropdown-menu').on('click', function (e) {
+    // Stop the notification dropdown from closing when clicking inside it
+    $('.notification-dropdown').on('click', function (e) {
         e.stopPropagation();
     });
     
@@ -291,7 +291,7 @@ $(document).ready(function() {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function() {
-                $(element).addClass('notification-read');
+                $(element).addClass('notification-read')
             },
             error: function(xhr, status, error) {
                 console.error('Error marking notification as read:', error);
@@ -329,14 +329,13 @@ $(document).ready(function() {
                     // Determine if the notification is read
                     let readClass = notification.is_read ? 'notification-read' : '';
 
-                    // Each notification item with a separate delete button
                     let notificationItem = `
                         <div class="d-flex justify-content-between align-items-center mb-2 ${readClass}">
                             <a href="${notification.link}" class="text-decoration-none text-dark" 
                                onclick="markAsRead(${notification.id}, this)" style="flex-grow: 1;">
                                 <div class="d-flex align-items-center">
                                     <!-- User Image -->
-                                   <img src="${notification.user.profile_photo_path ? '{{ Storage::url('') }}' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
+                                   <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
                                     alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                     <div>
                                         <strong>${notification.title}</strong>
@@ -456,13 +455,12 @@ $('#logout-button').on('click', function (e) {
     const currentTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
     const hours = new Date(currentTime).getHours();
 
-    if (hours < 18) {  // Before 6 pm
-        $('#logoutReasonModal').modal('show');  // Show reason modal
+    if (hours < 18) {  
+        $('#logoutReasonModal').modal('show'); 
     } else {
-        // Show instant feedback to user
+        
         $('#logout-button').text('Logging Out...'); 
         
-        // Perform logout in the background
         $.post("{{ route('logout') }}", { _token: "{{ csrf_token() }}" }, function() {
             window.location.href = "{{ route('login') }}";
         });

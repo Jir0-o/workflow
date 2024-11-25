@@ -16,7 +16,7 @@
                             <!-- SVG content here -->
                         </svg>
                         <img 
-                            src="{{ Storage::url('store_photos/unicorn-removebg-preview.png') }}" 
+                            src="{{ asset('storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
                             alt="Unicorn Logo" 
                             style="height: 40px;" 
                         />

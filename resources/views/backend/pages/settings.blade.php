@@ -304,7 +304,7 @@
                                     </td>
                                     <td>
                                         @if ($user->profile_photo_path)
-                                            <img src="{{ Storage::url($user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                         @else
                                             <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
                                         @endif

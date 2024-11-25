@@ -74,5 +74,8 @@ class User extends Authenticatable
     public function loginInfo(){
         return $this->hasMany(LoginInfo::class);
     }
+    public function notice(){
+        return $this->hasMany(Notice::class);
+    }
     
 }

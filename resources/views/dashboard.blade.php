@@ -153,6 +153,11 @@
                 
                 <!-- Scrollable Notice Board after 2 Notices -->
                 <div class="notice-board" style="max-height: 450px; overflow-y: auto; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+                @if ($notice->isEmpty())
+                    <div class="no-notice-message">
+                        <p>No notices for today.</p>
+                    </div>
+                @else
                     @foreach($notice as $notices)
                         <div class="notice-card">
                             <div class="notice-header">
@@ -160,26 +165,24 @@
                                 <button class="toggle-button" onclick="toggleNotice(this)">🔽</button>
                             </div>
                             <div class="notice-details">
-                                <div class="notice-date">📅 {{ $notices->notice_date->timezone('Asia/Dhaka')->format('d F Y, h:i A') }}</div>
+                                <div class="notice-date">Date: {{ $notices->notice_date->timezone('Asia/Dhaka')->format('d F Y, h:i A') }}</div>
                                 <div class="notice-author">
                                     <span class="author-name">
-                                        @foreach($noticeUser as $noticeusers)
-                                            {{ $noticeusers->name }}
-                                        @endforeach
-                                    </span> on {{ $notices->notice_date->format('d F Y') }}
+                                        {{ $notices->user->name }}
+                                    </span> Posted on {{ $notices->notice_date->format('d F Y') }}
                                 </div>
                                 <div class="notice-message">
                                     <p>{!! $notices->description !!}</p>
                                     <ul class="notice-points">
-                                        <li>🌟 Sitewide Freeleech</li>
-                                        <li>💰 2x seed bonus</li>
-                                        <li>⬆️ 2x Upload</li>
+                                        <li>Start Date: {{ $notices->start_date->format('d F Y') }}</li>
+                                        <li>End Date: {{ $notices->end_date->format('d F Y') }}</li>
                                     </ul>
                                 </div>
-                                <div class="notice-offer">🟡 Offers valid till 11:59 PM, 31st August 2024.</div>
+                                <div class="notice-offer">🟡 Notice valid till 11:59 PM, {{ $notices->end_date->format('d F Y') }}</div>
                             </div>
                         </div>
                     @endforeach
+                @endif
                 </div>
             </div>
         </div>

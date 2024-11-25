@@ -52,7 +52,12 @@ class UserController extends Controller
             $profilePicturePath = null;
     
             if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('profile-photos', 'public');
+                // Generate a unique filename
+                $filename = time() . '.' . $request->file('profile_picture')->getClientOriginalExtension();
+
+                // Save the file in the public/profile-photos directory
+                $profilePicturePath = 'profile-photos/' . $filename;
+                $request->file('profile_picture')->move(public_path('/storage/profile-photos'), $filename);
             }
     
             $user = User::create([
@@ -114,7 +119,7 @@ class UserController extends Controller
                 'email' => 'required|email|unique:users,email,' . $id,
                 'password' => 'nullable|confirmed',
                 'role' => 'required|array',
-                'profile_picture' => 'nullable|image|max:2048', // Ensure the key matches
+                'profile_picture' => 'nullable|image|max:2048',
             ]);
     
             $user = User::findOrFail($id);
@@ -126,9 +131,14 @@ class UserController extends Controller
             }
     
             if ($request->hasFile('profile_picture')) {
-                // Save new profile picture
-                $profilePicturePath = $request->file('profile_picture')->store('profile-photos', 'public');
-                $user->profile_photo_path = $profilePicturePath;
+                // Generate a unique filename
+                $filename = time() . '.' . $request->file('profile_picture')->getClientOriginalExtension();
+    
+                // Save the file in the public/profile-photos directory
+                $filePath = 'profile-photos/' . $filename;
+                $request->file('profile_picture')->move(public_path('/storage/profile-photos'), $filename);
+    
+                $user->profile_photo_path = $filePath;
             }
     
             $user->syncRoles($request->role);
@@ -136,11 +146,11 @@ class UserController extends Controller
     
             return response()->json(['success' => 'User updated successfully.']);
         } catch (\Exception $e) {
-            // Log the error for debugging
             \Log::error('User Update Failed:', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Failed to update user.'], 500);
         }
     }
+    
     
     /**
      * Remove the specified resource from storage.

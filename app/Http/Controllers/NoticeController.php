@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notice;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,7 @@ class NoticeController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */ 
     public function index()
     {
         //today's date
@@ -21,8 +22,10 @@ class NoticeController extends Controller
             ->whereDate('end_date', '>=', $todayDate)
             ->orderBy('notice_date', 'desc')
             ->get();
+
         $allNotice = Notice::orderBy('notice_date', 'desc')->get();
         $expried = Notice::where('status', 1)->orderBy('notice_date', 'desc')->get();
+
 
         $noticeDate = Notice::all();
         //auto Notic status update

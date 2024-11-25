@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^43.2.0",
+        "idle-js": "^1.2.0",
         "sweetalert2": "^11.6.13",
         "toastify-js": "^1.12.0"
     }
