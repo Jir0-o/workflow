@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="last_submit_date">Last Submit Date</label>
-                                    <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date">
+                                    <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" placeholder="Date">
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Create Task</button>
@@ -246,7 +246,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $pendingTask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($pendingTask->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $pendingTask->status }}</td>
                                             @can('Task Details Allow Action') 
                                             <td>
@@ -353,7 +353,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $incompletedtask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>
                                                 @php
                                                     // Explode the reason_message field
@@ -476,7 +476,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $completedtask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
                                             <td>{{ $completedtask->status }}</td>
                                             @can('Task Details Allow Action')
@@ -576,7 +576,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $requestedTask->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($requestedTask->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{!!($requestedTask->message) !!}</td>
                                             <td>{{ $requestedTask->status }}</td>
                                             @can('Task Details Allow Action')
@@ -618,7 +618,7 @@
                                         </script> 
                                     </tbody>
                                 </table>
-                            </div>
+                            </div> 
                         </div>
                     </div>
                 </div>

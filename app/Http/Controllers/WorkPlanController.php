@@ -118,7 +118,7 @@ class WorkPlanController extends Controller
     $role = Role::where('name', 'Super Admin')->first();
 
     if ($role) {
-    // Get the authenticated user
+    // Get the authenticated user 
     $authUser = auth()->user();
     $submitDateFormatted = Carbon::parse($request->last_submit_date)->locale('en')->isoFormat('DD MMMM YYYY');
 
@@ -127,7 +127,7 @@ class WorkPlanController extends Controller
         $task = new WorkPlan();
         $task->task_id = $request->title;
         $task->user_id = $authUser->id;
-        $task->title_name_id = $request->title;
+        $task->title_name_id = $request->projectTitle;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
         $task->work_status = $request->status;

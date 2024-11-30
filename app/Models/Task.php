@@ -14,4 +14,7 @@ class Task extends Model
     public function title_name(){
         return $this->belongsTo(TitleName::class);
     }
+    protected $casts = [
+        'submit_date' => 'datetime',
+    ];
 }

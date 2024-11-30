@@ -60,7 +60,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="last_submit_date">Last Submit Date</label>
-                                <input id="last_submit_date" name="last_submit_date" type="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                <input id="last_submit_date" name="last_submit_date" type="date" class="form-control" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                             </div>
                         </form>
                     </div>
@@ -283,7 +283,7 @@
                                     <span class="badge bg-primary"> {{ $inprogressCount }}</span>
                                 </button>
                             </li>
-                        </ul>
+                        </ul> 
                     </div>
                 </div>
 
@@ -339,7 +339,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -442,7 +442,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -557,7 +557,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -664,7 +664,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{!!($task->message) !!}</td>
                                             <td>{{ $task->status }}</td>
                                             <td>
@@ -1099,7 +1099,12 @@ $(document).ready(function(){
                     $('#main_task_title').val(response.data.tasks.task_title);
                     $('#title').val(response.data.tasks.title_name_id);
                     CKEDITOR.instances.description.setData(response.data.tasks.description);
-                    $('#Edit_last_submit_date').val(response.data.tasks.submit_date);
+                    // Convert submit_date to local time
+                    const submitDate = new Date(response.data.tasks.submit_date);
+
+                    const localDate = new Date(submitDate.getTime() - submitDate.getTimezoneOffset() * 60000);
+                    const formattedDate = localDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                    $('#Edit_last_submit_date').val(formattedDate); 
                     $('#work_status').val(response.data.tasks.work_status);
 
                     if (response.data.tasks.status == "in_progress") {
@@ -1144,7 +1149,11 @@ $(document).ready(function(){
                 $('#submit_task_title').val(response.data.tasks.task_title);
                 $('#Submit_title').val(response.data.tasks.title_name_id);
                 CKEDITOR.instances.submit_description.setData(response.data.tasks.description);
-                $('#submit_last_submit_date').val(response.data.tasks.submit_date); 
+                // Format the submit_date to Y-m-d format
+                const submitDate = new Date(response.data.tasks.submit_date);
+                const localDate = new Date(submitDate.getTime() - submitDate.getTimezoneOffset() * 60000);
+                const formattedDate = localDate.toISOString().split('T')[0]; 
+                $('#submit_last_submit_date').val(formattedDate); 
                 $('#submit_submit_date').val(response.data.tasks.submit_by_date); 
                 $('#submit_status').val(response.data.tasks.status);
                 // Populate users select field

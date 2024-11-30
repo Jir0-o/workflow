@@ -136,7 +136,7 @@
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         @if (Auth::user()->profile_photo_path)
-                            <img src="{{ ('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                            <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                         @else
                             <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
                         @endif
@@ -149,7 +149,7 @@
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
                                         @if (Auth::user()->profile_photo_path)
-                                            <img src="{{ ('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                         @else
                                             <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
                                         @endif

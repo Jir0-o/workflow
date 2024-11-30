@@ -122,7 +122,6 @@ class AsignTaskController extends Controller
             $task->title_name_id = $request->title;
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
-            $task->work_status = $request->work_status;
             $task->user_id = implode(',', $request->user_id);
             $task->save();
 
@@ -180,8 +179,8 @@ class AsignTaskController extends Controller
             $users = User::all();
             $titles = TitleName::all();
             $assignedUsers = explode(',', $task ->user_id);
-    
-            return response()->json([
+            
+            return response()->json([ 
                 'status' => true,
                 'message' => 'Task data retrieved successfully',
                 'data' => [
@@ -238,7 +237,6 @@ class AsignTaskController extends Controller
             if ($request->submit_by_date) {
                 $task->submit_by_date = $request->submit_by_date;
             }
-            $task->work_status = $request->work_status;
             if ($request->status) {
                 $task->status = $request->status;
             }else{
@@ -304,8 +302,20 @@ class AsignTaskController extends Controller
 public function completed($id)
 {
     $task = Task::findOrFail($id);
+    $startTime = Carbon::parse($task->created_at);
+    $currentDateTime = Carbon::now();
+
+    $totalDuration = $startTime->diffInSeconds($currentDateTime);
+
+    // Convert seconds to H:i:s format
+    $hours = floor($totalDuration / 3600);
+    $minutes = floor(($totalDuration % 3600) / 60);
+    $seconds = $totalDuration % 60;
+    $hoursHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
     $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
+    $task->work_hour = $hoursHours;
     $task->save();
 
     return back()->with('success', 'Task marked as completed successfully.');

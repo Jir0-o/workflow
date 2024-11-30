@@ -35,7 +35,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary" id="submitExtensionBtn">Submit</button>
-                            </form>
+                            </form> 
                             </div>
                         </div>
                     </div>
@@ -64,7 +64,9 @@
                                         @if($assignedTasks->isNotEmpty())
                                             <option value="">Select your task</option>
                                             @foreach($assignedTasks as $task)
-                                                <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                            <option value="{{ $task->id }}" data-project-title="{{ $task->title_name_id }}">
+                                                {{ $task->task_title }}
+                                            </option>
                                             @endforeach
                                         @else
                                             <option value="" disabled selected>
@@ -616,41 +618,53 @@
         CKEDITOR.replace('extension_reason');
 
         $('#createTaskForm').on('submit', function (e) {
-            e.preventDefault(); // Prevent the form from submitting the usual way
-            let formData = $(this).serialize();
+        e.preventDefault(); // Prevent the form from submitting the usual way
 
-            let messageData = CKEDITOR.instances['description'].getData();
+        // Serialize the form data
+        let formData = $(this).serialize();
 
-            // Append CKEditor data to the serialized string
-            formData += '&description=' + encodeURIComponent(messageData);
+        // Get CKEditor content
+        let messageData = CKEDITOR.instances['description'].getData();
 
-            $.ajax({
-                url: "{{ route('work_plan.store') }}",
-                type: "POST",
-                data: formData,
-                success: function (response) {
-                    $('#createTaskModal').modal('hide');
+        // Append CKEditor data to the serialized string
+        formData += '&description=' + encodeURIComponent(messageData);
 
-                    Swal.fire({
-                        title: 'Task Created!',
-                        text: 'Your task was created successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        location.reload();
-                    });
-                },
-                error: function (xhr) {
-                    $('#createTaskModal').modal('hide');
-                    Swal.fire({
-                        title: 'Error',
-                        text: xhr.responseJSON.message || 'Failed to create task.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
+        // Get the selected task's `data-project-title` attribute
+        let selectedTask = $('#title').find(':selected');
+        let projectTitleId = selectedTask.data('project-title'); // Extract the `data-project-title`
+
+        // Append projectTitleId to the serialized string
+        if (projectTitleId) {
+            formData += '&projectTitle=' + encodeURIComponent(projectTitleId);
+        }
+
+        $.ajax({
+            url: "{{ route('work_plan.store') }}",
+            type: "POST",
+            data: formData,
+            success: function (response) {
+                $('#createTaskModal').modal('hide');
+                Swal.fire({
+                    title: 'Task Created!',
+                    text: 'Your task was created successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            },
+            error: function (xhr) {
+                $('#createTaskModal').modal('hide');
+                Swal.fire({
+                    title: 'Error',
+                    text: xhr.responseJSON.message || 'Failed to create task.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         });
+    });
+
 
         // Handle form submission via AJAX
         $('#editTaskForm').on('submit', function(event) {
@@ -729,7 +743,7 @@
                         title: 'Update Failed',
                         text: response.message,
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK' 
                     });
                 }
             },

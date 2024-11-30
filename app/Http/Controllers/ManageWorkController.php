@@ -121,7 +121,7 @@ class ManageWorkController extends Controller
         foreach ($request -> user_id as $id) {
             $task = new WorkPlan();
             $task->task_id = $request->title;
-            $task->title_name_id = $request->title;
+            $task->title_name_id = $request->projectId;
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
             $task->work_status = $request->work_status;
@@ -131,17 +131,17 @@ class ManageWorkController extends Controller
             // Format the submit date
             $submitDateFormatted = Carbon::parse($request->last_submit_date)->locale('en')->isoFormat('DD MMMM YYYY');
             $notification = new Notification();
-            $notification->title = 'New Task has assigned to you';
+            $notification->title = 'New Work Plan has assigned to you';
             $notification->from_user_id = $user->id;
             $notification->to_user_id = $id;
             $notification->link = route('tasks.index');
-            $notification->text = "You have a new task, please complete it by {$submitDateFormatted} or it will mark as incomplete.";
+            $notification->text = "You have a new Work Plan, please complete it by {$submitDateFormatted} or it will mark as incomplete.";
             $notification->save();
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'Task created successfully',
+            'message' => 'Work Plan created successfully',
             'data' => [
                 'task_id' => $task->id,
                 'title' => $task->title_name_id,
@@ -220,7 +220,7 @@ class ManageWorkController extends Controller
             $task = WorkPlan::findOrFail($id);
             $task->task_id = $request->title;
             $task->user_id = $request->task_user_id;
-            $task->title_name_id = $request->title;
+            $task->title_name_id = $request->projectId;
             $task->description = $request->description;
 
             if ($request->last_submit_date == $task->submit_date) {
@@ -243,9 +243,9 @@ class ManageWorkController extends Controller
             $authUser = Auth::user();
             $userId = User::find($request->task_user_id);
 
-            Notification::create([ // Assuming you're using custom notifications model
-                'title' => "{$authUser->name} Task edited your task",
-                'text' => "{$authUser->name} has edited your task. Please check your Pending Task tab",
+            Notification::create([ 
+                'title' => "{$authUser->name} has edited your work plan",
+                'text' => "{$authUser->name} has edited your work plan. Please check your Pending work plan tab",
                 'from_user_id' => $authUser->id,
                 'to_user_id' => $userId->id,
                 'link' => route('asign_tasks.index'),
@@ -274,7 +274,7 @@ class ManageWorkController extends Controller
        $task = WorkPlan::find($id);
        $task->delete();
 
-       return back()->with('success', 'Task deleted successfully.');
+       return back()->with('success', 'work deleted successfully.');
 
     }
     public function incomplete($id)
@@ -284,7 +284,7 @@ class ManageWorkController extends Controller
     $task->save();
 
     
-    return back()->with('success', 'Task marked as Incompleted successfully.');
+    return back()->with('success', 'Work plan marked as Incompleted successfully.');
 }
 public function completed($id)
 {

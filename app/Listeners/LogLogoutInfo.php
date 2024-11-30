@@ -42,39 +42,51 @@ class LogLogoutInfo
              ->where('status', 0)
              ->get();
      
-// Update each record individually
-foreach ($todayDateUserIds as $loginInfo) {
-    // Check if the session ID matches the custom session token
-    if ($user->session_id == $sessionToken) {
-        $logoutTime = Carbon::now();
-        $status = 1;
-
-        // Convert login_time to a Carbon instance if it exists
-        if ($loginInfo->login_time) {
-            $loginTime = Carbon::parse($loginInfo->login_time);
-            $loginDuration = $loginTime->diffInSeconds($logoutTime);
-
-            // Manually convert seconds to H:i:s format for the TIME column
-            $hours = floor($loginDuration / 3600);
-            $minutes = floor(($loginDuration % 3600) / 60);
-            $seconds = $loginDuration % 60;
-            $loginHour = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        } else {
-            $loginHour = '00:00:00';
+            foreach ($todayDateUserIds as $loginInfo) {
+            if ($user->session_id == $sessionToken) {
+                $currentDateTime = Carbon::now();
+                $loginTime = Carbon::parse($loginInfo->login_date . ' ' . $loginInfo->login_time);
+                $logoutTime = $currentDateTime;
+        
+                // Check if logout occurs past midnight
+                if ($loginTime->toDateString() !== $currentDateTime->toDateString()) {
+                    $midnight = $loginTime->copy()->endOfDay(); 
+                    $postMidnightDuration = $midnight->diffInSeconds($logoutTime); // Calculate seconds after midnight
+        
+                    // Calculate login hours up to midnight
+                    $preMidnightDuration = $loginTime->diffInSeconds($midnight);
+        
+                    // Convert seconds to H:i:s format
+                    $hours = floor($preMidnightDuration / 3600);
+                    $minutes = floor(($preMidnightDuration % 3600) / 60);
+                    $seconds = $preMidnightDuration % 60;
+                    $preMidnightHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        
+                    // Update the current record
+                    $loginInfo->update([
+                        'logout_time' => $midnight,
+                        'status' => 1,
+                        'ip_address' => request()->getClientIp(),
+                        'login_hour' => $preMidnightHours, // Duration before midnight
+                    ]);
+                } else {
+                    // Regular logout logic for same-day sessions
+                    $loginDuration = $loginTime->diffInSeconds($logoutTime);
+                    $hours = floor($loginDuration / 3600);
+                    $minutes = floor(($loginDuration % 3600) / 60);
+                    $seconds = $loginDuration % 60;
+                    $loginHour = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        
+                    $loginInfo->update([
+                        'logout_time' => $logoutTime,
+                        'status' => 1,
+                        'ip_address' => request()->getClientIp(),
+                        'login_hour' => $loginHour,
+                    ]);
+                }
+            }
         }
-    } else {
-        $logoutTime = null;
-        $status = 0;
-        $loginHour = '00:00:00';
-    }
-    // Update the loginInfo record
-    $loginInfo->update([
-        'logout_time' => $logoutTime,
-        'ip_address' => request()->getClientIp(),
-        'status' => $status,
-        'login_hour' => $loginHour,
-    ]);
-}
+
          // If no records were found, create a new LoginInfo entry
          if ($todayDateUserIds->isEmpty()) {
              LoginInfo::create([

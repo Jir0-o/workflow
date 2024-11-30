@@ -39,7 +39,9 @@
                                         @if($assignedTasks->isNotEmpty())
                                             <option value="">Select your task</option>
                                             @foreach($assignedTasks as $task)
-                                                <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                                <option value="{{ $task->id }}" data-project-title="{{ $task->title_name_id }}">
+                                                    {{ $task->task_title}}
+                                                </option>
                                             @endforeach
                                         @else
                                             <option value="" disabled selected>
@@ -192,7 +194,7 @@
         </div>
     </div>
 
-<!-- Edit assign task Modal -->
+<!-- Edit assign work Modal -->
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -219,7 +221,7 @@
                             @if($assignedTasks->isNotEmpty())
                                 <option value="">Select your task</option>
                                 @foreach($assignedTasks as $task)
-                                    <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                    <option value="{{ $task->id }}" data-project-title="{{ $task->title_name_id }}">{{ $task->task_title }}</option>
                                 @endforeach
                             @else
                                 <option value="" disabled selected>
@@ -301,7 +303,7 @@
                             @if($assignedTasks->isNotEmpty())
                                 <option value="">Select your task</option>
                                 @foreach($assignedTasks as $task)
-                                    <option value="{{ $task->id }}">{{ $task->task_title }}</option>
+                                    <option value="{{ $task->id }}" data-project-title="{{ $task->title_name_id }}">{{ $task->task_title }}</option>
                                 @endforeach
                             @else
                                 <option value="" disabled selected>
@@ -1046,6 +1048,11 @@ $(document).ready(function(){
             formData.append('description', CKEDITOR.instances['task_description'].getData());
             formData.append('last_submit_date', $('#last_submit_date').val());
             formData.append('work_status', $('#work_submit_status').val());
+            // Fetch data-project-title from selected <option>
+            let selectedTask = $('#task_title').find(':selected');
+            let projectId = selectedTask.data('project-title') || null; 
+            console.log('Selected Project ID:', projectId); 
+            formData.append('projectId', projectId);
 
             // Append selected user IDs from modal
             $('#task_user_id').val().forEach(userId => {
@@ -1157,6 +1164,8 @@ $(document).ready(function(){
                 submit_by_date: $('#submit_submit_date').val(),
                 work_status: $('#submit_work_status').val(),
                 status: $('#submit_status').val(),
+                // Retrieve the data-project-title attribute
+                projectId: $('#Submit_title').find(':selected').data('project-title')
             },
             success: function(response) {
                 if (response.status) {
@@ -1211,6 +1220,8 @@ $(document).ready(function(){
                 last_submit_date: $('#Edit_last_submit_date').val(),
                 work_status: $('#work_status').val(),
                 status: $('#status').val(),
+                // Retrieve the data-project-title attribute
+                projectId: $('#title').find(':selected').data('project-title')
             },
             success: function(response) {
                 if (response.status) {
@@ -1261,7 +1272,7 @@ $(document).ready(function(){
                 if (response.status) {
                     console.log(response);
                     $('#edit_task_id').val(taskId);
-                    $('#title').val(response.data.tasks.title_name_id);
+                    $('#title').val(response.data.tasks.task_id);
                     $('#user_id').val(response.data.tasks.user_id);
                     CKEDITOR.instances.description.setData(response.data.tasks.description);
                     $('#Edit_last_submit_date').val(response.data.tasks.submit_date);
@@ -1299,7 +1310,7 @@ $(document).ready(function(){
         success: function(response) {
             if (response.status) {
                 $('#edit_submit_task_id').val(taskId);
-                $('#Submit_title').val(response.data.tasks.title_name_id);
+                $('#Submit_title').val(response.data.tasks.task_id);
                 $('#submit_user_id').val(response.data.tasks.user_id);
                 CKEDITOR.instances.submit_description.setData(response.data.tasks.description);
                 $('#submit_last_submit_date').val(response.data.tasks.submit_date); 

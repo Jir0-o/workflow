@@ -28,9 +28,9 @@ class CheckMidnightLogout
                 if ($loginInfo) {
                     $loginDate = Carbon::parse($loginInfo->login_date)->toDateString();
                     $currentDate = Carbon::now()->toDateString();
-
+ 
                     // Check if it's a new day since the last login
-                    if ($loginDate !== $currentDate) {
+                    if ($loginDate !== $currentDate) { 
                         Auth::guard('web')->logout();
                         return redirect()->route('login')->withErrors(['message' => 'You login session has expired. Please log in again.']);
                     }

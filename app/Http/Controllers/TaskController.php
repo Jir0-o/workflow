@@ -134,7 +134,6 @@ class TaskController extends Controller
         $task->title_name_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
-        $task->work_status = $request->status;
         $task->save();
 
         // Retrieve all users with the "Super Admin" role
@@ -280,8 +279,20 @@ class TaskController extends Controller
 {
 
     $task = Task::findOrFail($id);
+    $startTime = Carbon::parse($task->created_at);
+    $currentDateTime = Carbon::now();
+
+    $totalDuration = $startTime->diffInSeconds($currentDateTime);
+
+    // Convert seconds to H:i:s format
+    $hours = floor($totalDuration / 3600);
+    $minutes = floor(($totalDuration % 3600) / 60);
+    $seconds = $totalDuration % 60;
+    $hoursHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
     $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
+    $task->work_hour = $hoursHours;
     $task->save();
 
     // Find the role by name
