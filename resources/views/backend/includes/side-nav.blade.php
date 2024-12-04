@@ -121,26 +121,30 @@
                     </ul>
                 </li>
                 @endcan
-                @can('View Other Tabs')
+                @if(auth()->user()->can('View Other Tabs') || auth()->user()->can('View Application'))
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">Report & Other Section</span>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
-                        <div data-i18n="Layouts">Other Tabs (Beta)</div>
+                        <div data-i18n="Layouts">Other Tabs</div>
                     </a>
                     <ul class="menu-sub">
+                        @can('View Notice Board')
                         <li class="menu-item">
                             <a href="{{ route('notice.index') }}" class="menu-link">
                                 <div data-i18n="Without menu">Notice Board</div>
                             </a>
                         </li>
+                        @endcan
+                        @can('View Application')
                         <li class="menu-item">
-                            <a href="{{ route('loginReport.view') }}" class="menu-link">
+                            <a href="{{ route('application.index') }}" class="menu-link">
                                 <div data-i18n="Without navbar">Application</div>
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
                 @endcan

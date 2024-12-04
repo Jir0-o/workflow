@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AsignTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginDetailsController;
@@ -42,6 +43,7 @@ Route::middleware([
     Route::resource('notice', NoticeController::class);
     Route::resource('work_plan', WorkPlanController::class);
     Route::resource('manage_work', ManageWorkController::class);
+    Route::resource('application', ApplicationController::class);
 
 
     Route::get('details_login' ,[LoginDetailsController::class, 'detailsLogin'])->name('details_login.edit');
@@ -104,6 +106,13 @@ Route::middleware([
     //notice route
     Route::PATCH('/notice/{notice}/end', [NoticeController::class, 'noticeEnd'])->name('notice.end');
     Route::PATCH('/notice/{notice}/start', [NoticeController::class, 'noticeStart'])->name('notice.start');
-    
 
+    //application route
+    Route::post('/applications/{id}/accept', [ApplicationController::class, 'accept'])->name('application.accept');
+    Route::post('/applications/{id}/reject', [ApplicationController::class, 'reject'])->name('application.reject');
+    Route::delete('/applications/{id}/cancel', [ApplicationController::class, 'cancel'])->name('application.cancel');
+    Route::post('/application/{id}/return', [ApplicationController::class, 'return'])->name('application.return');
+    Route::post('/application/{id}/send', [ApplicationController::class, 'send'])->name('application.send');
+
+    
 });
