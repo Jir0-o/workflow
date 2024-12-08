@@ -32,6 +32,7 @@
                                     @method('PUT')
                                 <input type="hidden" id="taskId" name="taskId"> <!-- Hidden input for task ID -->
                                 <textarea id="extension_reason"></textarea>
+                                <span class="text-danger error-extension_reason"></span>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -51,11 +52,12 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="createTaskForm" action="{{ route('tasks.store') }}" method="POST">
+                            <form id="createTaskForm" method="POST">
                                 @csrf
                                 <div class="mb-3">
                                     <label for="task_title">Task Title</label>
                                     <input id="task_title" name="task_title" type="text" required class="form-control" placeholder="Write a task title">
+                                    <span class="text-danger error-task_title"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="title">Select Title</label>
@@ -77,14 +79,17 @@
                                             </option>
                                         @endif
                                     </select>
+                                    <span class="text-danger error-title"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="description">Task Description</label>
                                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
+                                    <span class="text-danger error-description"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="last_submit_date">Last Submit Date</label>
                                     <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" placeholder="Date">
+                                    <span class="text-danger error-last_submit_date"></span>
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Create Task</button>
@@ -93,6 +98,7 @@
                     </div>
                 </div>
             </div>
+
 
             <div class="modal fade" id="taskTableModal" tabindex="-1" aria-labelledby="taskTableModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -658,14 +664,19 @@
                         location.reload(); 
                     });
                 },
-                error: function (xhr) {
-                    $('#createTaskModal').modal('hide');
-                    Swal.fire({
-                        title: 'Error',
-                        text: xhr.responseJSON.message || 'Failed to create task.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+                error: function (xhr) { 
+                    $('.text-danger').text('');
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            $('.error-' + key).text(value[0]); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });
@@ -704,13 +715,19 @@
                         });
                     }
                 },
-                error: function(xhr) {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Error updating task: ' + xhr.responseJSON.message,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+                error: function (xhr) { 
+                    $('.text-danger').text('');
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            $('.error-' + key).text(value[0]); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });
@@ -819,13 +836,19 @@
                     });
                 }
             },
-            error: function(xhr) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Error updating task: ' + xhr.responseJSON.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+            error: function (xhr) { 
+                $('.text-danger').text('');
+                if (xhr.status === 422) {
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        $('.error-' + key).text(value[0]); 
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong. Please try again later.',
+                        icon: 'error',
+                    });
+                }
             }
         });
     });

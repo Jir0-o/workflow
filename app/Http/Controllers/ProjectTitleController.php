@@ -9,6 +9,7 @@ use App\Models\WorkPlan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ProjectTitleController extends Controller
 {
@@ -61,9 +62,9 @@ class ProjectTitleController extends Controller
              // Validate the request data
              $validated = $request->validate([
                  'title' => 'required|string|max:255',
-                 'start_date' => 'required|date',
+                 'start_date' => 'required|date|after_or_equal:today',
                  'end_date' => 'required|date|after_or_equal:start_date',
-                 'user_id' => 'required|array|min:1', 
+                 'user_id' => 'required|array|min:1',
                  'user_id.*' => 'exists:users,id' 
              ]);
 
@@ -88,16 +89,21 @@ class ProjectTitleController extends Controller
                  ]
              ], 201); 
      
-         } catch (\Exception $e) {
-             Log::error('Error creating project: '.$e->getMessage());
-     
-             // Return a JSON error response
-             return response()->json([
-                 'status' => false,
-                 'message' => 'Failed to create project',
-                 'error' => $e->getMessage()
-             ], 500); 
-         }
+            } catch (ValidationException $e) {
+                // Catch validation errors and return them with a 422 status
+                return response()->json([
+                    'status' => false,
+                    'errors' => $e->validator->errors(),
+                ], 422);
+            } catch (\Exception $e) {
+                Log::error('Error creating project: ' . $e->getMessage());
+        
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Failed to create project',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
      }
      
 
@@ -174,14 +180,19 @@ class ProjectTitleController extends Controller
                 'user_ids' => $request->user_id,
             ]
         ], 201);
+    } catch (ValidationException $e) {
+        // Catch validation errors and return them with a 422 status
+        return response()->json([
+            'status' => false,
+            'errors' => $e->validator->errors(),
+        ], 422);
     } catch (\Exception $e) {
-        Log::error('Error updating project: '.$e->getMessage());
+        Log::error('Error updating project: ' . $e->getMessage());
 
-        // Return a JSON error response
         return response()->json([
             'status' => false,
             'message' => 'Failed to update project',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
         ], 500);
     }
 

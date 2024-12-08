@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class ApplicationController extends Controller
 {
@@ -86,42 +89,77 @@ class ApplicationController extends Controller
                 'leave_end_date' => 'required|date|after_or_equal:leave_start_date',
                 'reason' => 'required|string',
             ]);
-            $AuthUser = Auth::user();
+    
+            // Find the role by name
+            $role = Role::where('name', 'Super Admin')->first();
+    
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'The role "Super Admin" does not exist.',
+                ], 422);
+            }
+    
+            // Get authenticated user
+            $authUser = Auth::user();
             $todayDate = Carbon::now()->toDateString();
-
+    
             // Store the application in the database
             $application = new Application();
-            $application->user_id = $AuthUser->id;
+            $application->user_id = $authUser->id;
             $application->date = $todayDate;
-            $application->name = $AuthUser->name;
+            $application->name = $authUser->name;
             $application->role = $request->role;
             $application->leave_type = $request->leave_type;
             $application->days_number = $request->days_requested;
             $application->from_date = $request->leave_start_date;
             $application->end_date = $request->leave_end_date;
             $application->reason = $request->reason;
-            $application->email = $AuthUser->email;
+            $application->email = $authUser->email;
             $application->status = 0;
             $application->save();
-
+    
+            // Retrieve all users with the "Super Admin" role
+            $superAdminUsers = User::role($role->name)->get();
+    
+            // Create notifications for each "Super Admin" user
+            foreach ($superAdminUsers as $superAdminUser) {
+                Notification::create([
+                    'title' => "{$authUser->name} submitted a new leave application",
+                    'text' => "{$authUser->name} has requested leave from. Waitting for approval " .
+                        Carbon::parse($request->leave_start_date)->format('j F Y') . " to " .
+                        Carbon::parse($request->leave_end_date)->format('j F Y'),
+                    'from_user_id' => $authUser->id,
+                    'to_user_id' => $superAdminUser->id,
+                    'link' => route('application.index'), 
+                ]);
+            }
+    
             return response()->json([
                 'status' => true,
-                'message' => 'Application created successfully',
-                'data' => [
-                    'application'=> $application 
-                ],
-            ]);
+                'message' => 'Application submitted successfully!',
+                'data' => $application,
+            ], 201);
     
-        } catch (\Exception $e) {
-            Log::error('Error creating project: '.$e->getMessage());
-
+        } catch (ValidationException $e) {
+            // Catch validation errors and return them with a 422 status
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to create application',
-                'error' => $e->getMessage()
-            ], 500); 
+                'errors' => $e->validator->errors(),
+            ], 422);
+    
+        } catch (\Exception $e) {
+            // Log and handle unexpected errors
+            Log::error('Error submitting leave application: ' . $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to submit leave application.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
+    
 
     /**
      * Display the specified resource.
@@ -199,6 +237,19 @@ class ApplicationController extends Controller
             $application->reason = $request->reason;
             $application->save();
 
+            // Retrieve all users with the "Super Admin" role
+            $users = User::find($application->user_id);
+            $authUser = auth()->user();
+    
+            // Create and send notifications to all "Super Admin" users
+            Notification::create([
+                'title' => "{$authUser->name} has updated you application",
+                'text' => "{$authUser->name} has updated your application. Please check your Application tab",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $users->id,
+                'link' => route('application.index'), 
+            ]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Application updated successfully',
@@ -206,7 +257,7 @@ class ApplicationController extends Controller
                     'application'=> $application 
                 ],
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation error',
@@ -224,6 +275,19 @@ class ApplicationController extends Controller
         if ($application) {
             $application->delete();
         }
+
+        // Retrieve all users with the "Super Admin" role
+        $users = User::find($application->user_id);
+        $authUser = auth()->user();
+
+        // Create and send notifications to all "Super Admin" users
+        Notification::create([
+            'title' => "{$authUser->name} has deleted your application",
+            'text' => "{$authUser->name} has deleted your application.",
+            'from_user_id' => $authUser->id,
+            'to_user_id' => $users->id,
+            'link' => route('application.index'), 
+        ]);
     
         return back()->with('success', 'Application deleted successfully.');
     }  
@@ -233,6 +297,19 @@ class ApplicationController extends Controller
             $application = Application::findOrFail($id); 
             $application->status = 1; 
             $application->save();
+
+            // Retrieve all users with the "Super Admin" role
+            $users = User::find($application->user_id);
+            $authUser = auth()->user();
+    
+            // Create and send notifications to all "Super Admin" users
+            Notification::create([
+                'title' => "{$authUser->name} has accepted your application",
+                'text' => "{$authUser->name} has accepted your application. Please check your Application accepted tab",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $users->id,
+                'link' => route('application.index'), 
+            ]);
     
             return response()->json([
                 'status' => true,
@@ -255,6 +332,19 @@ class ApplicationController extends Controller
             $application = Application::findOrFail($id); 
             $application->status = 2; 
             $application->save();
+
+            // Retrieve all users with the "Super Admin" role
+            $users = User::find($application->user_id);
+            $authUser = auth()->user();
+    
+            // Create and send notifications to all "Super Admin" users
+            Notification::create([
+                'title' => "{$authUser->name} has rejected your application",
+                'text' => "{$authUser->name} has rejected your application. Please check your Application rejected tab",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $users->id,
+                'link' => route('application.index'), 
+            ]);
     
             return response()->json([
                 'status' => true,
@@ -276,6 +366,33 @@ class ApplicationController extends Controller
         try {
             $application = Application::findOrFail($id);
             $application->delete();
+
+            // Find the role by name
+            $role = Role::where('name', 'Super Admin')->first();
+    
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'The role "Super Admin" does not exist.',
+                ], 422);
+            }
+
+            // Get authenticated user
+            $authUser = Auth::user();
+    
+            // Retrieve all users with the "Super Admin" role
+            $superAdminUsers = User::role($role->name)->get();
+    
+            // Create notifications for each "Super Admin" user
+            foreach ($superAdminUsers as $superAdminUser) {
+                Notification::create([
+                    'title' => "{$authUser->name} has canceled/deleted a application",
+                    'text' => "{$authUser->name} has canceled/deleted a application from.",
+                    'from_user_id' => $authUser->id,
+                    'to_user_id' => $superAdminUser->id,
+                    'link' => route('application.index'), 
+                ]);
+            }
     
             return response()->json([
                 'status' => true,
@@ -302,6 +419,19 @@ class ApplicationController extends Controller
             $application->return_reason = $request->reason; 
             $application->save();
 
+            // Retrieve all users with the "Super Admin" role
+            $users = User::find($application->user_id);
+            $authUser = auth()->user();
+    
+            // Create and send notifications to all "Super Admin" users
+            Notification::create([
+                'title' => "{$authUser->name} has returned your application",
+                'text' => "{$authUser->name} has returned your application. Please check your Application returned tab. Return reason: {$request->reason}",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $users->id,
+                'link' => route('application.index'), 
+            ]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Application returned successfully.',
@@ -322,6 +452,33 @@ class ApplicationController extends Controller
             $application = Application::findOrFail($id);
             $application->status = 0; 
             $application->save();
+
+            // Find the role by name
+            $role = Role::where('name', 'Super Admin')->first();
+    
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'The role "Super Admin" does not exist.',
+                ], 422);
+            }
+
+            // Get authenticated user
+            $authUser = Auth::user();
+    
+            // Retrieve all users with the "Super Admin" role
+            $superAdminUsers = User::role($role->name)->get();
+    
+            // Create notifications for each "Super Admin" user
+            foreach ($superAdminUsers as $superAdminUser) {
+                Notification::create([
+                    'title' => "{$authUser->name} has resend a returned application",
+                    'text' => "{$authUser->name} has resend a returned application from. Waitting for approval",
+                    'from_user_id' => $authUser->id,
+                    'to_user_id' => $superAdminUser->id,
+                    'link' => route('application.index'), 
+                ]);
+            }
 
             return response()->json([
                 'status' => true,

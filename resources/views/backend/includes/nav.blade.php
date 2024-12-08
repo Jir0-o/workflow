@@ -33,7 +33,7 @@
         padding: 3px 6px;
     }
 
-    .notification-read {
+    .notifications-read {
     opacity: 0.6; 
     }
 
@@ -327,7 +327,7 @@ $(document).ready(function() {
                     });
 
                     // Determine if the notification is read
-                    let readClass = notification.is_read ? 'notification-read' : '';
+                    let readClass = notification.is_read == 1 ? 'notifications-read' : '';
 
                     let notificationItem = `
                         <div class="d-flex justify-content-between align-items-center mb-2 ${readClass}">
@@ -335,7 +335,7 @@ $(document).ready(function() {
                                onclick="markAsRead(${notification.id}, this)" style="flex-grow: 1;">
                                 <div class="d-flex align-items-center">
                                     <!-- User Image -->
-                                   <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
+                                    <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
                                     alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                     <div>
                                         <strong>${notification.title}</strong>

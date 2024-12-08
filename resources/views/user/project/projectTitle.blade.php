@@ -31,6 +31,7 @@
                                 <div class="mb-3">
                                     <label for="title">Project Name</label>
                                     <input id="title" name="title" type="text" required class="form-control" placeholder="Title Name">
+                                    <span class="text-danger error-title"></span>
                                 </div>
 
                                 <div class="mb-3">
@@ -41,21 +42,25 @@
                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                                         @endforeach 
                                     </select>
+                                    <span class="text-danger error-user_id"></span>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="description">Project Description (Optional)</label>
                                     <textarea id="description" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
+                                    <span class="text-danger error-description"></span>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="start_date">Project Start Date</label>
                                     <input id="start_date" name="start_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
+                                    <span class="text-danger error-start_date"></span>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="end_date">Project End Date</label>
                                     <input id="end_date" name="end_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
+                                    <span class="text-danger error-end_date"></span>
                                 </div>
                             </form>
                         </div>
@@ -81,22 +86,27 @@
                                 <div class="mb-3">
                                     <label for="editTitle">Project Name</label>
                                     <input id="editTitle" name="title" type="text" required class="form-control" placeholder="Title Name">
+                                    <span class="text-danger error-title"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="editUser">User Name</label>
                                     <select id="editUser" name="user_id[]" class="form-control" multiple="multiple" required></select>
+                                    <span class="text-danger error-user_id"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="editDescription">Project Description (Not required)</label>
                                     <textarea id="editDescription" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
+                                    <span class="text-danger error-description"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="editStartDate">Project Start Date</label>
                                     <input id="editStartDate" name="start_date" type="date" required class="form-control" placeholder="Date">
+                                    <span class="text-danger error-start_date"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label for="editEndDate">Project End Date</label>
                                     <input id="editEndDate" name="end_date" type="date" required class="form-control" placeholder="Date">
+                                    <span class="text-danger error-end_date"></span>
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -623,18 +633,19 @@
                     });
                     // Optionally, refresh the page or update the project list dynamically
                 },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'There was an error creating the project.',
-                        icon: 'error',
-                        confirmButtonText: 'Try Again'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload(); // Reload the page
-                        }
-                    });
+                error: function (xhr) { 
+                    $('.text-danger').text('');
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            $('.error-' + key).text(value[0]); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });
@@ -708,8 +719,19 @@
                             alert('Error updating project');
                         }
                     },
-                    error: function() {
-                        alert('Failed to update project');
+                    error: function (xhr) { 
+                        $('.text-danger').text('');
+                        if (xhr.status === 422) {
+                            $.each(xhr.responseJSON.errors, function (key, value) {
+                                $('.error-' + key).text(value[0]); 
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong. Please try again later.',
+                                icon: 'error',
+                            });
+                        }
                     }
                 });
             });

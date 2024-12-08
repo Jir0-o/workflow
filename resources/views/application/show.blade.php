@@ -147,19 +147,16 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    @if (Auth::user()->hasRole('Super Admin'))
                     @can('Accept/Reject Application')
                     <button type="button" class="btn btn-success" id="acceptApplicationBtn" data-id="">Accept</button>
                     <button type="button" class="btn btn-danger" id="rejectApplicationBtn" data-id="">Reject</button>
                     @endcan
-                    @else
                     @can('Send Application')
                     <button type="button" class="btn btn-success" id="sendApplicationBtn" data-id="">Send</button>
                     @endcan
                     @can('Cancel Application')
                     <button type="button" class="btn btn-secondary" id="cancelApplicationBtn" data-id="">Cancel</button>
                     @endcan
-                    @endif
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

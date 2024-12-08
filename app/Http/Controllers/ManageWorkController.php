@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Role;
 
@@ -111,10 +112,23 @@ class ManageWorkController extends Controller
         try {
         $request->validate([
             'description' => 'required',
-            'title'=> 'required',
+            'title'=> 'required|exists:tasks,id',
+            'last_submit_date'=> 'required|date|after_or_equal:today',
+            'work_status'=> 'required',
             'user_id' => 'required|array|min:1',
             'user_id.*' => 'exists:users,id',
         ]);
+
+        // Retrieve the task using the ID from the `title` field
+        $task = Task::find($request->title);
+
+        // Check if the last_submit_date is greater than the task_end_date
+        if (Carbon::parse($request->last_submit_date)->greaterThan(Carbon::parse($task->submit_date))) {
+            return response()->json([
+                'status' => false,
+                'errors' => ['last_submit_date' => ['The last submit date cannot be more than the task\'s end date. End date: ' .  Carbon::parse($task->submit_date)->format('j F Y')]],
+            ], 422);
+        }
 
         $user = Auth::user();
     
@@ -151,16 +165,20 @@ class ManageWorkController extends Controller
             ],
         ]);
 
-    } catch (\Exception $e) {
-        Log::error('Error creating project: '.$e->getMessage());
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'errors' => $e->validator->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error creating work plan: ' . $e->getMessage());
 
-        // Return a JSON error response
-        return response()->json([
-            'status' => false,
-            'message' => 'Failed to create project',
-            'error' => $e->getMessage()
-        ], 500); 
-    }
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create work plan',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -210,8 +228,22 @@ class ManageWorkController extends Controller
     {
         $request->validate([
             'description' => 'required',
-
+            'title'=> 'required|exists:tasks,id',
+            'last_submit_date'=> 'required|date',
+            'work_status'=> 'required',
+            'task_user_id'=> ' required',
         ]);
+
+        // Retrieve the task using the ID from the `title` field
+        $task = Task::find($request->title);
+
+        // Check if the last_submit_date is greater than the task_end_date
+        if (Carbon::parse($request->last_submit_date)->greaterThan(Carbon::parse($task->submit_date))) {
+            return response()->json([
+                'status' => false,
+                'errors' => ['last_submit_date' => ['The last submit date cannot be more than the task\'s end date. End date: ' .  Carbon::parse($task->submit_date)->format('j F Y')]],
+            ], 422);
+        }
 
         //today's date
         $currentDate = Carbon::now()->toDateString();
@@ -254,14 +286,22 @@ class ManageWorkController extends Controller
             // Return JSON response for AJAX
             return response()->json([
                 'status' => true,
-                'message' => 'Assign Task edited successfully.',
+                'message' => 'Work plan edited successfully.',
                 'data' => $task
             ], 200);
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
+            // Catch validation errors and return them with a 422 status
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to update task',
-                'error' => $e->getMessage()
+                'errors' => $e->validator->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error updating work: ' . $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update work',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

@@ -53,6 +53,7 @@
                                     <button type="button" class="btn btn-link p-0 ml-2" data-bs-toggle="modal" data-bs-target="#newAssignTaskModal">
                                         <i class="fas fa-plus-circle" style="font-size: 24px; color: #007bff;"></i>
                                     </button>
+                                    <span class="text-danger error-title"></span>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -63,10 +64,12 @@
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach 
                                 </select>
+                                <span class="text-danger error-user_id"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="task_description">Work Description</label>
                                 <textarea id="task_description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
+                                <span class="text-danger error-description"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="work_status">Work Status</label>
@@ -74,10 +77,12 @@
                                     <option value="Work From Home">Work From Home</option>
                                     <option value="Work From Office">Work From Office</option>
                                 </select>
+                                <span class="text-danger error-work_status"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="last_submit_date">Last Submit Date</label>
                                 <input id="last_submit_date" name="last_submit_date" type="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                <span class="text-danger error-last_submit_date"></span>
                             </div>
                         </form>
                     </div>
@@ -103,6 +108,7 @@
                             <div class="mb-3">
                                 <label for="modal_title">Project Name</label>
                                 <input id="modal_title" name="title" type="text" required class="form-control" placeholder="Title Name">
+                                <span class="text-danger error-title"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="modal_user_id">Assign User</label>
@@ -112,18 +118,22 @@
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach 
                                 </select>
+                                <span class="text-danger error-user_id"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="modal_description">Project Description (Optional)</label>
                                 <textarea id="modal_description" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
+                                <span class="text-danger error-description"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="modal_start_date">Project Start Date</label>
                                 <input id="modal_start_date" name="start_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
+                                <span class="text-danger error-start_date"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="modal_end_date">Project End Date</label>
                                 <input id="modal_end_date" name="end_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
+                                <span class="text-danger error-end_date"></span>
                             </div>
                         </form>
                     </div>
@@ -151,6 +161,7 @@
                         <div class="mb-3">
                             <label for="work_title">Task Title</label>
                             <input id="work_title" name="work_title" type="text" required class="form-control" placeholder="Write a task title">
+                            <span class="text-danger error-work_title"></span>
                         </div>
                         <div class="mb-3">
                             <label for="work_task_title">Project Title</label>
@@ -161,6 +172,7 @@
                                         <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
                                     @endforeach
                                 </select>
+                                <span class="text-danger error-work_task_title"></span>
                                 <!-- Button to open Create Project Sub-Modal -->
                                 <button type="button" class="btn btn-link p-0 ml-2" data-bs-toggle="modal" data-bs-target="#createProjectModal">
                                     <i class="fas fa-plus-circle" style="font-size: 24px; color: #007bff;"></i>
@@ -175,14 +187,17 @@
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach 
                             </select>
+                            <span class="text-danger error-work_user_id"></span>
                         </div>
                         <div class="mb-3">
                             <label for="work_description">Task Description</label>
                             <textarea id="work_description" name="work_description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
+                            <span class="text-danger error-work_description"></span>
                         </div>
                         <div class="mb-3">
                             <label for="work_submit_date">Last Submit Date</label>
                             <input id="work_submit_date" name="work_submit_date" type="date" class="form-control" value="{{ date('Y-m-d') }}">
+                            <span class="text-danger error-work_submit_date"></span>
                         </div>
                     </form>
                 </div>
@@ -229,6 +244,7 @@
                                 </option>
                             @endif
                         </select>
+                        <span class="text-danger error-title"></span>
                     </div>
 
                     <div class="mb-3">
@@ -238,16 +254,19 @@
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
                         </select>
+                        <span class="text-danger error-user_id"></span>
                     </div>
 
                     <div class="mb-3">
                         <label for="description">Work Description</label>
                         <textarea id="description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
+                        <span class="text-danger error-description"></span>
                     </div>
 
                     <div class="mb-3">
                         <label for="last_submit_date">Due Date</label>
                         <input id="Edit_last_submit_date" name="last_submit_date" type="date" class="form-control">
+                        <span class="text-danger error-last_submit_date"></span>
                     </div>
                     <div class="mb-3">
                         <label for="work_status">Work Status</label>
@@ -255,6 +274,7 @@
                             <option value="Work From Home">Work From Home</option>
                             <option value="Work From Office">Work From Office</option>
                         </select>
+                        <span class="text-danger error-work_status"></span>
                     </div>
 
                     <div class="mb-3">
@@ -265,6 +285,7 @@
                             <option value="completed">Completed</option>
                             <option value="in_progress">In Progress</option>
                         </select>
+                        <span class="text-danger error-status"></span>
                     </div>
                 </form>
             </div>
@@ -311,6 +332,7 @@
                                 </option>
                             @endif
                         </select>
+                        <span class="text-danger error-title"></span>
                     </div>
 
                     <div class="mb-3">
@@ -320,21 +342,25 @@
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
                         </select>
+                        <span class="text-danger error-user_id"></span>
                     </div>
 
                     <div class="mb-3">
                         <label for="submit_description">Work Description</label>
                         <textarea id="submit_description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
+                        <span class="text-danger error-description"></span>
                     </div>
 
                     <div class="mb-3">
                         <label for="submit_last_submit_date">Due Date</label>
                         <input id="submit_last_submit_date" name="last_submit_date" type="date" class="form-control">
+                        <span class="text-danger error-last_submit_date"></span>
                     </div>
 
                     <div class="mb-3">
                         <label for="submit_submit_date">Submitted Date</label>
                         <input id="submit_submit_date" name="submit_date" type="datetime-local" class="form-control">
+                        <span class="text-danger error-submit_date"></span>
                     </div>
 
                     <div class="mb-3">
@@ -343,6 +369,7 @@
                             <option value="Work From Home">Work From Home</option>
                             <option value="Work From Office">Work From Office</option>
                         </select>
+                        <span class="text-danger error-work_status"></span>
                     </div>
 
                     <div class="mb-3">
@@ -353,6 +380,7 @@
                             <option value="completed">Completed</option>
                             <option value="in_progress">In Progress</option>
                         </select>
+                        <span class="text-danger error-status"></span>
                     </div>
                 </form>
             </div>
@@ -1021,18 +1049,20 @@ $(document).ready(function(){
                         }
                     });
                 },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'There was an error creating the project.',
-                        icon: 'error',
-                        confirmButtonText: 'Try Again'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
-                    });
+                error: function (xhr) { 
+                    $('.text-danger').text('');
+
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            $('.error-' + key).text(value[0]); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });
@@ -1078,18 +1108,20 @@ $(document).ready(function(){
                         }
                     });
                 },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'There was an error creating the task.',
-                        icon: 'error',
-                        confirmButtonText: 'Try Again'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
-                    });
+                error: function (xhr) { 
+                    $('.text-danger').text('');
+
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            $('.error-' + key).text(value[0]); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
                 }
             });
         });
@@ -1131,18 +1163,20 @@ $(document).ready(function(){
                     }
                 });
             },
-            error: function(xhr) {
-                console.error('Error:', xhr.responseText);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'There was an error creating the task.',
-                    icon: 'error',
-                    confirmButtonText: 'Try Again'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        location.reload();
-                    }
-                });
+            error: function (xhr) { 
+                $('.text-danger').text('');
+
+                if (xhr.status === 422) {
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        $('.error-' + key).text(value[0]); 
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong. Please try again later.',
+                        icon: 'error',
+                    });
+                }
             }
         });
     });
@@ -1192,15 +1226,20 @@ $(document).ready(function(){
                     });
                 }
             },
-            error: function(xhr) {
-                console.error("Error:", xhr.responseJSON.message); // Debugging
-                // Show error SweetAlert with the specific error message
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Error updating task: ' + xhr.responseJSON.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+            error: function (xhr) { 
+                $('.text-danger').text('');
+
+                if (xhr.status === 422) {
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        $('.error-' + key).text(value[0]); 
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong. Please try again later.',
+                        icon: 'error',
+                    });
+                }
             }
         });
     });
@@ -1246,14 +1285,20 @@ $(document).ready(function(){
                     });
                 }
             },
-            error: function(xhr) {
-                // Show error SweetAlert with the specific error message
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Error updating task: ' + xhr.responseJSON.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+            error: function (xhr) { 
+                $('.text-danger').text('');
+
+                if (xhr.status === 422) {
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        $('.error-' + key).text(value[0]); 
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong. Please try again later.',
+                        icon: 'error',
+                    });
+                }
             }
         });
     });

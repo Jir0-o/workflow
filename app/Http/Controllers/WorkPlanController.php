@@ -10,6 +10,8 @@ use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use PhpParser\Node\Expr\AssignOp\Mod;
 use RealRashid\SweetAlert\Facades\Alert;
 use Spatie\Permission\Models\Role;
@@ -110,10 +112,23 @@ class WorkPlanController extends Controller
     {
         // Validate the incoming request
         $request->validate([
-            'title' => 'required',
+            'title'=> 'required|exists:tasks,id',
             'description' => 'required',
-            'last_submit_date' => 'required|date',
+            'last_submit_date' => 'required|date|after_or_equal:today',
+            'status'=> 'required',
+            'projectTitle'=> 'required|exists:title_names,id',
         ]);
+
+    // Retrieve the task using the ID from the `title` field
+    $task = Task::find($request->title);
+
+    // Check if the last_submit_date is greater than the task_end_date
+    if (Carbon::parse($request->last_submit_date)->greaterThan(Carbon::parse($task->submit_date))) {
+        return response()->json([
+            'status' => false,
+            'errors' => ['last_submit_date' => ['The last submit date cannot be more than the task\'s end date. End date: ' .  Carbon::parse($task->submit_date)->format('j F Y')]],
+        ], 422);
+    }
     // Find the role by name
     $role = Role::where('name', 'Super Admin')->first();
 
@@ -149,16 +164,24 @@ class WorkPlanController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Task created successfully!',
+            'message' => 'work created successfully!',
             'data' => $task
         ], 201);
-    } catch (\Exception $e) {
+    } catch (ValidationException $e) {
+        // Catch validation errors and return them with a 422 status
         return response()->json([
             'status' => false,
-            'message' => 'Failed to create task!',
-            'error' => $e->getMessage()
-        ], 500);
-    }
+            'errors' => $e->validator->errors(),
+        ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error creating work: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create work',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
 
@@ -188,7 +211,7 @@ class WorkPlanController extends Controller
     try {
         // Validate request data
         $request->validate([
-            'message' => 'required|string|max:255', // Added string type and max length for message
+            'message' => 'required|string|max:255', 
         ]);
 
         // Find the role by name
@@ -229,10 +252,19 @@ class WorkPlanController extends Controller
                 'status' => true,
                 'message' => 'Edit message sent to admin successfully.',
             ], 200);
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
+            // Catch validation errors and return them with a 422 status
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to update task: ' . $e->getMessage(),
+                'errors' => $e->validator->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error updating work: ' . $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update work',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

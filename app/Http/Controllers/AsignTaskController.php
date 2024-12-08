@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Role;
 
@@ -108,15 +110,30 @@ class AsignTaskController extends Controller
     public function store(Request $request)
     {
         try {
-        $request->validate([
-            'description' => 'required',
-            'task_title' => 'required',
-            'user_id' => 'required|array|min:1',
-            'user_id.*' => 'exists:users,id',
-        ]);
+            // Validation with automatic response for failures
+            $request->validate([
+                'description' => 'required',
+                'task_title' => 'required',
+                'title' => 'required|exists:title_names,id',
+                'last_submit_date' => 'required|date|after_or_equal:today',
+                'user_id' => 'required|array|min:1',
+                'user_id.*' => 'exists:users,id',
+            ]);
 
-        $user = Auth::user();
+            // Retrieve the project using the ID from the `title` field
+            $project = TitleName::find($request->title);
+
+            // Check if the last_submit_date is greater than the project_end_date
+            if (Carbon::parse($request->last_submit_date)->greaterThan(Carbon::parse($project->end_date))) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['last_submit_date' => ['The last submit date cannot be more than the project\'s end date. End date: ' .  Carbon::parse($project->end_date)->format('j F Y')]],
+                ], 422);
+            }
     
+            $user = Auth::user();
+    
+            // Task creation
             $task = new Task();
             $task->task_title = $request->task_title;
             $task->title_name_id = $request->title;
@@ -124,42 +141,48 @@ class AsignTaskController extends Controller
             $task->submit_date = $request->last_submit_date;
             $task->user_id = implode(',', $request->user_id);
             $task->save();
-
-            foreach ($request -> user_id as $id) {
-            // Format the submit date
-            $submitDateFormatted = Carbon::parse($request->last_submit_date)->locale('en')->isoFormat('DD MMMM YYYY');
-            $notification = new Notification();
-            $notification->title = 'New Task has assigned to you';
-            $notification->from_user_id = $user->id;
-            $notification->to_user_id = $id;
-            $notification->link = route('tasks.index');
-            $notification->text = "You have a new task, please complete it by {$submitDateFormatted} or it will mark as incomplete.";
-            $notification->save();
+    
+            // Notifications
+            foreach ($request->user_id as $id) {
+                $submitDateFormatted = Carbon::parse($request->last_submit_date)->locale('en')->isoFormat('DD MMMM YYYY');
+                $notification = new Notification();
+                $notification->title = 'New Task has been assigned to you';
+                $notification->from_user_id = $user->id;
+                $notification->to_user_id = $id;
+                $notification->link = route('tasks.index');
+                $notification->text = "You have a new task, please complete it by {$submitDateFormatted} or it will be marked as incomplete.";
+                $notification->save();
+            }
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Task created successfully',
+                'data' => [
+                    'task_id' => $task->id,
+                    'title' => $task->title_name_id,
+                    'description' => $task->description,
+                    'submit_date' => $task->submit_date,
+                    'user_id' => $id,
+                ],
+            ]);
+    
+        } catch (ValidationException $e) {
+            // Catch validation errors and return them with a 422 status
+            return response()->json([
+                'status' => false,
+                'errors' => $e->validator->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error creating task: ' . $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create task',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Task created successfully',
-            'data' => [
-                'task_id' => $task->id,
-                'title' => $task->title_name_id,
-                'description' => $task->description,
-                'submit_date' => $task->submit_date,
-                'user_id' => $id,
-            ],
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Error creating project: '.$e->getMessage());
-
-        // Return a JSON error response
-        return response()->json([
-            'status' => false,
-            'message' => 'Failed to create project',
-            'error' => $e->getMessage()
-        ], 500); 
     }
-    }
+    
 
     /**
      * Display the specified resource.
@@ -211,11 +234,23 @@ class AsignTaskController extends Controller
         $request->validate([
             'description' => 'required',
             'task_title' => 'required',
-
+            'title'=> 'required|exists:title_names,id',
+            'last_submit_date'=> 'required|date',
         ]);
 
         //today's date
         $currentDate = Carbon::now()->toDateString();
+
+        // Retrieve the project using the ID from the `title` field
+        $project = TitleName::find($request->title);
+
+        // Check if the last_submit_date is greater than the project_end_date
+        if (Carbon::parse($request->last_submit_date)->greaterThan(Carbon::parse($project->end_date))) {
+            return response()->json([
+                'status' => false,
+                'errors' => ['last_submit_date' => ['The last submit date cannot be more than the project\'s end date. End date: ' .  Carbon::parse($project->end_date)->format('j F Y')]],
+            ], 422);
+        }
     
         try {
             $task = Task::find($id);
@@ -264,11 +299,19 @@ class AsignTaskController extends Controller
                 'message' => 'Assign Task edited successfully.',
                 'data' => $task
             ], 200);
+        } catch (ValidationException $e) {
+            // Catch validation errors and return them with a 422 status
+            return response()->json([
+                'status' => false,
+                'errors' => $e->validator->errors(),
+            ], 422);
         } catch (\Exception $e) {
+            Log::error('Error updating task: ' . $e->getMessage());
+    
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to update task',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
