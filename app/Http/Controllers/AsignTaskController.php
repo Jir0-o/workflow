@@ -137,7 +137,7 @@ class AsignTaskController extends Controller
             $task = new Task();
             $task->task_title = $request->task_title;
             $task->title_name_id = $request->title;
-            $task->description = $request->description;
+            $task->description = $request->description; 
             $task->submit_date = $request->last_submit_date;
             $task->user_id = implode(',', $request->user_id);
             $task->save();
@@ -174,7 +174,6 @@ class AsignTaskController extends Controller
             ], 422);
         } catch (\Exception $e) {
             Log::error('Error creating task: ' . $e->getMessage());
-    
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to create task',

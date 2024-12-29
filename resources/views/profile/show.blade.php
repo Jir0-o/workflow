@@ -7,6 +7,8 @@
         </h2>
     </x-slot>
 
+        <!-- Wrapper for Dark Mode -->
+    <div id="profile-container">
     <div>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())
@@ -44,6 +46,28 @@
             @endif
         </div>
     </div>
+    </div>
 </x-app-layout>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if dark mode is enabled
+    const isDarkMode = document.body.classList.contains('dark-mode');
+
+    // Apply dark mode styles to all necessary parts
+    const elementsToStyle = [
+        document.body,
+        document.querySelector('header'),
+        document.querySelector('.max-w-7xl'),
+    ];
+
+    elementsToStyle.forEach((el) => {
+        if (isDarkMode && el) {
+            el.classList.add('dark-mode');
+        } else if (el) {
+            el.classList.remove('dark-mode');
+        }
+    });
+});
+</script>
 @endsection

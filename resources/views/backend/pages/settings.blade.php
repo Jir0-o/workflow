@@ -49,7 +49,7 @@
                                     <th class="py-4 px-6" style="width: 500px;">
                                         <div id="permission{{ $role->id }}" class="hidden flex gap-4 flex-wrap">
                                             @foreach ($role->permissions as $item)
-                                                <div class="bg-green-500 text-dark p-1 rounded font-bold">
+                                                <div class="p-1 rounded font-bold">
                                                     {{ $item->name }}
                                                 </div>
                                             @endforeach

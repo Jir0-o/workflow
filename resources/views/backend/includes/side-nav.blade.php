@@ -18,7 +18,7 @@
                         <img 
                             src="{{ asset('storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
                             alt="Unicorn Logo" 
-                            style="height: 40px;" 
+                            class="side-nav-logo"
                         />
                     </span>
                 </a>

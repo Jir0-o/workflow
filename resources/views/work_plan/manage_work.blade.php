@@ -1161,7 +1161,7 @@ $(document).ready(function(){
                     if (result.isConfirmed) {
                         location.reload();
                     }
-                });
+                }); 
             },
             error: function (xhr) { 
                 $('.text-danger').text('');

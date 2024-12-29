@@ -14,7 +14,7 @@ use Spatie\Permission\Models\Role;
 
 class ApplicationController extends Controller
 {
-    /**
+    /** 
      * Display a listing of the resource.
      */
     public function __construct(){
@@ -258,7 +258,7 @@ class ApplicationController extends Controller
                 ],
             ]);
         } catch (ValidationException $e) {
-            return response()->json([
+            return response()->json([ 
                 'status' => false,
                 'message' => 'Validation error',
                 'errors' => $e->errors(), // Returns all validation errors

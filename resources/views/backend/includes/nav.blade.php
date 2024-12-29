@@ -42,15 +42,326 @@
         color: #ffffff;
     }
 
-    /* Additional styles for specific elements in dark mode */
-    body.dark-mode .navbar {
+    /* Navbar in Dark Mode */
+    body.dark-mode .navbar,
+    body.dark-mode {
         background-color: #333333;
-    }
-    body.dark-mode .dropdown-menu {
-        background-color: #444444;
         color: #ffffff;
     }
 
+    body.dark-mode .navbar input,
+    body.dark-mode .navbar a {
+        color: #ffffff;
+    }
+
+    /* Sidebar in Dark Mode */
+    body.dark-mode .layout-menu {
+        background-color: #222222;
+        color: #ffffff;
+    }
+
+    body.dark-mode .layout-menu a {
+        color: #ffffff;
+    }
+
+    body.dark-mode .menu-inner {
+        background-color: #222222;
+        color: #ffffff;
+    }
+
+    /* Cards in Dark Mode */
+    body.dark-mode .card {
+        background-color: #444444;
+        color: #ffffff;
+        border: none;
+    }
+
+    /* Tables in Dark Mode */
+    body.dark-mode .table {
+        background-color: #333333;
+        color: #ffffff;
+    }
+
+    body.dark-mode .table th,
+    body.dark-mode .table td {
+        border-color: #555555;
+        color: #ffffff;
+    }
+
+    /* Additional Elements */
+    body.dark-mode a {
+        color: #00bcd4; /* Adjust color for links */
+    }
+
+    body.dark-mode .tab-content {
+        background-color: #333333;
+        color: #ffffff;
+    }
+
+    /* Dark mode for the top navbar */
+    body.dark-mode .layout-navbar {
+        background-color: #333333; /* Dark background */
+        color: #181616; /* Light text color */
+        border-bottom: 1px solid #444444; /* Optional: subtle border for separation */
+    }
+
+    /* Dark mode for the navbar links and icons */
+    body.dark-mode .layout-navbar a,
+    body.dark-mode .layout-navbar .nav-item i,
+    body.dark-mode .layout-navbar .form-control {
+        color: #1d1b1b; /* Adjust text color for better visibility */
+    }
+
+    /* Dark mode for the notification dropdown */
+    body.dark-mode .notification-dropdown {
+        background-color: #444444;
+        color: #ffffff;
+        border: none;
+    }
+
+    /* Dark mode for the notification badge */
+    body.dark-mode #notification-count {
+        background-color: #ff4444; /* Red for better visibility */
+        color: #ffffff;
+    }
+
+    /* Dark mode for the search input */
+    body.dark-mode .layout-navbar .form-control {
+        background-color: #555555; /* Darker background for inputs */
+        color: #ffffff;
+        border: 1px solid #666666; /* Optional border */
+    }
+
+    /* Dark mode for dropdown menus */
+    body.dark-mode .dropdown-menu {
+        background-color: #444444;
+        color: #ffffff;
+        border: none;
+    }
+
+    /* Dark mode for user profile dropdown */
+    body.dark-mode .dropdown-menu .dropdown-item {
+        color: #ffffff;
+    }
+
+    body.dark-mode .dropdown-menu .dropdown-item:hover {
+        background-color: #555555; /* Highlight on hover */
+    }
+
+    body.dark-mode .text-500 {
+    color: #ffffff !important; /* Forces white text */
+    }
+
+    /* Make all h5 tags white */
+    body.dark-mode .h5 {
+        color: #ffffff !important;
+    }
+
+    /* For Dark Mode */
+    body.dark-mode h5 {
+        color: #ffffff !important; /* Ensures white text in dark mode */
+    }
+
+    /* Dark mode styles for the notice board */
+    body.dark-mode .notice-board {
+        background-color: #444444; /* Dark background for notice board */
+        color: #ffffff; /* White text for visibility */
+        border: 1px solid #555555; /* Softer border for dark mode */
+    }
+
+    /* Dark mode styles for notice card */
+    body.dark-mode .notice-card {
+        background-color: #555555; /* Darker background for each notice card */
+        color: #ffffff; /* Ensure text is visible */
+        border: 1px solid #666666; /* Slight border for card separation */
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    /* Dark mode for header text */
+    body.dark-mode .notice-header h4 {
+        color: #ffffff;
+    }
+    body.dark-mode h3 {
+        color: #ffffff;
+    }
+
+    /* Dark mode for notice details and message */
+    body.dark-mode .notice-details,
+    body.dark-mode .notice-message {
+        color: #dddddd; /* Slightly lighter text for better readability */
+    }
+
+    /* Dark mode for author and date */
+    body.dark-mode .notice-author,
+    body.dark-mode .notice-date {
+        color: #bbbbbb; /* Subtle color for secondary info */
+    }
+
+    /* Ensure list points are also visible */
+    body.dark-mode .notice-points li {
+        color: #dddddd;
+    }
+
+    /* Ensure no padding or margin at the top of the parent container */
+    body.dark-mode .app-brand {
+        background-color: #222222; /* Match the dark mode background */
+        color: #ffffff; /* Ensure text is visible */
+        border: none; /* Remove any border causing white space */
+    }
+
+    /* Default image styling */
+    .side-nav-logo {
+        height: 40px;
+        background-color: transparent;
+        display: block;
+        margin: auto; 
+    }
+
+    /* Dark mode adjustments for the image container */
+    body.dark-mode .app-brand-logo .side-nav-logo {
+        filter: brightness(0.8);
+        background-color: #222222;
+    }
+
+    /* Modal Background and Content */
+    body.dark-mode .modal-content {
+        background-color: #333; /* Dark background for modal content */
+        color: #ffffff; /* White text for better visibility */
+    }
+
+    /* Modal Header */
+    body.dark-mode .modal-header {
+        background-color: #444; /* Slightly darker background for header */
+        color: #ffffff; /* Ensure the text in the header is white */
+    }
+
+    body.dark-mode .modal-header .btn-close {
+        filter: invert(1); /* Inverts the close button icon for dark mode */
+    }
+
+    /* Modal Body */
+    body.dark-mode .modal-body {
+        background-color: #444; /* Dark background for body */
+    }
+
+    /* Form Inputs, Selects, and Textareas */
+    body.dark-mode .form-control {
+        background-color: #555; /* Dark background for inputs */
+        color: #ffffff; /* White text inside inputs */
+        border: 1px solid #888; /* Lighter border for inputs */
+    }
+
+    /* Input and Select Focus State */
+    body.dark-mode .form-control:focus {
+        border-color: #007bff; /* Highlight border color on focus */
+        background-color: #444; /* Maintain the dark background on focus */
+    }
+
+    /* Modal Footer */
+    body.dark-mode .modal-footer {
+        background-color: #444; /* Dark background for footer */
+    }
+
+    /* Button Styling */
+    body.dark-mode .btn-primary {
+        background-color: #007bff; /* Primary button color */
+        border-color: #007bff;
+    }
+
+    body.dark-mode .btn-secondary {
+        background-color: #555; /* Secondary button in dark mode */
+        border-color: #555;
+    }
+
+    /* Error Messages */
+    body.dark-mode .text-danger {
+        color: #ff6b6b; /* Red color for error text */
+    }
+
+    /* Dark Mode Styles for Profile */
+    .dark-mode #profile-container {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+    .dark-mode #profile-container .card,
+    .dark-mode #profile-container .form-section,
+    .dark-mode #profile-container .table {
+        background-color: #222222;
+        color: #ffffff;
+        border: 1px solid #444444;
+    }
+
+    /* Form Labels, Inputs, Buttons */
+    .dark-mode #profile-container label {
+        color: #cccccc;
+    }
+
+    .dark-mode #profile-container input,
+    .dark-mode #profile-container textarea,
+    .dark-mode #profile-container select {
+        background-color: #333333;
+        color: #ffffff;
+        border: 1px solid #555555;
+    }
+
+    .dark-mode #profile-container button {
+        background-color: #444444;
+        color: #1a1717;
+        border: 1px solid #666666;
+    }
+
+    .dark-mode #profile-container button:hover {
+        background-color: #555555;
+    }
+
+    .dark-mode #profile-container .underline {
+        color: #bbbbbb;
+    }
+
+    .dark-mode #profile-container .underline:hover {
+        color: #ffffff;
+    }
+
+    /* Header in Dark Mode */
+    .dark-mode header, 
+    .dark-mode header h2 {
+        background-color: #121212; /* Match dark mode background */
+        color: #ffffff; /* Match dark mode text */
+    }
+
+    /* General Container in Dark Mode */
+    .dark-mode .max-w-7xl {
+        background-color: #121212; /* Match dark mode background */
+        color: #ffffff; /* Match dark mode text */
+        border: 1px solid #444444; /* Optional border for distinction */
+    }
+
+    /* Section Borders in Dark Mode */
+    .dark-mode .section-border {
+        border-top: 1px solid #444444;
+    }
+
+    /* Additional Livewire Forms in Dark Mode */
+    .dark-mode .form-section,
+    .dark-mode .livewire-component {
+        background-color: #222222;
+        color: #ffffff;
+        border: 1px solid #444444;
+    }
+
+    /* Buttons in Dark Mode */
+    .dark-mode button {
+        background-color: #444444;
+        color: #ffffff;
+        border: 1px solid #666666;
+    }
+
+    .dark-mode button:hover {
+        background-color: #555555;
+    }
+    
     .layout-navbar a {
         text-decoration: none !important;
     }
@@ -329,27 +640,31 @@ $(document).ready(function() {
                     // Determine if the notification is read
                     let readClass = notification.is_read == 1 ? 'notifications-read' : '';
 
+                    // Check if dark mode is enabled
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+
                     let notificationItem = `
-                        <div class="d-flex justify-content-between align-items-center mb-2 ${readClass}">
-                            <a href="${notification.link}" class="text-decoration-none text-dark" 
-                               onclick="markAsRead(${notification.id}, this)" style="flex-grow: 1;">
-                                <div class="d-flex align-items-center">
-                                    <!-- User Image -->
-                                    <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
-                                    alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                    <div>
-                                        <strong>${notification.title}</strong>
-                                        <p class="mb-1" style="font-size: 0.9em; color: #555;">${notification.text}</p>
-                                        <small class="text-muted">${createdAt}</small>
-                                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2 ${readClass}">
+                        <a href="${notification.link}" class="text-decoration-none ${isDarkMode ? 'text-light' : 'text-dark'}" 
+                        onclick="markAsRead(${notification.id}, this)" style="flex-grow: 1;">
+                            <div class="d-flex align-items-center">
+                                <!-- User Image -->
+                                <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
+                                alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                <div>
+                                    <strong class="${isDarkMode ? 'text-light' : 'text-dark'}">${notification.title}</strong>
+                                    <p class="mb-1" style="font-size: 0.9em; color: ${isDarkMode ? '#bbb' : '#555'};">${notification.text}</p>
+                                    <small class="text-muted">${createdAt}</small>
                                 </div>
-                            </a>
-                            <button class="btn btn-sm btn-light text-danger" onclick="deleteNotification(${notification.id})">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                        <hr>`;
-                    notificationList.append(notificationItem);
+                            </div>
+                        </a>
+                        <button class="btn btn-sm ${isDarkMode ? 'btn-dark text-light' : 'btn-light text-danger'}" onclick="deleteNotification(${notification.id})">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <hr style="border-color: ${isDarkMode ? '#555' : '#ddd'};">`;
+
+                notificationList.append(notificationItem);
                 });
             } else {
                 notificationList.html('<p class="text-center text-muted">No new notifications</p>');
