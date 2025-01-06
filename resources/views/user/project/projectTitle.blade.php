@@ -29,13 +29,13 @@
                                 <input type="hidden" name="previous_url" value="{{ url()->previous() }}">
 
                                 <div class="mb-3">
-                                    <label for="title">Project Name</label>
+                                    <label for="title">Project Name<span class="text-danger">*</span></label>
                                     <input id="title" name="title" type="text" required class="form-control" placeholder="Title Name">
                                     <span class="text-danger error-title"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="user_id">Assign User</label>
+                                    <label for="user_id">Assign User<span class="text-danger">*</span></label>
                                     <select id="user_id" name="user_id[]" class="form-control" multiple="multiple" required>
                                         <option value="">Select User</option>
                                         @foreach($users as $user)
@@ -46,21 +46,27 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="description">Project Description (Optional)</label>
+                                    <label for="description">Project Description</label>
                                     <textarea id="description" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
                                     <span class="text-danger error-description"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="start_date">Project Start Date</label>
+                                    <label for="start_date">Project Start Date<span class="text-danger">*</span></label>
                                     <input id="start_date" name="start_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
                                     <span class="text-danger error-start_date"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="end_date">Project End Date</label>
+                                    <label for="end_date">Project Expected End Date<span class="text-danger">*</span></label>
                                     <input id="end_date" name="end_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
                                     <span class="text-danger error-end_date"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="attachment">Attachments</label>
+                                    <input id="attachment" name="attachment[]" type="file" class="form-control" multiple>
+                                    <span class="text-danger error-attachment"></span>
+                                    <div id="file-names" class="mt-2"></div> <!-- Selected file names will appear here -->
                                 </div>
                             </form>
                         </div>
@@ -84,30 +90,43 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
-                                    <label for="editTitle">Project Name</label>
+                                    <label for="editTitle">Project Name <span class="text-danger">*</span></label>
                                     <input id="editTitle" name="title" type="text" required class="form-control" placeholder="Title Name">
                                     <span class="text-danger error-title"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="editUser">User Name</label>
+                                    <label for="editUser">User Name<span class="text-danger">*</span></label>
                                     <select id="editUser" name="user_id[]" class="form-control" multiple="multiple" required></select>
                                     <span class="text-danger error-user_id"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="editDescription">Project Description (Not required)</label>
+                                    <label for="editDescription">Project Description</label>
                                     <textarea id="editDescription" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
                                     <span class="text-danger error-description"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="editStartDate">Project Start Date</label>
+                                    <label for="editStartDate">Project Start Date <span class="text-danger">*</span></label>
                                     <input id="editStartDate" name="start_date" type="date" required class="form-control" placeholder="Date">
                                     <span class="text-danger error-start_date"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="editEndDate">Project End Date</label>
+                                    <label for="editEndDate">Project Expected End Date<span class="text-danger">*</span></label>
                                     <input id="editEndDate" name="end_date" type="date" required class="form-control" placeholder="Date">
                                     <span class="text-danger error-end_date"></span>
                                 </div>
+                                <div class="form-group">
+                                    <label for="editAttachment">Attachments</label>
+                                    <input type="file" id="editAttachment" name="attachment[]" class="form-control" multiple>
+                                    <span class="text-danger error-attachment"></span>
+                                    <div id="edit-file-names" class="mt-2"></div> 
+                                    <small class="text-muted">
+                                        Current Attachments:
+                                        <div id="currentAttachments" class="mt-1"></div>
+                                    </small>
+                                    <!-- Hidden input to store current attachments as JSON -->
+                                    <input type="hidden" id="currentAttachmentsData" name="currentAttachments" value="[]">
+                                </div>                                
+                                <br>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                             </form>
@@ -173,12 +192,12 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Start Date</th>
-                                            <th>Expected End Date</th>
-                                            <th>Completed Date</th>
-                                            <th>assigned User</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
+                                            <th>Start Date</th>
+                                            <th>Expected End Date</th>
+                                            <th>Assigned User</th>
+                                            <th>Attachment</th>
                                             <th>Status</th>
                                             @can('View Project Action')
                                             <th>Actions</th>
@@ -189,9 +208,11 @@
                                         @foreach($runningProject as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! ($project->description) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
-                                            <td>{{ $project->end_by_date ? \Carbon\Carbon::parse($project->end_by_date)->format('d F Y, h:i A') : 'Project Running' }}</td>
+                                            {{-- <td>{{ $project->end_by_date ? \Carbon\Carbon::parse($project->end_by_date)->format('d F Y, h:i A') : 'Project Running' }}</td> --}}
                                             <td>
                                                 @foreach(explode(',', $project->user_id) as $userId)
                                                 @php
@@ -200,8 +221,23 @@
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
                                             </td>
-                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! ($project->description) !!}</td>
+                                            <td>
+                                                @if ($project->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($project->attachment, true);
+                                                        $attachmentName = json_decode($project->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
@@ -286,12 +322,13 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
+                                            <th>Project Title</th>
+                                            <th>Description</th>
                                             <th>Start Date</th>
                                             <th>Expected End Date</th>
                                             <th>Completed Date</th>
-                                            <th>assigned User</th>
-                                            <th>Project Title</th>
-                                            <th>Description</th>
+                                            <th>Assigned User</th>
+                                            <th>Attachment</th>
                                             <th>Status</th>
                                             @can('View Project Action')
                                             <th>Actions</th>
@@ -302,6 +339,8 @@
                                         @foreach($completedProject as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! ($project->description) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
                                             <td>{{ $project->end_by_date ? \Carbon\Carbon::parse($project->end_by_date)->format('d F Y, h:i A') : 'Project completed' }}</td>
@@ -312,8 +351,23 @@
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
                                             </td>
-                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! ($project->description) !!}</td>
+                                            <td>
+                                                @if ($project->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($project->attachment, true);
+                                                        $attachmentName = json_decode($project->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
@@ -398,11 +452,12 @@
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Start Date</th>
-                                            <th>Expected End Date</th>
-                                            <th>assigned User</th>
                                             <th>Project Title</th>
                                             <th>Description</th>
+                                            <th>Start Date</th>
+                                            <th>Expected End Date</th>
+                                            <th>Assigned User</th>
+                                            <th>Attachment</th>
                                             <th>Status</th>
                                             @can('View Project Action')
                                             <th>Actions</th>
@@ -413,6 +468,8 @@
                                         @foreach($droppedProject as $key => $project)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
+                                            <td>{!! ($project->description) !!}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</td>
                                             <td> @foreach(explode(',', $project->user_id) as $userId)
@@ -422,8 +479,23 @@
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
                                             </td>
-                                            <td>{{ $project->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!! ($project->description) !!}</td>
+                                            <td>
+                                                @if ($project->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($project->attachment, true);
+                                                        $attachmentName = json_decode($project->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $project->status }}</td>
                                             @can('View Project Action')
                                             <td>
@@ -600,11 +672,17 @@
 
             // Create a new FormData object
             let formData = new FormData();
+            
             formData.append('_token', '{{ csrf_token() }}'); // Add CSRF token
             formData.append('title', $('#title').val());
             formData.append('description', CKEDITOR.instances['description'].getData()); // Get data from CKEditor
             formData.append('start_date', $('#start_date').val());
             formData.append('end_date', $('#end_date').val());
+            // Append all selected files
+            let files = $('#attachment')[0].files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append('attachment[]', files[i]);
+            }
             
             // Append user_id values individually
             $('#user_id').val().forEach(user => {
@@ -679,6 +757,25 @@
                                 $('#editUser').append(`<option value="${user.id}" ${isSelected}>${user.name}</option>`);
                             });
 
+                            const attachmentName = response.project.attachment_name || ''; 
+                            const attachment = response.project.attachment || '';
+                            let attachments = [];
+                            if (attachment) {
+                                try {
+                                    attachments = JSON.parse(attachment); 
+                                } catch (e) {
+                                    attachments = [attachment]; 
+                                }
+                            }
+
+                            // Update hidden input field (for storing the attachments data in JSON format if needed)
+                            $('#currentAttachmentsData').val(JSON.stringify(attachments));
+                            loadExistingAttachments(attachments);
+
+                            // Clear and reset new file selection
+                            $('#editAttachment').val('');
+                            $('#editAttachmentList').html('<p>No files selected.</p>');
+
                             // Show the modal
                             $('#editProjectModal').modal('show');
                             
@@ -695,15 +792,25 @@
             });
 
             // Handle form submission for update
-            $('#editProjectForm').on('submit', function(e) {
-                e.preventDefault();
-                    // Get the data from CKEditor for the description
-                const descriptionData = CKEDITOR.instances['editDescription'].getData();
-                const formData = $(this).serialize() + '&description=' + encodeURIComponent(descriptionData);
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
+            $('#editProjectForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            // Add the data from CKEditor for the description
+            const descriptionData = CKEDITOR.instances['editDescription'].getData();
+            formData.append('description', descriptionData);
+
+            // Add the data from the hidden input field (for storing the attachments data in JSON format if needed)
+            formData.append('attachment', $('#currentAttachmentsData').val());
+            formData.append('currentAttachments', $('#currentAttachmentsData').val());
+
+            $.ajax({
+                url: $(this).attr('action'), // URL from the form's action attribute
+                type: 'POST',
+                data: formData,
+                    processData: false,
+                    contentType: false, 
                     success: function(response) {
                         if (response.status) {
                             $('#editProjectModal').modal('hide');
@@ -735,6 +842,144 @@
                     }
                 });
             });
+
+        // Display selected file names dynamically with remove option
+        $('#attachment').on('change', function() {
+            let fileList = $('#file-names'); // Target the div for file names
+            fileList.empty(); // Clear previous file names
+
+            let files = $(this)[0].files; // Get selected files
+            if (files.length > 0) {
+                let ul = $('<ul class="list-group"></ul>'); // Create a list group
+                $.each(files, function(index, file) {
+                    ul.append(
+                        `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${file.name}
+                            <button class="btn btn-sm btn-danger remove-file" data-file-index="${index}">&times;</button>
+                        </li>`
+                    );
+                });
+                fileList.append(ul); // Append the list to the display div
+            } else {
+                fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
+            }
+        });
+
+        // Handle remove attachment functionality
+        $(document).on('click', '.remove-file', function() {
+            let fileIndex = $(this).data('file-index'); 
+            let inputElement = $('#attachment')[0]; 
+            let dataTransfer = new DataTransfer(); 
+
+            let files = inputElement.files;
+            for (let i = 0; i < files.length; i++) {
+                if (i !== fileIndex) {
+                    dataTransfer.items.add(files[i]);
+                }
+            }
+            // Update the input element's file list
+            inputElement.files = dataTransfer.files;
+
+            $('#attachment').trigger('change');
+        });
+
+            // Display selected file names dynamically with remove option
+            $('#editAttachment').on('change', function() {
+            let fileList = $('#edit-file-names'); // Target the div for file names
+            fileList.empty(); // Clear previous file names
+
+            let files = $(this)[0].files; // Get selected files
+            if (files.length > 0) {
+                let ul = $('<ul class="list-group"></ul>'); // Create a list group
+                $.each(files, function(index, file) {
+                    ul.append(
+                        `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${file.name}
+                            <button class="btn btn-sm btn-danger edit-remove-file" data-file-index="${index}">&times;</button>
+                        </li>`
+                    );
+                });
+                fileList.append(ul); // Append the list to the display div
+            } else {
+                fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
+            }
+        });
+
+        // Handle remove attachment functionality
+        $(document).on('click', '.edit-remove-file', function() {
+            let fileIndex = $(this).data('file-index'); 
+            let inputElement = $('#editAttachment')[0]; 
+            let dataTransfer = new DataTransfer(); 
+
+            let files = inputElement.files;
+            for (let i = 0; i < files.length; i++) {
+                if (i !== fileIndex) {
+                    dataTransfer.items.add(files[i]);
+                }
+            }
+            // Update the input element's file list
+            inputElement.files = dataTransfer.files;
+
+            $('#editAttachment').trigger('change');
+        });
+
+        // Function to load existing attachments into the modal
+        function loadExistingAttachments(attachments) {
+            const currentAttachmentsContainer = $('#currentAttachments');
+            currentAttachmentsContainer.empty(); // Clear existing content
+
+            if (attachments.length > 0) {
+                attachments.forEach((attachment, index) => {
+                    // Extract the file name from the attachment URL or path
+                    const fileName = attachment.split('/').pop();
+
+                    currentAttachmentsContainer.append(`
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <a href="${attachment}" target="_blank">${fileName}</a>
+                            <button type="button" class="btn btn-sm btn-danger remove-existing-attachment" data-index="${index}">&times;</button>
+                        </div>
+                    `);
+                });
+            } else {
+                // Show a placeholder message if no attachments exist
+                currentAttachmentsContainer.html('<p>No attachments available.</p>');
+            }
+        }
+
+        $(document).on('click', '.remove-existing-attachment', function () {
+        const attachmentIndex = $(this).data('index');
+        const attachmentsData = $('#currentAttachmentsData').val();
+
+        console.log('Attachment Index:', attachmentIndex);
+        console.log('Attachments Data:', attachmentsData);
+
+        // Parse attachments from hidden input
+        let attachments = [];
+        if (attachmentsData) {
+            try {
+                attachments = JSON.parse(attachmentsData);
+            } catch (error) {
+                console.error('Error parsing attachments data:', error);
+                return; // Stop execution if JSON parsing fails
+            }
+        }
+
+        // Validate the index before attempting to remove the attachment
+        if (attachments.length > 0 && attachmentIndex >= 0 && attachmentIndex < attachments.length) {
+            // Remove the attachment at the specified index
+            attachments.splice(attachmentIndex, 1);
+            
+            // Update the hidden input with the new attachments array
+            $('#currentAttachmentsData').val(JSON.stringify(attachments));
+
+            // Refresh the attachment display
+            loadExistingAttachments(attachments);
+        } else {
+            console.error('Invalid attachment index or no attachments to remove');
+        }
+    });
+
+
     });
 </script>
 @endsection

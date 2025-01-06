@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class ActivityController extends Controller
 {
     public function store(Request $request)
-    {
+    { 
         // Validate incoming data
         $data = $request->validate([
             'user_id' => 'required|integer',

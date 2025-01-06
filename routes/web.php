@@ -88,7 +88,6 @@ Route::middleware([
 
     //Notification Route
     Route::get('/notifications/count', [NotificationController::class, 'notificationCount'])->name('notifications.count');
-    // In your routes/web.php
     Route::delete('/notifications/delete/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.delete');
     Route::post('/notifications/clear', [NotificationController::class, 'clearNotifications'])->name('notifications.clear');
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications.get');

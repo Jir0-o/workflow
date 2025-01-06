@@ -107,7 +107,7 @@ class WorkPlanController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     */
+     */ 
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -117,7 +117,29 @@ class WorkPlanController extends Controller
             'last_submit_date' => 'required|date|after_or_equal:today',
             'status'=> 'required',
             'projectTitle'=> 'required|exists:title_names,id',
+            'attachment' => 'nullable|max:2048',
         ]);
+
+        $attachments = [];
+        $attachmentNames = [];
+        
+        if ($request->hasFile('attachment')) {
+            foreach ($request->file('attachment') as $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $randomNumber = rand(1000, 9999);
+                $extension = $file->getClientOriginalExtension();
+        
+                $filename = $originalName . '_' . $randomNumber . '.' . $extension;
+                $filePath = 'storage/attachment/' . $filename;
+        
+                // Save file
+                $file->move(public_path('storage/attachment'), $filename);
+        
+                // Add to arrays
+                $attachments[] = $filePath;
+                $attachmentNames[] = $originalName . '.' . $extension;
+            }
+        }
 
     // Retrieve the task using the ID from the `title` field
     $task = Task::find($request->title);
@@ -146,6 +168,8 @@ class WorkPlanController extends Controller
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
         $task->work_status = $request->status;
+        $task->attachment = json_encode($attachments); 
+        $task->attachment_name = json_encode($attachmentNames); 
         $task->save();
 
         // Retrieve all users with the "Super Admin" role
@@ -274,6 +298,14 @@ class WorkPlanController extends Controller
     public function destroy(string $id)
     {
         $task = WorkPlan::find($id);
+        $deleteAttachment = json_decode($task->attachment, true) ?? [];
+
+        foreach ($deleteAttachment as $deletedFile) {
+         $filePath = public_path($deletedFile);
+         if (file_exists($filePath)) {
+             unlink($filePath); 
+         }
+     }
         $task->delete();
 
         // Find the role by name

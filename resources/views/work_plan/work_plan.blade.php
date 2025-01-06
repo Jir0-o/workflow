@@ -22,7 +22,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content"> 
                             <div class="modal-header">
-                                <h5 class="modal-title" id="reasonTaskModalLabel">Extend Work Plan</h5>
+                                <h5 class="modal-title" id="reasonTaskModalLabel">Extend Work Plan <span class="text-danger">*</span></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -54,7 +54,7 @@
                             <form id="createTaskForm" action="{{ route('work_plan.store') }}" method="POST">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="title">Select Title</label>
+                                    <label for="title">Select Title<span class="text-danger">*</span></label>
                                     <select id="title" name="title" class="form-control" required>
                                         @php
                                             $assignedTasks = $titles->filter(function ($title) use ($userId) {
@@ -78,7 +78,7 @@
                                     <span class="text-danger error-title"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="status">Work Status</label>
+                                    <label for="status">Work Status<span class="text-danger">*</span></label>
                                     <select id="status" name="status" class="form-control" required>
                                         <option value="Work From Home">Work From Home</option>
                                         <option value="Work From Office">Work From Office</option>
@@ -86,14 +86,20 @@
                                     <span class="text-danger error-status"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="description">Work Description</label>
+                                    <label for="description">Work Description<span class="text-danger">*</span></label>
                                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
                                     <span class="text-danger error-description"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="last_submit_date">Last Submit Date</label>
+                                    <label for="last_submit_date">Last Submit Date<span class="text-danger">*</span></label>
                                     <input id="last_submit_date" name="last_submit_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date">
                                     <span class="text-danger error-last_submit_date"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="attachment">Attachments</label>
+                                    <input id="attachment" name="attachment[]" type="file" class="form-control" multiple>
+                                    <span class="text-danger error-attachment"></span>
+                                    <div id="file-names" class="mt-2"></div> 
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Create Work Plan</button>
@@ -196,6 +202,7 @@
                                             <th>Submitted Date</th>
                                             <th>Work Status</th>
                                             <th>Extend Reason</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -227,6 +234,23 @@
                                                 <p>Total: {{ $reason_count }}</p>
                                                 @else
                                                 <p>No reasons available</p>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($pendingTask->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($pendingTask->attachment, true);
+                                                        $attachmentName = json_decode($pendingTask->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
                                                 @endif
                                             </td>
                                             <td>{{ $pendingTask->status }}</td>
@@ -309,6 +333,7 @@
                                             <th>Submitted Date</th>
                                             <th>Work Status</th>
                                             <th>Extend Reason</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -340,6 +365,23 @@
                                                 <p>Total: {{ $reason_count }}</p>
                                                 @else
                                                 <p>No reasons available</p>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($incompletedtask->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($incompletedtask->attachment, true);
+                                                        $attachmentName = json_decode($incompletedtask->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
                                                 @endif
                                             </td>
                                             <td>{{ $incompletedtask->status }}</td>
@@ -425,6 +467,7 @@
                                             <th>Submitted Date</th>
                                             <th>Work Status</th>
                                             <th>Extend Reason</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -456,6 +499,23 @@
                                                 <p>Total: {{ $reason_count }}</p>
                                                 @else
                                                 <p>No reasons available</p>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($completedtask->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($completedtask->attachment, true);
+                                                        $attachmentName = json_decode($completedtask->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
                                                 @endif
                                             </td>
                                             <td>{{ $completedtask->status }}</td>
@@ -534,6 +594,7 @@
                                             <th>Your Message</th>
                                             <th>Work Status</th>
                                             <th>Extend Reason</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             @can('Work Plan Allow Action')
                                             <th>Actions</th>
@@ -565,6 +626,23 @@
                                                 <p>Total: {{ $reason_count }}</p>
                                                 @else
                                                 <p>No reasons available</p>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($requestedTask->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($requestedTask->attachment, true);
+                                                        $attachmentName = json_decode($requestedTask->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
                                                 @endif
                                             </td>
                                             <td>{{ $requestedTask->status }}</td>
@@ -623,57 +701,101 @@
         CKEDITOR.replace('extension_reason');
 
         $('#createTaskForm').on('submit', function (e) {
-        e.preventDefault(); // Prevent the form from submitting the usual way
+            e.preventDefault(); // Prevent the form from submitting the usual way
 
-        // Serialize the form data
-        let formData = $(this).serialize();
+            // Create a FormData object
+            let formData = new FormData(this);
 
-        // Get CKEditor content
-        let messageData = CKEDITOR.instances['description'].getData();
+            // Append CKEditor data to FormData
+            const messageData = CKEDITOR.instances['description'].getData();
+            formData.append('description', messageData);
 
-        // Append CKEditor data to the serialized string
-        formData += '&description=' + encodeURIComponent(messageData);
+            // Get the selected task's `data-project-title` attribute
+            let selectedTask = $('#title').find(':selected');
+            let projectTitleId = selectedTask.data('project-title'); // Extract the `data-project-title`
 
-        // Get the selected task's `data-project-title` attribute
-        let selectedTask = $('#title').find(':selected');
-        let projectTitleId = selectedTask.data('project-title'); // Extract the `data-project-title`
+            // Append projectTitleId to the FormData
+            if (projectTitleId) {
+                formData.append('projectTitle', projectTitleId);
+            }
 
-        // Append projectTitleId to the serialized string
-        if (projectTitleId) {
-            formData += '&projectTitle=' + encodeURIComponent(projectTitleId);
-        }
-
-        $.ajax({
-            url: "{{ route('work_plan.store') }}",
-            type: "POST",
-            data: formData,
-            success: function (response) {
-                $('#createTaskModal').modal('hide');
-                Swal.fire({
-                    title: 'Task Created!',
-                    text: 'Your task was created successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    location.reload();
-                });
-            },
-            error: function (xhr) { 
-                $('.text-danger').text('');
-                if (xhr.status === 422) {
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        $('.error-' + key).text(value[0]); 
-                    });
-                } else {
+            $.ajax({
+                url: "{{ route('work_plan.store') }}",
+                type: "POST",
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#createTaskModal').modal('hide');
                     Swal.fire({
-                        title: 'Error!',
-                        text: 'Something went wrong. Please try again later.',
-                        icon: 'error',
+                        title: 'Task Created!',
+                        text: 'Your task was created successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload();
                     });
+                },
+                error: function (xhr) { 
+                    $('.text-danger').text('');
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            $('.error-' + key).text(value[0]); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
                 }
+            });
+        });
+
+    // Display selected file names dynamically with remove option
+    $('#attachment').on('change', function() {
+        let fileList = $('#file-names'); // Target the div for file names
+        fileList.empty(); // Clear previous file names
+
+            let files = $(this)[0].files; // Get selected files
+            if (files.length > 0) {
+                let ul = $('<ul class="list-group"></ul>'); // Create a list group
+                $.each(files, function(index, file) {
+                    ul.append(
+                        `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${file.name}
+                            <button class="btn btn-sm btn-danger remove-file" data-file-index="${index}">&times;</button>
+                        </li>`
+                    );
+                });
+                fileList.append(ul); // Append the list to the display div
+            } else {
+                fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
             }
         });
-    });
+
+        // Handle remove attachment functionality
+        $(document).on('click', '.remove-file', function() {
+            let fileIndex = $(this).data('file-index'); 
+            let inputElement = $('#attachment')[0]; 
+            let dataTransfer = new DataTransfer(); 
+
+            let files = inputElement.files;
+            for (let i = 0; i < files.length; i++) {
+                if (i !== fileIndex) {
+                    dataTransfer.items.add(files[i]);
+                }
+            }
+            // Update the input element's file list
+            inputElement.files = dataTransfer.files;
+
+            $('#attachment').trigger('change');
+        });
+
 
 
         // Handle form submission via AJAX

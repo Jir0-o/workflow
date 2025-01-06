@@ -15,6 +15,42 @@
 input.is-invalid {
     border-color: #dc3545;
 }
+
+/* .see-more-btn, .see-less-btn {
+    background-color: transparent;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.see-more-btn:hover, .see-less-btn:hover {
+    color: darkblue;
+} */
+
+.truncated-content {
+    position: relative;
+    display: block; /* Ensures block-level layout */
+    word-wrap: break-word; /* Break long words */
+    overflow-wrap: break-word;
+    max-width: 100%; /* Prevent horizontal expansion */
+    white-space: normal; /* Prevent single-line stretching */
+}
+
+.see-more-btn, .see-less-btn {
+    margin-top: 5px;
+    display: inline-block; /* Ensures buttons are inline with proper spacing */
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 14px;
+}
+
+.see-more-btn:hover, .see-less-btn:hover {
+    text-decoration: underline;
+}
+
+
 </style>
     
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -34,12 +70,12 @@ input.is-invalid {
                         <form id="assignTaskForm">
                             @csrf
                             <div class="mb-3">
-                                <label for="main_title">Task Title</label>
+                                <label for="main_title">Task Title<span class="text-danger">*</span></label>
                                 <input id="main_title" name="main_title" type="text" class="form-control" placeholder="Write a task title" required>
                                 <span class="text-danger error-main_title"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="task_title">Project Title</label>
+                                <label for="task_title">Project Title<span class="text-danger">*</span></label>
                                 <div class="d-flex align-items-center">
                                     <select id="task_title" name="title" class="form-control" style="width: calc(100% - 30px);">
                                         <option value="">Select title</option>
@@ -55,7 +91,7 @@ input.is-invalid {
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="main_user_id">User Name</label>
+                                <label for="main_user_id">User Name<span class="text-danger">*</span></label>
                                 <select id="task_user_id" name="user_id[]" class="form-control new_model_select2" multiple="multiple" required>
                                     <option value="">Select User</option>
                                     @foreach($users as $user)
@@ -65,14 +101,20 @@ input.is-invalid {
                                 <span class="text-danger error-user_id"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="task_description">Task Description</label>
+                                <label for="task_description">Task Description<span class="text-danger">*</span></label>
                                 <textarea id="task_description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
                                 <span class="text-danger error-description"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="last_submit_date">Last Submit Date</label>
+                                <label for="last_submit_date">Last Submit Date<span class="text-danger">*</span></label>
                                 <input id="last_submit_date" name="last_submit_date" type="date" class="form-control" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                                 <span class="text-danger error-last_submit_date"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="task_attachment">Attachments</label>
+                                <input id="task_attachment" name="attachment[]" type="file" class="form-control" multiple>
+                                <span class="text-danger error-attachment"></span>
+                                <div id="file-names" class="mt-2"></div> 
                             </div>
                         </form>
                     </div>
@@ -96,12 +138,12 @@ input.is-invalid {
                         <form id="createProjectForm">
                             @csrf
                             <div class="mb-3">
-                                <label for="modal_title">Project Name</label>
+                                <label for="modal_title">Project Name<span class="text-danger">*</span></label>
                                 <input id="modal_title" name="title" type="text" required class="form-control" placeholder="Title Name">
                                 <span class="text-danger error-title"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="modal_user_id">Assign User</label>
+                                <label for="modal_user_id">Assign User<span class="text-danger">*</span></label>
                                 <select id="modal_user_id" name="user_id[]" class="form-control model_select2" multiple="multiple" required>
                                     <option value="">Select User</option>
                                     @foreach($users as $user)
@@ -111,19 +153,25 @@ input.is-invalid {
                                 <span class="text-danger error-user_id"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="modal_description">Project Description (Optional)</label>
+                                <label for="modal_description">Project Description</label>
                                 <textarea id="modal_description" name="description" class="form-control" rows="4" placeholder="Project Details"></textarea>
                                 <span class="text-danger error-description"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="modal_start_date">Project Start Date</label>
+                                <label for="modal_start_date">Project Start Date<span class="text-danger">*</span></label>
                                 <input id="modal_start_date" name="start_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
                                 <span class="text-danger error-start_date"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="modal_end_date">Project End Date</label>
+                                <label for="modal_end_date">Project Expected End Date<span class="text-danger">*</span></label>
                                 <input id="modal_end_date" name="end_date" type="date" required class="form-control" value="{{ date('Y-m-d') }}">
                                 <span class="text-danger error-end_date"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="modal_attachments">Attachments</label>
+                                <input id="modal_attachments" name="attachment[]" type="file" class="form-control" multiple>
+                                <span class="text-danger error-attachment"></span>
+                                <div id="modal-file-names" class="mt-2"></div> 
                             </div>
                         </form>
                     </div>
@@ -148,17 +196,17 @@ input.is-invalid {
             <div class="modal-body">
                 <form id="editProjectForm" method="POST">
                     @csrf
-                    @method('PUT')
+                    @method('PUT') 
                     
                     <input type="hidden" id="edit_task_id" name="task_id">
                     <div class="mb-3">
-                        <label for="main_task_title">Task Title</label>
+                        <label for="main_task_title">Task Title<span class="text-danger">*</span></label>
                         <input id="main_task_title" name="main_task_title" type="text" required class="form-control" placeholder="Write a task title">
                         <span class="text-danger error-main_task_title"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="title">Select Title</label>
+                        <label for="title">Select Title<span class="text-danger">*</span></label>
                         <select id="title" name="title" class="form-control" required>
                             @foreach($title as $tit)
                                 <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
@@ -168,24 +216,24 @@ input.is-invalid {
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit_user_id">User Name</label>
+                        <label for="edit_user_id">User Name<span class="text-danger">*</span></label>
                         <select id="edit_user_id" name="user_id[]" class="form-control" multiple="multiple" required></select>
                         <span class="text-danger error-user_id"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="description">Task Description</label>
+                        <label for="description">Task Description<span class="text-danger">*</span></label>
                         <textarea id="description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
                         <span class="text-danger error-description"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="last_submit_date">Due Date</label>
+                        <label for="last_submit_date">Due Date<span class="text-danger">*</span></label>
                         <input id="Edit_last_submit_date" name="last_submit_date" type="date" class="form-control">
                         <span class="text-danger error-last_submit_date"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="status">Task Status</label>
+                        <label for="status">Task Status<span class="text-danger">*</span></label>
                         <select id="status" name="status" class="form-control" required>
                             <option value="pending">Pending</option>
                             <option value="incomplete">Incomplete</option>
@@ -194,6 +242,18 @@ input.is-invalid {
                         </select>
                         <span class="text-danger error-status"></span>
                     </div>
+                    <div class="form-group">
+                        <label for="editAttachment">Attachments</label>
+                        <input type="file" id="editAttachment" name="attachment[]" class="form-control" multiple>
+                        <span class="text-danger error-attachment"></span>
+                        <div id="edit-file-names" class="mt-2"></div> 
+                        <small class="text-muted">
+                            Current Attachments:
+                            <div id="currentAttachments" class="mt-1"></div>
+                        </small>
+                        <!-- Hidden input to store current attachments as JSON -->
+                        <input type="hidden" id="currentAttachmentsData" name="currentAttachments" value="[]">
+                    </div>   
                 </form>
             </div> 
             <div class="modal-footer">
@@ -219,13 +279,13 @@ input.is-invalid {
                     
                     <input type="hidden" id="edit_submit_task_id" name="task_id">
                     <div class="mb-3">
-                        <label for="submit_task_title">Task Title</label>
+                        <label for="submit_task_title">Task Title<span class="text-danger">*</span></label>
                         <input id="submit_task_title" name="submit_task_title" type="text" required class="form-control" placeholder="Write a task title">
                         <span class="text-danger error-submit_task_title"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="Submit_title">Select Title</label>
+                        <label for="Submit_title">Select Title<span class="text-danger">*</span></label>
                         <select id="Submit_title" name="title" class="form-control" required>
                             @foreach($title as $tit)
                                 <option value="{{ $tit->id }}">{{ $tit->project_title }}</option>
@@ -234,30 +294,30 @@ input.is-invalid {
                         <span class="text-danger error-title"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="submit_user_id">User Name</label>
+                        <label for="submit_user_id">User Name<span class="text-danger">*</span></label>
                         <select id="submit_user_id" name="user_id[]" class="form-control" multiple="multiple" required></select>
                         <span class="text-danger error-submit_user_id"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="submit_description">Task Description</label>
+                        <label for="submit_description">Task Description<span class="text-danger">*</span></label>
                         <textarea id="submit_description" name="description" class="form-control" rows="4" placeholder="Task Details"></textarea>
                         <span class="text-danger error-description"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="submit_last_submit_date">Due Date</label>
+                        <label for="submit_last_submit_date">Due Date<span class="text-danger">*</span></label>
                         <input id="submit_last_submit_date" name="last_submit_date" type="date" class="form-control">
                         <span class="text-danger error-last_submit_date"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="submit_submit_date">Submitted Date</label>
+                        <label for="submit_submit_date">Submitted Date<span class="text-danger">*</span></label>
                         <input id="submit_submit_date" name="submit_date" type="datetime-local" class="form-control">
                         <span class="text-danger error-submit_date"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="submit_status">Task Status</label>
+                        <label for="submit_status">Task Status<span class="text-danger">*</span></label>
                         <select id="submit_status" name="status" class="form-control" required>
                             <option value="pending">Pending</option>
                             <option value="incomplete">Incomplete</option>
@@ -265,6 +325,18 @@ input.is-invalid {
                             <option value="in_progress">In Progress</option>
                         </select>
                         <span class="text-danger error-status"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="submit_work_attachments">Attachments</label>
+                        <input type="file" id="submit_work_attachments" name="attachment[]" class="form-control" multiple>
+                        <span class="text-danger error-attachment"></span>
+                        <div id="edit-submit-file-names" class="mt-2"></div>
+                        <small class="text-muted">
+                            Current Attachments:
+                            <div id="currentAttachmentSubmit" class="mt-1"></div>
+                        </small>
+                        <!-- Hidden input to store current attachments as JSON -->
+                        <input type="hidden" id="currentAttachmentsSubmit" name="currentAttachments" value="[]">
                     </div>
                 </form>
             </div>
@@ -342,12 +414,13 @@ input.is-invalid {
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
+                                            <th>Task Title<div style="visibility: hidden; width: 200px;"></div></th>
                                             <th>Project Title</th>
-                                            <th>Task Details</th>
+                                            <th>Task Details<div style="visibility: hidden; width: 400px;"></div></th>
                                             <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -357,9 +430,23 @@ input.is-invalid {
                                         @foreach($pendingTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title }}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ $task->task_title }}">
+                                                    {{ Str::limit($task->task_title, 50) }}
+                                                    @if (strlen($task->task_title) > 50)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ htmlspecialchars(strip_tags($task->description)) }}">
+                                                    {!! Str::limit(strip_tags($task->description), 100) !!}
+                                                    @if (strlen(strip_tags($task->description)) > 100)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>
                                                 @foreach(explode(',', $task->user_id) as $userId)
                                                 @php
@@ -370,6 +457,23 @@ input.is-invalid {
                                             </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
+                                            <td>
+                                                @if ($task->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($task->attachment, true);
+                                                        $attachmentName = json_decode($task->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -446,12 +550,13 @@ input.is-invalid {
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
+                                            <th>Task Title<div style="visibility: hidden; width: 200px;"></div></th>
                                             <th>Project Title</th>
-                                            <th>Task Details</th>
+                                            <th>Task Details<div style="visibility: hidden; width: 400px;"></div></th>
                                             <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -460,9 +565,23 @@ input.is-invalid {
                                         @foreach($incompleteTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title ?? 'No task title selected' }}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ $task->task_title }}">
+                                                    {{ Str::limit($task->task_title, 50) }}
+                                                    @if (strlen($task->task_title) > 50)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ htmlspecialchars(strip_tags($task->description)) }}">
+                                                    {!! Str::limit(strip_tags($task->description), 100) !!}
+                                                    @if (strlen(strip_tags($task->description)) > 100)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>
                                                 @foreach(explode(',', $task->user_id) as $userId)
                                                 @php
@@ -473,6 +592,23 @@ input.is-invalid {
                                             </td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
+                                            <td>
+                                                @if ($task->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($task->attachment, true);
+                                                        $attachmentName = json_decode($task->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -560,13 +696,14 @@ input.is-invalid {
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
+                                            <th>Task Title<div style="visibility: hidden; width: 200px;"></div></th>
                                             <th>Project Title</th>
-                                            <th>Task Details</th>
+                                            <th>Task Details<div style="visibility: hidden; width: 400px;"></div></th>
                                             <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -575,9 +712,23 @@ input.is-invalid {
                                         @foreach($completeTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title ?? 'No task title selected' }}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ $task->task_title }}">
+                                                    {{ Str::limit($task->task_title, 50) }}
+                                                    @if (strlen($task->task_title) > 50)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ htmlspecialchars(strip_tags($task->description)) }}">
+                                                    {!! Str::limit(strip_tags($task->description), 100) !!}
+                                                    @if (strlen(strip_tags($task->description)) > 100)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>
                                                 @foreach(explode(',', $task->user_id) as $userId)
                                                 @php
@@ -589,6 +740,23 @@ input.is-invalid {
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
+                                            <td>
+                                                @if ($task->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($task->attachment, true);
+                                                        $attachmentName = json_decode($task->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -667,13 +835,14 @@ input.is-invalid {
                                     <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Task Title</th>
+                                            <th>Task Title<div style="visibility: hidden; width: 200px;"></div></th>
                                             <th>Project Title</th>
-                                            <th>Task Details</th>
+                                            <th>Task Details<div style="visibility: hidden; width: 400px;"></div></th>
                                             <th>Assigned User</th>
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Suggestion</th>
+                                            <th>Attachments</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -682,9 +851,23 @@ input.is-invalid {
                                         @foreach($inprogressTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->task_title }}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ $task->task_title }}">
+                                                    {{ Str::limit($task->task_title, 50) }}
+                                                    @if (strlen($task->task_title) > 50)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>{{ $task->title_name->project_title ?? 'No project title selected' }}</td>
-                                            <td>{!!($task->description)!!}</td>
+                                            <td>
+                                                <div class="truncated-content" data-full-content="{{ htmlspecialchars(strip_tags($task->description)) }}">
+                                                    {!! Str::limit(strip_tags($task->description), 100) !!}
+                                                    @if (strlen(strip_tags($task->description)) > 100)
+                                                        <button class="see-more-btn">See More</button>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td>
                                                 @foreach(explode(',', $task->user_id) as $userId)
                                                 @php
@@ -696,6 +879,23 @@ input.is-invalid {
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{!!($task->message) !!}</td>
+                                            <td>
+                                                @if ($task->attachment)
+                                                    @php
+                                                        // Decode JSON-encoded attachments and names
+                                                        $attachment = json_decode($task->attachment, true);
+                                                        $attachmentName = json_decode($task->attachment_name, true);
+                                                    @endphp
+                                            
+                                                    @foreach ($attachment as $index => $attachments)
+                                                        <a href="{{ asset($attachments) }}" target="_blank" title="Download {{ $attachmentName[$index] ?? 'Attachment' }}">
+                                                            {{ $attachmentName[$index] ?? 'Attachment' }}
+                                                        </a><br> 
+                                                    @endforeach
+                                                @else
+                                                    No Attachments
+                                                @endif
+                                            </td>
                                             <td>{{ $task->status }}</td>
                                             <td>
                                                 <div class="dropdown">
@@ -768,7 +968,7 @@ input.is-invalid {
                             }
                         });
                     } 
-                </script> 
+                </script>
                 {{-- Sweet alart for completed task change  --}}
                 <script>
                     function confirmCompleteTask(StatusTaskId) {
@@ -855,6 +1055,57 @@ input.is-invalid {
 </style>
 
 <script>
+$(document).ready(function () {
+    $('.dataTable').each(function () {
+        const table = $(this).DataTable();
+
+        // Attach "See More" and "See Less" functionality on table draw
+        table.on('draw', function () {
+            attachSeeMoreHandlers();
+        });
+    });
+
+    // Function to attach "See More" button functionality
+    function attachSeeMoreHandlers() {
+        $(document).off('click', '.see-more-btn').on('click', '.see-more-btn', function () {
+            const truncatedDiv = $(this).closest('.truncated-content');
+            const fullContent = truncatedDiv.attr('data-full-content');
+
+            if (fullContent) {
+                // Replace truncated content with full content
+                truncatedDiv.html(`
+                    <div>${fullContent}</div>
+                    <button class="see-less-btn">See Less</button>
+                `);
+            } else {
+                console.error('Full content is missing or undefined.');
+            }
+        });
+
+        $(document).off('click', '.see-less-btn').on('click', '.see-less-btn', function () {
+            const truncatedDiv = $(this).closest('.truncated-content');
+            const fullContent = truncatedDiv.attr('data-full-content');
+
+            if (fullContent) {
+                const truncatedContent = fullContent.substring(0, 50);
+                // Replace full content with truncated content
+                truncatedDiv.html(`
+                    <div>${truncatedContent}...</div>
+                    <button class="see-more-btn">See More</button>
+                `);
+            } else {
+                console.error('Full content is missing or undefined.');
+            }
+        });
+    }
+
+    // Attach handlers initially (for the first draw)
+    attachSeeMoreHandlers();
+});
+
+</script>
+
+<script>
 $(document).ready(function(){
     CKEDITOR.replace('modal_description');
     CKEDITOR.replace('task_description');
@@ -903,9 +1154,9 @@ $(document).ready(function(){
             e.preventDefault();
         });
 
-            // Handle Project creation form submission
-            $('#saveProjectBtn').on('click', function(e) {
-            e.preventDefault();
+        // Handle Project creation form submission
+        $('#saveProjectBtn').on('click', function(e) {
+        e.preventDefault();
 
             // Create a new FormData object
             let formData = new FormData();
@@ -914,6 +1165,11 @@ $(document).ready(function(){
             formData.append('description', CKEDITOR.instances['modal_description'].getData());
             formData.append('start_date', $('#modal_start_date').val());
             formData.append('end_date', $('#modal_end_date').val());
+            // Append all selected files
+            let files = $('#modal_attachments')[0].files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append('attachment[]', files[i]);
+            }
 
             // Append selected user IDs from modal
             $('#modal_user_id').val().forEach(user => {
@@ -967,6 +1223,11 @@ $(document).ready(function(){
             formData.append('description', CKEDITOR.instances['task_description'].getData());
             formData.append('last_submit_date', $('#last_submit_date').val());
             formData.append('work_status', $('#work_submit_status').val());
+            // Append all selected files
+            let files = $('#task_attachment')[0].files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append('attachment[]', files[i]);
+            }
 
             $('#task_user_id').val().forEach(userId => {
                 formData.append('user_id[]', userId);
@@ -1013,84 +1274,265 @@ $(document).ready(function(){
             });
         });
 
+    // Display selected file names dynamically with remove option
+    $('#task_attachment').on('change', function() {
+        let fileList = $('#file-names'); // Target the div for file names
+        fileList.empty(); // Clear previous file names
 
-
-    $('#updateSubmitTaskBtn').on('click', function() {
-        const updateUrl = $(this).data('url');
-        $.ajax({
-            url: updateUrl,
-            type: 'PUT',
-            data: {
-                _token: $('input[name="_token"]').val(),
-                task_user_id: $('#submit_user_id').val(),
-                task_title: $('#submit_task_title').val(),
-                title: $('#Submit_title').val(),
-                description: CKEDITOR.instances.submit_description.getData(),
-                last_submit_date: $('#submit_last_submit_date').val(),
-                submit_by_date: $('#submit_submit_date').val(),
-                status: $('#submit_status').val(),
-            },
-            success: function(response) {
-                if (response.status) {
-                    $('#editSubmittedTaskModal').modal('hide'); // Close modal
-
-                    // Show SweetAlert success notification
-                    Swal.fire({
-                        title: 'Project Updated!',
-                        text: 'Your project was updated successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        location.reload(); // Reload the page after confirmation
-                    });
-                } else {
-                    console.log("Failed to update task"); // Debugging
-                    // Show failure SweetAlert
-                    Swal.fire({
-                        title: 'Update Failed',
-                        text: 'Failed to update the task.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            },
-            error: function (xhr) {
-                console.log('Full Error Response:', xhr);
-                
-                // Clear previous errors
-                $('.text-danger').text('');
-
-                if (xhr.status === 422) {
-                    // Loop through validation errors and display them
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        $('.error-' + key).text(value[0]); // Display first error message for each field
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Something went wrong. Please try again later.',
-                        icon: 'error',
-                    });
-                }
-            }
-        });
+        let files = $(this)[0].files; // Get selected files
+        if (files.length > 0) {
+            let ul = $('<ul class="list-group"></ul>'); // Create a list group
+            $.each(files, function(index, file) {
+                ul.append(
+                    `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${file.name}
+                        <button class="btn btn-sm btn-danger remove-file" data-file-index="${index}">&times;</button>
+                    </li>`
+                );
+            });
+            fileList.append(ul); // Append the list to the display div
+        } else {
+            fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
+        }
     });
 
-    // Update button click handler
-    $('#updateTaskBtn').on('click', function() {
-        const updateNewUrl = $(this).data('url'); // Get the URL from data-url attribute
+    // Handle remove attachment functionality
+    $(document).on('click', '.remove-file', function() {
+        let fileIndex = $(this).data('file-index'); 
+        let inputElement = $('#task_attachment')[0]; 
+        let dataTransfer = new DataTransfer(); 
+
+        let files = inputElement.files;
+        for (let i = 0; i < files.length; i++) {
+            if (i !== fileIndex) {
+                dataTransfer.items.add(files[i]);
+            }
+        }
+        // Update the input element's file list
+        inputElement.files = dataTransfer.files;
+
+        $('#task_attachment').trigger('change');
+    });
+
+    // Display selected file names dynamically with remove option
+    $('#modal_attachments').on('change', function() {
+        let fileList = $('#modal-file-names'); // Target the div for file names
+        fileList.empty(); // Clear previous file names
+
+        let files = $(this)[0].files; // Get selected files
+        if (files.length > 0) {
+            let ul = $('<ul class="list-group"></ul>'); // Create a list group
+            $.each(files, function(index, file) {
+                ul.append(
+                    `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${file.name}
+                        <button class="btn btn-sm btn-danger modal-remove-file" data-file-index="${index}">&times;</button>
+                    </li>`
+                );
+            });
+            fileList.append(ul); // Append the list to the display div
+        } else {
+            fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
+        }
+    });
+
+    // Handle remove attachment functionality
+    $(document).on('click', '.modal-remove-file', function() {
+        let fileIndex = $(this).data('file-index'); 
+        let inputElement = $('#modal_attachments')[0]; 
+        let dataTransfer = new DataTransfer(); 
+
+        let files = inputElement.files;
+        for (let i = 0; i < files.length; i++) {
+            if (i !== fileIndex) {
+                dataTransfer.items.add(files[i]);
+            }
+        }
+        // Update the input element's file list
+        inputElement.files = dataTransfer.files;
+
+        $('#modal_attachments').trigger('change');
+    });
+
+       // Display selected file names dynamically with remove option
+       $('#editAttachment').on('change', function() {
+        let fileList = $('#edit-file-names'); // Target the div for file names
+        fileList.empty(); // Clear previous file names
+
+        let files = $(this)[0].files; // Get selected files
+        if (files.length > 0) {
+            let ul = $('<ul class="list-group"></ul>'); // Create a list group
+            $.each(files, function(index, file) {
+                ul.append(
+                    `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${file.name}
+                        <button class="btn btn-sm btn-danger edit-remove-file" data-file-index="${index}">&times;</button>
+                    </li>`
+                );
+            });
+            fileList.append(ul); // Append the list to the display div
+        } else {
+            fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
+        }
+    });
+
+    // Handle remove attachment functionality
+    $(document).on('click', '.edit-remove-file', function() {
+        let fileIndex = $(this).data('file-index'); 
+        let inputElement = $('#editAttachment')[0]; 
+        let dataTransfer = new DataTransfer(); 
+
+        let files = inputElement.files;
+        for (let i = 0; i < files.length; i++) {
+            if (i !== fileIndex) {
+                dataTransfer.items.add(files[i]);
+            }
+        }
+        // Update the input element's file list
+        inputElement.files = dataTransfer.files;
+
+        $('#editAttachment').trigger('change');
+    });
+
+    // Display selected file names dynamically with remove option
+    $('#submit_work_attachments').on('change', function() {
+        let fileList = $('#edit-submit-file-names'); // Target the div for file names
+        fileList.empty(); // Clear previous file names
+
+        let files = $(this)[0].files; // Get selected files
+        if (files.length > 0) {
+            let ul = $('<ul class="list-group"></ul>'); // Create a list group
+            $.each(files, function(index, file) {
+                ul.append(
+                    `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${file.name}
+                        <button class="btn btn-sm btn-danger edit-submit-remove-file" data-file-index="${index}">&times;</button>
+                    </li>`
+                );
+            });
+            fileList.append(ul); // Append the list to the display div
+        } else {
+            fileList.html('<p>No files selected.</p>'); // Show message if no files are selected
+        }
+    });
+
+    // Handle remove attachment functionality
+    $(document).on('click', '.edit-submit-remove-file', function() {
+        let fileIndex = $(this).data('file-index'); 
+        let inputElement = $('#submit_work_attachments')[0]; 
+        let dataTransfer = new DataTransfer(); 
+
+        let files = inputElement.files;
+        for (let i = 0; i < files.length; i++) {
+            if (i !== fileIndex) {
+                dataTransfer.items.add(files[i]);
+            }
+        }
+        // Update the input element's file list
+        inputElement.files = dataTransfer.files;
+
+        $('#submit_work_attachments').trigger('change');
+    });
+
+
+
+    $('#updateSubmitTaskBtn').on('click', function () {
+        const updateUrl = $(this).data('url'); // Get the URL from the button's data-url attribute
+
+        const form = $('#editSubmitProjectForm')[0]; 
+        const formData = new FormData(form);
+
+        // Validate and gather form data
+        const title = $('#Submit_title').val();
+        const description = CKEDITOR.instances.submit_description.getData();
+
+        formData.append('_token', $('input[name="_token"]').val());
+        formData.append('task_title', $('#submit_task_title').val());
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('last_submit_date', $('#submit_last_submit_date').val());
+        formData.append('submit_by_date', $('#submit_submit_date').val());
+        formData.append('status', $('#submit_status').val());
+
+    $.ajax({
+        url: updateUrl,
+        type: 'POST',
+        data: formData,
+        processData: false, // Prevent default processing of the form data
+        contentType: false, // Prevent automatic content type setting
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF protection
+        },
+        success: function (response) {
+            if (response.status) {
+                // Close modal on success
+                $('#editSubmittedTaskModal').modal('hide');
+
+                // Display success notification
+                Swal.fire({
+                    title: 'Project Updated!',
+                    text: 'Your project was updated successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // Reload the page after the user confirms
+                });
+            } else {
+                // Display error notification for failure
+                Swal.fire({
+                    title: 'Update Failed',
+                    text: 'Failed to update the task.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        },
+        error: function (xhr) {
+            console.error('Error Response:', xhr); // Log the full error response for debugging
+
+            // Clear previous errors
+            $('.text-danger').text('');
+
+            if (xhr.status === 422) {
+                // Display validation errors
+                $.each(xhr.responseJSON.errors, function (key, value) {
+                    $('.error-' + key).text(value[0]); // Display first error message for each field
+                });
+            } else {
+                // Show generic error notification
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Something went wrong. Please try again later.',
+                    icon: 'error',
+                });
+            }
+        }
+    });
+});
+
+     // Update button click handler
+     $('#updateTaskBtn').on('click', function() {
+        const updateNewUrl = $(this).data('url'); 
+        console.log(updateNewUrl);
+
+        const form = $('#editProjectForm')[0]; 
+        const formData = new FormData(form);
+
+        formData.append('_token', $('input[name="_token"]').val());
+        formData.append('task_title', $('#main_task_title').val());
+        formData.append('title', $('#title').val());
+        formData.append('description', CKEDITOR.instances.description.getData());
+        formData.append('last_submit_date', $('#Edit_last_submit_date').val());
+        formData.append('status', $('#status').val());
 
         $.ajax({
             url: updateNewUrl,
-            type: 'PUT',
-            data: {
-                _token: $('input[name="_token"]').val(),
-                task_user_id: $('#edit_user_id').val(),
-                task_title: $('#main_task_title').val(),
-                title: $('#title').val(),
-                description: CKEDITOR.instances.description.getData(),
-                last_submit_date: $('#Edit_last_submit_date').val(),
-                status: $('#status').val(),
+            type: 'POST', 
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
                 if (response.status) {
@@ -1136,7 +1578,7 @@ $(document).ready(function(){
             }
         });
     });
-});
+
 
   // Edit button click handler
   $('.editTaskModal').on('click', function() {
@@ -1149,7 +1591,6 @@ $(document).ready(function(){
             type: 'GET',
             success: function(response) {
                 if (response.status) {
-                    console.log(response);
                     $('#edit_task_id').val(taskId);
                     $('#main_task_title').val(response.data.tasks.task_title);
                     $('#title').val(response.data.tasks.title_name_id);
@@ -1161,6 +1602,25 @@ $(document).ready(function(){
                     const formattedDate = localDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
                     $('#Edit_last_submit_date').val(formattedDate); 
                     $('#work_status').val(response.data.tasks.work_status);
+
+                    const attachmentName = response.data.tasks.attachment_name || ''; 
+                    const attachment = response.data.tasks.attachment || '';
+                    let attachments = [];
+                    if (attachment) {
+                        try {
+                            attachments = JSON.parse(attachment); 
+                        } catch (e) {
+                            attachments = [attachment]; 
+                        }
+                    }
+
+                    // Update hidden input field (for storing the attachments data in JSON format if needed)
+                    $('#currentAttachmentsData').val(JSON.stringify(attachments));
+                    loadExistingAttachments(attachments);
+
+                    // Clear and reset new file selection
+                    $('#editAttachment').val('');
+                    $('#editAttachmentList').html('<p>No files selected.</p>');
 
                     if (response.data.tasks.status == "in_progress") {
                         $('#status').val('').closest('.mb-3').hide();
@@ -1190,6 +1650,62 @@ $(document).ready(function(){
         });
     });
 
+    // Function to load existing attachments into the modal
+    function loadExistingAttachments(attachments) {
+        const currentAttachmentsContainer = $('#currentAttachments');
+        currentAttachmentsContainer.empty(); // Clear existing content
+
+        if (attachments.length > 0) {
+            attachments.forEach((attachment, index) => {
+                // Extract the file name from the attachment URL or path
+                const fileName = attachment.split('/').pop();
+
+                currentAttachmentsContainer.append(`
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <a href="${attachment}" target="_blank">${fileName}</a>
+                        <button type="button" class="btn btn-sm btn-danger remove-existing-attachment" data-index="${index}">&times;</button>
+                    </div>
+                `);
+            });
+        } else {
+            // Show a placeholder message if no attachments exist
+            currentAttachmentsContainer.html('<p>No attachments available.</p>');
+        }
+    }
+
+        $(document).on('click', '.remove-existing-attachment', function () {
+        const attachmentIndex = $(this).data('index');
+        const attachmentsData = $('#currentAttachmentsData').val();
+
+        console.log('Attachment Index:', attachmentIndex);
+        console.log('Attachments Data:', attachmentsData);
+
+        // Parse attachments from hidden input
+        let attachments = [];
+        if (attachmentsData) {
+            try {
+                attachments = JSON.parse(attachmentsData);
+            } catch (error) {
+                console.error('Error parsing attachments data:', error);
+                return; // Stop execution if JSON parsing fails
+            }
+        }
+
+        // Validate the index before attempting to remove the attachment
+        if (attachments.length > 0 && attachmentIndex >= 0 && attachmentIndex < attachments.length) {
+            // Remove the attachment at the specified index
+            attachments.splice(attachmentIndex, 1);
+            
+            // Update the hidden input with the new attachments array
+            $('#currentAttachmentsData').val(JSON.stringify(attachments));
+
+            // Refresh the attachment display
+            loadExistingAttachments(attachments);
+        } else {
+            console.error('Invalid attachment index or no attachments to remove');
+        }
+    });
+
     $('.editSubmitTaskModal').on('click', function() {
     const taskId = $(this).data('task-id');
     const editUrl = `{{ route('asign_tasks.edit', ':id') }}`.replace(':id', taskId);
@@ -1211,6 +1727,26 @@ $(document).ready(function(){
                 $('#submit_last_submit_date').val(formattedDate); 
                 $('#submit_submit_date').val(response.data.tasks.submit_by_date); 
                 $('#submit_status').val(response.data.tasks.status);
+
+                const attachmentName = response.data.tasks.attachment_name || ''; 
+                const attachment = response.data.tasks.attachment || '';
+                let attachments = [];
+                if (attachment) {
+                    try {
+                        attachments = JSON.parse(attachment); 
+                    } catch (e) {
+                        attachments = [attachment]; 
+                    }
+                }
+
+                // Update hidden input field (for storing the attachments data in JSON format if needed)
+                $('#currentAttachmentsSubmit').val(JSON.stringify(attachments));
+                loadExistingAttachmentsSubmit(attachments);
+
+                // Clear and reset new file selection
+                $('#submit_work_attachments').val('');
+                $('#editAttachmentSubmit').html('<p>No files selected.</p>');
+                
                 // Populate users select field
                 $('#submit_user_id').empty();
                 response.data.users.forEach(user => {
@@ -1229,6 +1765,61 @@ $(document).ready(function(){
         error: function() {
             alert('Failed to load task data');
         }
+    });
+});
+
+        // Function to load existing attachments into the modal
+        function loadExistingAttachmentsSubmit(attachments) {
+        const currentAttachmentsContainer = $('#currentAttachmentSubmit');
+        currentAttachmentsContainer.empty(); // Clear existing content
+
+        if (attachments.length > 0) {
+            attachments.forEach((attachment, index) => {
+                // Extract the file name from the attachment URL or path
+                const fileName = attachment.split('/').pop();
+
+                currentAttachmentsContainer.append(`
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <a href="${attachment}" target="_blank">${fileName}</a>
+                        <button type="button" class="btn btn-sm btn-danger remove-existing-attachment-submit" data-index="${index}">&times;</button>
+                    </div>
+                `);
+            });
+        } else {
+            // Show a placeholder message if no attachments exist
+            currentAttachmentsContainer.html('<p>No attachments available.</p>');
+        }
+    }
+
+        $(document).on('click', '.remove-existing-attachment-submit', function () {
+        const attachmentIndex = $(this).data('index');
+        const attachmentsData = $('#currentAttachmentsSubmit').val();
+
+        // Parse attachments from hidden input
+        let attachments = [];
+        if (attachmentsData) {
+            try {
+                attachments = JSON.parse(attachmentsData);
+            } catch (error) {
+                console.error('Error parsing attachments data:', error);
+                return; // Stop execution if JSON parsing fails
+            }
+        }
+
+        // Validate the index before attempting to remove the attachment
+        if (attachments.length > 0 && attachmentIndex >= 0 && attachmentIndex < attachments.length) {
+            // Remove the attachment at the specified index
+            attachments.splice(attachmentIndex, 1);
+            
+            // Update the hidden input with the new attachments array
+            $('#currentAttachmentsSubmit').val(JSON.stringify(attachments));
+
+            // Refresh the attachment display
+            loadExistingAttachmentsSubmit(attachments);
+        } else {
+            console.error('Invalid attachment index or no attachments to remove');
+        }
+
     });
 });
 </script>

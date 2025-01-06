@@ -361,6 +361,29 @@
     .dark-mode button:hover {
         background-color: #555555;
     }
+
+    /* Select2 Dropdown in Dark Mode */
+    .dark-mode .select2-container--default .select2-selection--multiple {
+        background-color: #222222; /* Dropdown background */
+        color: #ffffff; /* Text color */
+        border: 1px solid #444444; /* Optional border */
+    }
+
+    .dark-mode .select2-container--default .select2-results__option {
+        background-color: #222222; /* Dropdown options background */
+        color: #ffffff; /* Options text color */
+    }
+
+    .dark-mode .select2-container--default .select2-results__option--highlighted {
+        background-color: #444444; /* Highlighted option background */
+        color: #ffffff; /* Highlighted option text */
+    }
+
+    .dark-mode .select2-container--default .select2-search--dropdown .select2-search__field {
+        background-color: #222222; /* Search input background */
+        color: #ffffff; /* Search input text */
+        border: 1px solid #444444; /* Search input border */
+    }
     
     .layout-navbar a {
         text-decoration: none !important;

@@ -18,6 +18,8 @@ class WorkPlan extends Model
         'user_id',
         'title_name_id',
         'status',
+        'attachment',
+        'attachment_name',
         'created_at',
         'updated_at'
     ];

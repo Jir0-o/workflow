@@ -11,6 +11,7 @@ use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -115,9 +116,31 @@ class ManageWorkController extends Controller
             'title'=> 'required|exists:tasks,id',
             'last_submit_date'=> 'required|date|after_or_equal:today',
             'work_status'=> 'required',
+            'attachment.*' => 'nullable|file|max:2048', // Validate each file
             'user_id' => 'required|array|min:1',
             'user_id.*' => 'exists:users,id',
         ]);
+
+        $attachments = [];
+        $attachmentNames = [];
+        
+        if ($request->hasFile('attachment')) {
+            foreach ($request->file('attachment') as $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $randomNumber = rand(1000, 9999);
+                $extension = $file->getClientOriginalExtension();
+        
+                $filename = $originalName . '_' . $randomNumber . '.' . $extension;
+                $filePath = 'storage/attachment/' . $filename;
+        
+                // Save file
+                $file->move(public_path('storage/attachment'), $filename);
+        
+                // Add to arrays
+                $attachments[] = $filePath;
+                $attachmentNames[] = $originalName . '.' . $extension;
+            }
+        }
 
         // Retrieve the task using the ID from the `title` field
         $task = Task::find($request->title);
@@ -139,6 +162,8 @@ class ManageWorkController extends Controller
             $task->description = $request->description;
             $task->submit_date = $request->last_submit_date;
             $task->work_status = $request->work_status;
+            $task->attachment = json_encode($attachments); 
+            $task->attachment_name = json_encode($attachmentNames); 
             $task->user_id = $id;
             $task->save();
 
@@ -232,6 +257,9 @@ class ManageWorkController extends Controller
             'last_submit_date'=> 'required|date',
             'work_status'=> 'required',
             'task_user_id'=> ' required',
+            'attachment' => 'nullable|max:2048',
+            'attachment.*' => 'nullable|max:2048', // Allow multiple files, each with a max size of 2MB
+            'currentAttachments' => 'nullable|string', // JSON string of current attachments
         ]);
 
         // Retrieve the task using the ID from the `title` field
@@ -250,6 +278,52 @@ class ManageWorkController extends Controller
     
         try {
             $task = WorkPlan::findOrFail($id);
+
+            // Decode current attachments and their names
+            $currentAttachments = json_decode($request->currentAttachments, true) ?? [];
+            $currentAttachmentNames = json_decode($task->attachment_name, true) ?? [];
+            $projectAttachments = [];
+            $attachmentNames = [];
+    
+            // Ensure the "storage/attachment" directory exists
+            $attachmentDir = public_path('storage/attachment');
+            if (!File::exists($attachmentDir)) {
+                File::makeDirectory($attachmentDir, 0777, true, true);
+            }
+    
+            // Handle new attachments upload
+            if ($request->hasFile('attachment')) {
+                foreach ($request->file('attachment') as $file) {
+                    // Generate a unique filename to avoid overwriting
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $randomNumber = rand(1000, 9999);
+                    $extension = $file->getClientOriginalExtension();
+    
+                    $filename = $originalName . '_' . $randomNumber . '.' . $extension;
+                    $attachmentPath = 'storage/attachment/' . $filename;
+    
+                    // Move the file to the directory
+                    $file->move(public_path('storage/attachment'), $filename);
+    
+                    $projectAttachments[] = $attachmentPath;
+
+                    $attachmentNames[] = $originalName . '.' . $extension;
+                }
+            }
+    
+            // Add existing attachments and their original names to the updated list
+            $projectAttachments = array_merge($projectAttachments, $currentAttachments);
+            $attachmentNames = array_merge($attachmentNames, $currentAttachmentNames);
+    
+            // Remove old files that are no longer in the current attachments
+            $deletedFiles = array_diff(json_decode($task->attachment, true) ?? [], $projectAttachments);
+            foreach ($deletedFiles as $deletedFile) {
+                $filePath = public_path($deletedFile);
+                if (file_exists($filePath)) {
+                    unlink($filePath); 
+                }
+            }
+
             $task->task_id = $request->title;
             $task->user_id = $request->task_user_id;
             $task->title_name_id = $request->projectId;
@@ -269,6 +343,8 @@ class ManageWorkController extends Controller
             }else{
                 $task->status = 'pending';
             }
+            $task->attachment = json_encode($projectAttachments); 
+            $task->attachment_name = json_encode($attachmentNames);
             $task->admin_message = 'Task Edited by Admin';
             $task->save();
 
@@ -312,6 +388,16 @@ class ManageWorkController extends Controller
     public function destroy(string $id)
     {
        $task = WorkPlan::find($id);
+
+       $deleteAttachment = json_decode($task->attachment, true) ?? [];
+
+       foreach ($deleteAttachment as $deletedFile) {
+        $filePath = public_path($deletedFile);
+        if (file_exists($filePath)) {
+            unlink($filePath); 
+        }
+    }
+
        $task->delete();
 
        return back()->with('success', 'work deleted successfully.');

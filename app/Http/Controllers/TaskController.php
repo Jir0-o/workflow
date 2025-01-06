@@ -118,8 +118,30 @@ class TaskController extends Controller
             'title' => 'required|exists:title_names,id',
             'task_title' => 'required',
             'description' => 'required',
+            'attachment' => 'nullable|max:2048',
             'last_submit_date' => 'required|date|after_or_equal:today',
         ]);
+
+        $attachments = [];
+        $attachmentNames = [];
+        
+        if ($request->hasFile('attachment')) {
+            foreach ($request->file('attachment') as $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $randomNumber = rand(1000, 9999);
+                $extension = $file->getClientOriginalExtension();
+        
+                $filename = $originalName . '_' . $randomNumber . '.' . $extension;
+                $filePath = 'storage/attachment/' . $filename;
+        
+                // Save file
+                $file->move(public_path('storage/attachment'), $filename);
+        
+                // Add to arrays
+                $attachments[] = $filePath;
+                $attachmentNames[] = $originalName . '.' . $extension;
+            }
+        }
     // Retrieve the project using the ID from the `title` field
     $project = TitleName::find($request->title);
 
@@ -140,12 +162,14 @@ class TaskController extends Controller
 
     try {
         // Create a new task
-        $task = new Task();
+        $task = new Task(); 
         $task->task_title = $request->task_title;
         $task->user_id = $authUser->id;
         $task->title_name_id = $request->title;
         $task->description = $request->description;
         $task->submit_date = $request->last_submit_date;
+        $task->attachment = json_encode($attachments); 
+        $task->attachment_name = json_encode($attachmentNames); 
         $task->save();
 
         // Retrieve all users with the "Super Admin" role
@@ -273,6 +297,14 @@ class TaskController extends Controller
     public function destroy(string $id)
     {
         $task = Task::find($id);
+        $deleteAttachment = json_decode($task->attachment, true) ?? [];
+
+        foreach ($deleteAttachment as $deletedFile) {
+         $filePath = public_path($deletedFile);
+         if (file_exists($filePath)) {
+             unlink($filePath); 
+         }
+     }
         $task->delete();
 
         // Find the role by name
