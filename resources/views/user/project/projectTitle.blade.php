@@ -643,12 +643,13 @@
 
     <script>
 
-        $(document).ready(function() {
-            $('.dropdown-submenu a.test').on("click", function(e){
+        $('.dropdown-submenu a.test').on("click", function(e){
             $(this).next('ul').toggle();
             e.stopPropagation();
             e.preventDefault();
         });
+
+        $(document).ready(function() {
             // Initialize select2 when modal is shown
             $('#createProjectModal').on('shown.bs.modal', function() {
             $('#user_id').select2({
@@ -728,7 +729,7 @@
             });
         });
             // Event listener for edit button click
-            $('.edit-button').on('click', function() {
+            $(document).on('click', '.edit-button', function() {
                 const projectId = $(this).data('id');
                 
                 // Construct the URL with the project ID dynamically using JavaScript string template

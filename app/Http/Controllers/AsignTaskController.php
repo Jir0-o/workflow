@@ -430,20 +430,22 @@ class AsignTaskController extends Controller
 public function completed($id)
 {
     $task = Task::findOrFail($id);
-    $startTime = Carbon::parse($task->created_at);
+    $startTime = Carbon::parse($task->submit_date);
     $currentDateTime = Carbon::now();
 
-    $totalDuration = $startTime->diffInSeconds($currentDateTime);
+    $totalDurationInSeconds = (int) $startTime->diffInSeconds($currentDateTime);
 
-    // Convert seconds to H:i:s format
-    $hours = floor($totalDuration / 3600);
-    $minutes = floor(($totalDuration % 3600) / 60);
-    $seconds = $totalDuration % 60;
-    $hoursHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    $maxMysqlTimeInSeconds = 838 * 3600 + 59 * 60 + 59;
+    $safeDuration = min($totalDurationInSeconds, $maxMysqlTimeInSeconds);
 
-    $task->submit_by_date = Carbon::now();
+    $hours = floor($safeDuration / 3600);
+    $minutes = floor(($safeDuration % 3600) / 60);
+    $seconds = $safeDuration % 60;
+    $timeFormatted = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+    $task->submit_by_date = $currentDateTime;
     $task->status = 'completed';
-    $task->work_hour = $hoursHours;
+    $task->work_hour = $timeFormatted; 
     $task->save();
 
     return back()->with('success', 'Task marked as completed successfully.');

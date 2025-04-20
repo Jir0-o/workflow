@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AsignTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginDetailsController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\ManageWorkController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\NotificationController;
@@ -15,8 +16,20 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WorkingController;
 use App\Http\Controllers\WorkPlanController;
+use App\Mail\MonthlyTaskReportMail;
+use App\Models\DetailLogin;
+use App\Models\MailAddress;
+use App\Models\MailLog;
 use Illuminate\Support\Facades\Route;
+
+use App\Mail\DailyTaskReportMail;
+use App\Models\Task;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Models\WorkPlan;
+use Illuminate\Support\Carbon;
 
 
 
@@ -44,6 +57,8 @@ Route::middleware([
     Route::resource('work_plan', WorkPlanController::class);
     Route::resource('manage_work', ManageWorkController::class);
     Route::resource('application', ApplicationController::class);
+    Route::resource('working_profile', WorkingController::class);
+    Route::resource('mail_send', MailController::class);
 
 
     Route::get('details_login' ,[LoginDetailsController::class, 'detailsLogin'])->name('details_login.edit');
@@ -88,6 +103,7 @@ Route::middleware([
 
     //Notification Route
     Route::get('/notifications/count', [NotificationController::class, 'notificationCount'])->name('notifications.count');
+    // In your routes/web.php
     Route::delete('/notifications/delete/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.delete');
     Route::post('/notifications/clear', [NotificationController::class, 'clearNotifications'])->name('notifications.clear');
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications.get');
@@ -113,5 +129,75 @@ Route::middleware([
     Route::post('/application/{id}/return', [ApplicationController::class, 'return'])->name('application.return');
     Route::post('/application/{id}/send', [ApplicationController::class, 'send'])->name('application.send');
 
+    //change photo
+    Route::post('/profile/update-photo', [WorkingController::class, 'updatePhoto'])->name('profile.update.photo');
+    Route::post('/profile/update-username', [WorkingController::class, 'updateUsername'])->name('profile.update.username');
+    Route::PUT('/profile/update-email', [WorkingController::class, 'updateEmail'])->name('profile.update.email');
+    Route::PUT('/profile/{id}/update-profile', [WorkingController::class, 'updateProfile'])->name('profile.update.profile');
+    Route::PUT('/profile/{id}/change-password', [WorkingController::class, 'changePassword'])->name('profile.change-password');
+    Route::get('/get-user-details/{id}', [WorkingController::class, 'getUserDetails'])->name('get.user.details');
+    Route::get('/get-user-profile/{id}', [WorkingController::class, 'getUserProfile'])->name('get.user.profile');
+    Route::get('/get-total-users', [WorkingController::class, 'getTotalUsers'])->name('get.users');
+
+    //email route
+    Route::post('/send-daily-report', [MailController::class, 'sendDaily'])->name('send.daily.report');
+    Route::post('/send-monthly-report', [MailController::class, 'sendMonthly'])->name('send.monthly.report');
+
+
+    // Route::get('/test-mail', function () {
+    //     $user = User::first();
+
+    //     $yesterdayRange = [Carbon::yesterday()->startOfDay(), Carbon::yesterday()->endOfDay()];
+    //     $todayRange = [Carbon::today()->startOfDay(), Carbon::now()];
+
+    //     $userIds = User::pluck('id');
+
+    //     $todayDate = Carbon::today()->toDateString();
+
+    //     $detailsLoginUserIds = DetailLogin::whereDate('login_date', $todayDate)
+    //         ->pluck('user_id')
+    //         ->unique();
+
+    //     $workingUsers = User::whereIn('id', $detailsLoginUserIds)->get();
+    //     $notWorkingUsers = User::whereIn('id', $userIds->diff($detailsLoginUserIds))->get();
+
+    //     $yesterdayTasks = Task::where('user_id', $user->id)
+    //     ->with('user')
+    //     ->whereBetween('created_at', $yesterdayRange)
+    //     ->get();
+
+    //     $todayTasks = Task::where('user_id', $user->id)
+    //         ->with('user')
+    //         ->whereBetween('created_at', $todayRange)
+    //         ->get();
+        
+    //     $yesterdayWorkPlans = WorkPlan::where('user_id', $user->id)
+    //         ->with('task', 'user')
+    //         ->whereBetween('created_at', $yesterdayRange)
+    //         ->get();
+
+    //     $todayWorkPlans = WorkPlan::where('user_id', $user->id)
+    //         ->with('task', 'user')
+    //         ->whereBetween('created_at', $todayRange)
+    //         ->get();
+
+    //     $tasks = Task::where('user_id', $user->id)
+    //         ->whereBetween('created_at', [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()])
+    //         ->get();
+
+    //     MailLog::create([
+    //         'mail_address_id' => MailAddress::where('email_address', User::first()->email)->value('id'),
+    //         'name' => $user->name,
+    //         'mail_type' => 'Daily Task Report',
+    //         'mail_date' => Carbon::now(),
+    //         'status' => 1,
+    //         'is_active' => 1
+    //     ]);
     
+    //     Mail::to($user->email)->send(new DailyTaskReportMail($yesterdayTasks, $todayTasks, $yesterdayWorkPlans, $todayWorkPlans, $workingUsers, $notWorkingUsers));
+    //     Mail::to($user->email)->send(new MonthlyTaskReportMail($tasks));
+    
+    //     return 'Mail sent to Mailtrap!';
+    // });
+
 });

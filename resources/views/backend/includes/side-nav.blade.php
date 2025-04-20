@@ -15,11 +15,11 @@
                             xmlns:xlink="http://www.w3.org/1999/xlink">
                             <!-- SVG content here -->
                         </svg>
-                        <img 
-                            src="{{ asset('storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
-                            alt="Unicorn Logo" 
-                            class="side-nav-logo"
-                        />
+                    <img 
+                        src="{{ asset('storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
+                        alt="Unicorn Logo" 
+                        class="side-nav-logo"
+                    />
                     </span>
                 </a>
 
@@ -50,7 +50,7 @@
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-task"></i>
-                        <div data-i18n="Layouts">Manage Task Details</div>
+                        <div data-i18n="Layouts">Manage Task & Work Plan</div>
                     </a>
                     @endcan
                     <ul class="menu-sub">
@@ -81,7 +81,7 @@
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-calendar-check"></i>
-                        <div data-i18n="Layouts">Task & Plan Manage</div>
+                        <div data-i18n="Layouts">Task & Work Plan</div>
                     </a>
                     <ul class="menu-sub">
                         @can('View Work Plan')
@@ -123,12 +123,12 @@
                 @endcan
                 @if(auth()->user()->can('View Other Tabs') || auth()->user()->can('View Application'))
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">Report & Other Section</span>
+                    <span class="menu-header-text">@if (auth()->user()->hasRole('Super Admin')) Report & Other Section @else Other Section @endif</span>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
-                        <div data-i18n="Layouts">Other Tabs</div>
+                        <div data-i18n="Layouts">@if (auth()->user()->hasRole('Super Admin')) Other Tabs @else Application Tab @endif</div>
                     </a>
                     <ul class="menu-sub">
                         @can('View Notice Board')
@@ -158,7 +158,7 @@
                         @can('View Report')
                         <li class="menu-item">
                             <a href="{{route('report.index')}}" class="menu-link">
-                                <div data-i18n="Container">View Report</div>
+                                <div data-i18n="Container">Work Plan Report</div>
                             </a>
                         </li>
                         @endcan
@@ -172,6 +172,27 @@
                     </ul>
                 </li>
                 @endcan
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">@if (auth()->user()->hasRole('Super Admin')) Mail Management @endif</span>
+                </li>
+                <li class="menu-item">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
+                        <div data-i18n="Layouts">@if (auth()->user()->hasRole('Super Admin')) Mail Management @endif</div>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{route('mail_send.index')}}" class="menu-link">
+                                <div data-i18n="Container">Mail Create</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('mail_send.create') }}" class="menu-link">
+                                <div data-i18n="Without navbar">Mail Logs</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 @can('View Role Permission Menu')
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text"> Role and Permission</span>

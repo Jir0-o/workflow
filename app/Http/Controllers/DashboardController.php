@@ -156,7 +156,7 @@ class DashboardController extends Controller
 
         $userIds = User::pluck('id')->unique();
         $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek(); 
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
 
@@ -168,7 +168,7 @@ class DashboardController extends Controller
         $missingInUsers = $detailsLoginUserIds->diff($userIds);
         $missingInDetailsLogins = $userIds->diff($detailsLoginUserIds);
         
-        $missingInUsersCount = User::whereIn('id', $missingInDetailsLogins)->count();
+        $missingInUsersCount = User::whereIn('id', $missingInDetailsLogins)->count(); 
 
         //To Do table data
 

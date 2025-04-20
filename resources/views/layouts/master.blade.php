@@ -108,10 +108,12 @@
             </div>
             <!-- / Content -->
             <div class="content-backdrop fade"></div>
+            @include('backend.partials.footer')
           </div>
           <!-- Content wrapper -->
         </div>
         <!-- / Layout page -->
+        
       </div>
 
       <!-- Overlay -->
@@ -232,6 +234,5 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.all.min.js
       });
   }, 10000); // Update every 10 seconds for performance
 </script>
-
   </body>
 </html>

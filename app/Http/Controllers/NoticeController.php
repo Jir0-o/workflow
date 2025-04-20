@@ -71,7 +71,7 @@ class NoticeController extends Controller
     {
         try {
             // Validate the request data
-            $validated = $request->validate([
+            $validated = $request->validate([ 
                 'title' => 'required|string|max:255',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',

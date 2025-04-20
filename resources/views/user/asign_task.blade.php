@@ -1106,6 +1106,12 @@ $(document).ready(function () {
 </script>
 
 <script>
+
+    $('.dropdown-submenu a.test').on("click", function(e){
+        $(this).next('ul').toggle();
+        e.stopPropagation();
+        e.preventDefault();
+    });
 $(document).ready(function(){
     CKEDITOR.replace('modal_description');
     CKEDITOR.replace('task_description');
@@ -1148,11 +1154,6 @@ $(document).ready(function(){
                 });
             });
 
-        $('.dropdown-submenu a.test').on("click", function(e){
-            $(this).next('ul').toggle();
-            e.stopPropagation();
-            e.preventDefault();
-        });
 
         // Handle Project creation form submission
         $('#saveProjectBtn').on('click', function(e) {
@@ -1581,7 +1582,7 @@ $(document).ready(function(){
 
 
   // Edit button click handler
-  $('.editTaskModal').on('click', function() {
+    $(document).on('click', '.editTaskModal', function() {
         const taskId = $(this).data('task-id');
         const editUrl = `{{ route('asign_tasks.edit', ':id') }}`.replace(':id', taskId);
         const updateNewUrl = `{{ route('asign_tasks.update', ':id') }}`.replace(':id', taskId);
@@ -1706,7 +1707,7 @@ $(document).ready(function(){
         }
     });
 
-    $('.editSubmitTaskModal').on('click', function() {
+    $(document).on('click', '.editSubmitTaskModal', function () {
     const taskId = $(this).data('task-id');
     const editUrl = `{{ route('asign_tasks.edit', ':id') }}`.replace(':id', taskId);
     const updateSubmitUrl = `{{ route('asign_tasks.update', ':id') }}`.replace(':id', taskId);

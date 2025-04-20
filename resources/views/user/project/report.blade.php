@@ -39,7 +39,7 @@
                                 @foreach($titles as $title)
                                     <option value="{{ $title->id }}" {{ old('task_title', $oldInput['task_title'] ?? '') == $title->id ? 'selected' : '' }}>{{ $title->project_title }}</option>
                                 @endforeach
-                            </select>
+                            </select> 
                         </div>
                         <div class="col-md-4">
                             <label for="user" class="form-label">User</label>
@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered table-dark">
                         <thead>
                             <tr>
                                 <th>SL</th>

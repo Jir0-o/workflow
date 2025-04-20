@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('users:logout')->dailyAt('00:00');
+        $schedule->command('app:send-daily-task-report')->everyMinute();
+        $schedule->command('app:send-monthly-task-report')->monthlyOn(1, '07:00');
     }
 
     /**

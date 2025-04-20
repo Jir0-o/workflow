@@ -78,20 +78,50 @@ class WorkPlanController extends Controller
             }
 
         }
-        //Create Work Plan
-        $titles = Task::where('status', 'pending')->where('user_id', $userId)->get();
-        //count
-        $pendingCount = WorkPlan::where('user_id', $userId)->where('status', 'pending')->count();
-        $completeCount = WorkPlan::where('user_id', $userId)->where('status', 'completed')->count();
-        $incompleteCount = WorkPlan::where('user_id', $userId)->where('status', 'incomplete')->count();
-        $inprogressCount = WorkPlan::where('user_id', $userId)->where('status', 'in_progress')->count();
+        // Create Work Plan
+        $titles = Task::where('status', 'pending')
+            ->whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->get();
 
+        // Count
+        $pendingCount = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'pending')
+            ->count();
+        $completeCount = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'completed')
+            ->count();
+        $incompleteCount = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'incomplete')
+            ->count();
+        $inprogressCount = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'in_progress')
+            ->count();
 
+        // Fetch tasks
+        $pendingTasks = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'pending')
+            ->with('user', 'task')
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
-        $pendingTasks = WorkPlan::where('user_id', $userId)->where('status', 'pending')->with('user','task')->orderBy('updated_at', 'desc')->get();
-        $completedTasks = WorkPlan::where('user_id', $userId)->where('status', 'completed')->with('user','task')->orderBy('submit_by_date', 'desc')->get();
-        $incompletedTasks = WorkPlan::where('user_id', $userId)->where('status', 'incomplete')->with('user','task')->orderBy('updated_at', 'desc')->get();
-        $requestedTasks = WorkPlan::where('user_id', $userId)->where('status', 'in_progress')->with('user','task')->orderBy('updated_at', 'desc')->get();
+        $completedTasks = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'completed')
+            ->with('user', 'task')
+            ->orderBy('submit_by_date', 'desc')
+            ->get();
+
+        $incompletedTasks = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'incomplete')
+            ->with('user', 'task')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $requestedTasks = WorkPlan::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'in_progress')
+            ->with('user', 'task')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
 
         return view('work_plan.work_plan', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount','tasks','userId','titles'));
 

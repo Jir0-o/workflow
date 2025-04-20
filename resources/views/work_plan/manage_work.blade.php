@@ -8,6 +8,24 @@
 .cke_button__about {
     display: none !important;
 }
+
+.user-profile-popup {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 220px;
+    display: none;
+    z-index: 1000;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.user-hover {
+    color: inherit !important; /* Keeps the text color the same as surrounding text */
+    text-decoration: none !important; /* Removes underline */
+}
 </style>
     
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -15,6 +33,41 @@
 
 <div class="row mt-5">
     <div class="col-12">
+
+    <!-- Profile Pop-up -->
+    <div id="userProfilePopup" class="user-profile-popup shadow-lg rounded p-3 bg-white" style="width: 350px;">
+        <input type="hidden" id="profile_user_id" name="profile_user_id" value="">
+
+        <!-- Profile Header -->
+        <div class="text-center">
+            <img id="profilePhoto" alt="User Badge" class="rounded-circle border my-2" width="80" height="80">
+            <h5 id="username" class="mb-1 fw-bold" style="color: #30D158; display: inline;"></h5> 
+            <span id="roleName" class="badge bg-danger ms-1"></span>
+            <h6 id="userRank" class="text-muted" style="color: #B0B3B8;"></h6>
+        </div>
+
+        <!-- User Details -->
+        <div class="px-3 text-start">
+            <p class="mb-2"><strong>📧 Email:</strong> <span id="contractEmail"></span></p>
+            <p class="mb-2"><strong>🏠 Address:</strong> <span id="userAddress"></span></p>
+        </div>
+
+        <!-- Work Stats -->
+        <div class="text-center mt-3">
+            <div class="d-flex justify-content-between px-3">
+                <p class="mb-1"><strong>✅ Work Plans:</strong> <span class="badge bg-primary" id="completedWorkPlan"></span></p>
+                <p class="mb-1"><strong>📌 Tasks:</strong> <span class="badge bg-info" id="completedTask"></span></p>
+                <p class="mb-1"><strong>⏳ Pending Work:</strong> <span class="badge bg-warning" id="pendingTasks"></span></p>
+            </div>
+        </div>
+
+        <!-- Login Details -->
+        <div class="text-center mt-3">
+            <p class="mb-1"><small>🕒 <strong>Last Login:</strong> <span id="lastSeen"></span></small></p>
+            <p class="mb-1"><small>⏳ <strong>Session Duration:</strong> <span id="loginDuration"></span></small></p>
+        </div>
+    </div>
+
         <!-- Main Assign work plan Modal -->
         <div class="modal fade" id="assignTaskModal" tabindex="-1" aria-labelledby="assignTaskModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -519,7 +572,13 @@
                                         @foreach($pendingTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
+                                            <td>
+                                                <a href="{{ route('working_profile.show', $task->user->id) }}"
+                                                    class="user-hover"
+                                                    data-user-id="{{ $task->user->id }}">
+                                                    {{ $task->user->name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
@@ -641,7 +700,13 @@
                                         @foreach($incompleteTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
+                                            <td>
+                                                <a href="{{ route('working_profile.show', $task->user->id) }}"
+                                                    class="user-hover"
+                                                    data-user-id="{{ $task->user->id }}">
+                                                    {{ $task->user->name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
@@ -775,7 +840,13 @@
                                         @foreach($completeTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
+                                            <td>
+                                                <a href="{{ route('working_profile.show', $task->user->id) }}"
+                                                    class="user-hover"
+                                                    data-user-id="{{ $task->user->id }}">
+                                                    {{ $task->user->name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
@@ -901,7 +972,13 @@
                                         @foreach($inprogressTasks as $key => $task)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $task->user->name }}</td>
+                                            <td>
+                                                <a href="{{ route('working_profile.show', $task->user->id) }}"
+                                                    class="user-hover"
+                                                    data-user-id="{{ $task->user->id }}">
+                                                    {{ $task->user->name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $task->task->task_title ?? 'No task title selected' }}</td>
                                             <td>{!!($task->description)!!}</td>
                                             <td>{!!($task->message) !!}</td>
@@ -1868,6 +1945,146 @@ $(document).ready(function(){
 
         $('#submit_work_attachments').trigger('change');
     });
+
+        // Function to convert login time to Bangladesh Time (GMT+6) with AM/PM
+        function convertToBangladeshTime(loginDate, loginTime) {
+        if (!loginDate || !loginTime) return "Not Logged In";
+
+        // Combine date & time into full datetime string
+        let fullDateTime = `${loginDate} ${loginTime}`;
+
+        // Convert to Date object
+        let date = new Date(fullDateTime);
+
+        // If the date is invalid, return error message
+        if (isNaN(date.getTime())) return "Invalid Date";
+
+        // Convert to Bangladesh Time (GMT+6)
+        let options = { 
+            timeZone: "Asia/Dhaka",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true 
+        };
+        
+        return new Intl.DateTimeFormat("en-US", options).format(date);
+    }
+
+    // Function to format login duration (HH:MM:SS) into "X hours Y minutes"
+    function formatDuration(timeString) {
+        if (!timeString) return "Not Logged In";
+
+        let parts = timeString.split(":");
+        if (parts.length !== 3) return "Invalid Duration";
+
+        let hours = parseInt(parts[0], 10);
+        let minutes = parseInt(parts[1], 10);
+
+        return `${hours}h ${minutes}m`;
+    }
+
+    $(document).on("mouseenter", ".user-hover", function (e) {
+        clearTimeout($("#userProfilePopup").data("timeout"));
+
+        let userId = $(this).data("user-id");
+        if (!userId) return; // Ensure userId exists
+
+        // Show "Loading..." before fetching data
+        $("#username").text("Loading...");
+        $("#userRank").text("Loading...");
+        $("#profilePhoto").attr("src", "{{ asset('storage/default-profile.png') }}");
+        $("#roleName").text("Loading...");
+        $("#contractEmail").text("Loading...");
+        $("#userAddress").text("Loading...");
+        $("#loginTime").text("Loading...");
+        $("#loginDuration").text("Loading...");
+        $("#lastSeen").text("Loading...");
+        $("#pendingTasks").text("Loading...");
+        $("#completedTask").text("Loading...");
+        $("#completedWorkPlan").text("Loading...");
+
+        // **AJAX request to fetch user data**
+        $.ajax({
+            url: "{{ route('get.user.profile', '') }}/" + userId, // Fix route formatting
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let user = data.data.user;
+                let userDetails = data.data.user_details;
+                let loginTime = data.data.loginTime;
+
+                // Update user details
+                $("#username").text(user.name);
+                $("#userRank").text(userDetails?.user_title || "Info Not Updated");
+                $("#profilePhoto").attr("src", user.profile_photo_path ? "{{ asset('storage') }}/" + user.profile_photo_path : "{{ asset('storage/default-profile.png') }}");
+                $("#roleName").text(userDetails?.role_name || "Info Not Updated");
+                $("#contractEmail").text(userDetails?.email || "Info Not Updated");
+                $("#userAddress").text(userDetails?.address || "Info Not Updated");
+
+                $("#pendingTasks").text(data.data.pendingWork);
+                $("#completedTask").text(data.data.completedTask);
+                $("#completedWorkPlan").text(data.data.completedWork);
+
+                // Convert last login time
+                $("#lastSeen").text(loginTime?.login_time && loginTime?.login_date ? convertToBangladeshTime(loginTime.login_date, loginTime.login_time) : "Not Logged In");
+
+                // Convert login duration
+                $("#loginDuration").text(loginTime?.login_hour ? formatDuration(loginTime.login_hour) : "Not Logged In");
+            },
+            error: function () {
+                $("#username").text("Error loading data");
+            }
+        });
+
+    // **Position popup next to the cursor or above it based on available space**
+    let popupHeight = $("#userProfilePopup").outerHeight();
+    let popupWidth = $("#userProfilePopup").outerWidth();
+    let windowHeight = $(window).height();
+    let windowWidth = $(window).width();
+    let cursorY = e.pageY;
+    let cursorX = e.pageX;
+
+    // Check if there is enough space below the cursor
+    if (cursorY + popupHeight + 10 > windowHeight) {
+        // Not enough space below, show above the cursor
+        $("#userProfilePopup")
+            .css({
+                top: cursorY - popupHeight - 10 + "px", 
+                left: cursorX + 15 + "px"
+            })
+            .fadeIn(200);
+    } else {
+        // Enough space below, show below the cursor
+        $("#userProfilePopup")
+                .css({
+                    top: cursorY + 10 + "px", 
+                    left: cursorX + 15 + "px"
+                })
+                .fadeIn(200);
+        }
+    });
+
+    // **Hide popup on mouseleave**
+    $(document).on("mouseleave", ".user-hover", function () {
+        let hidePopup = setTimeout(function () {
+            $("#userProfilePopup").fadeOut(200);
+        }, 500);
+        $("#userProfilePopup").data("timeout", hidePopup);
+    });
+
+    // Keep popup open when hovering over it
+    $("#userProfilePopup").hover(
+        function () {
+            clearTimeout($(this).data("timeout"));
+        },
+        function () {
+            let hidePopup = setTimeout(function () {
+                $("#userProfilePopup").fadeOut(200);
+            }, 500);
+            $(this).data("timeout", hidePopup);
+        }
+    );
 });
 </script>
 @if (session('success'))

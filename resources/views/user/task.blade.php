@@ -82,7 +82,7 @@
                                     <span class="text-danger error-title"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="description">Task Description<span class="text-danger">*</span></label>
+                                    <label for="description">Task Description</label>
                                     <textarea id="description" name="description" class="form-control" rows="4" required placeholder="Task Details"></textarea>
                                     <span class="text-danger error-description"></span>
                                 </div>

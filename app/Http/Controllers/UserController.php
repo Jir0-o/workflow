@@ -13,7 +13,6 @@ class UserController extends Controller
 {
     public function __construct(){
         $this->middleware('permission:Create User',['only'=>['store','create']]);
-        $this->middleware('permission:edit User',['only'=>['edit','update']]);
         $this->middleware('permission:delete User',['only'=>['destroy']]);
 
     }
@@ -118,7 +117,7 @@ class UserController extends Controller
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email,' . $id,
                 'password' => 'nullable|confirmed',
-                'role' => 'required|array',
+                'role' => 'nullable|array',
                 'profile_picture' => 'nullable|image|max:2048',
             ]);
     

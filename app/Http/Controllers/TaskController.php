@@ -83,18 +83,44 @@ class TaskController extends Controller
 
         //dropdown task
         $taskDropdown = WorkPlan::all();
-        //count
-        $pendingCount = Task::where('user_id', $userId)->where('status', 'pending')->count();
-        $completeCount = Task::where('user_id', $userId)->where('status', 'completed')->count();
-        $incompleteCount = Task::where('user_id', $userId)->where('status', 'incomplete')->count();
-        $inprogressCount = Task::where('user_id', $userId)->where('status', 'in_progress')->count();
 
+        $pendingCount = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'pending')
+            ->count();
+        $completeCount = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'completed')
+            ->count();
+        $incompleteCount = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'incomplete')
+            ->count();
+        $inprogressCount = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'in_progress')
+            ->count();
+        
+        $pendingTasks = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'pending')
+            ->with('user', 'title_name')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        $completedTasks = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'completed') 
+            ->with('user', 'title_name')
+            ->orderBy('submit_by_date', 'desc')
+            ->get();
+        
+        $incompletedTasks = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'incomplete')
+            ->with('user', 'title_name')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        $requestedTasks = Task::whereRaw("FIND_IN_SET(?, user_id)", [$userId])
+            ->where('status', 'in_progress')
+            ->with('user', 'title_name')
+            ->orderBy('updated_at', 'desc')
+            ->get();    
 
-
-        $pendingTasks = Task::where('user_id', $userId)->where('status', 'pending')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-        $completedTasks = Task::where('user_id', $userId)->where('status', 'completed')->with('user','title_name')->orderBy('submit_by_date', 'desc')->get();
-        $incompletedTasks = Task::where('user_id', $userId)->where('status', 'incomplete')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
-        $requestedTasks = Task::where('user_id', $userId)->where('status', 'in_progress')->with('user','title_name')->orderBy('updated_at', 'desc')->get();
     
         return view('user.task', compact('pendingTasks', 'completedTasks', 'incompletedTasks','requestedTasks','pendingCount','completeCount','incompleteCount','inprogressCount','tasks','userId','titles','taskDropdown'));
 
@@ -117,7 +143,7 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|exists:title_names,id',
             'task_title' => 'required',
-            'description' => 'required',
+            'description' => 'nullable',
             'attachment' => 'nullable|max:2048',
             'last_submit_date' => 'required|date|after_or_equal:today',
         ]);
@@ -339,7 +365,7 @@ class TaskController extends Controller
 {
 
     $task = Task::findOrFail($id);
-    $startTime = Carbon::parse($task->created_at);
+    $startTime = Carbon::parse($task->submit_date);
     $currentDateTime = Carbon::now();
 
     $totalDuration = $startTime->diffInSeconds($currentDateTime);

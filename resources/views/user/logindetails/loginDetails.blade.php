@@ -120,7 +120,7 @@
                                             @if ($profilePath)
                                                 <img src="{{ asset('storage/' . $profilePath) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                             @else
-                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                             @endif
                                         </td>
                                         <td>{{ $userLogs->first()->name }}</td>
@@ -152,7 +152,7 @@
                                                                 @if ($log->user->profile_photo_path)
                                                                     <img src="{{ asset('storage/' . $log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                                                 @else
-                                                                    <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                                    <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                                                 @endif
                                                             </td>
                                                             <td>{{ \Carbon\Carbon::parse($log->login_date)->format('d F Y') }}</td>
@@ -255,7 +255,7 @@
                                             @if ($profilePath)
                                                 <img src="{{ asset('storage/' . $profilePath) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                             @else
-                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                             @endif
                                         </td>
                                         <td>{{ $userLogs->first()->name }}</td>
@@ -286,7 +286,7 @@
                                                                 @if ($userLogs->first() && $userLogs->first()->user && $userLogs->first()->user->profile_photo_path)
                                                                 <img src="{{ asset('storage/' . $userLogs->first()->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                                                 @else
-                                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                                    <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                                                 @endif
                                                             </td>
                                                             <td>
@@ -389,7 +389,7 @@
                                             @if ($log->user->profile_photo_path)
                                                 <img src="{{ asset('storage/' . $log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                             @else
-                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                             @endif
                                         </td>
                                         <td>{{ $log->name }}</td>
@@ -480,7 +480,7 @@
                                             @if ($log->user && $log->user->profile_photo_path)
                                                 <img src="{{ asset('storage/' . $log->user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                             @else
-                                                <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                             @endif
                                         </td>
                                         <td>{{ $log->name }}</td>
@@ -490,7 +490,6 @@
                                         <td>
                                             <span class="badge bg-warning">Not Logged In</span>
                                         </td>
-
                                     </tr>
                                 @endforeach
                             @endforeach

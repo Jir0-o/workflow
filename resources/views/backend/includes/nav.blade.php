@@ -98,6 +98,10 @@
         color: #ffffff;
     }
 
+    body.dark-mode .table .permissions-item {
+    color: #ffffff !important;
+    }
+
     /* Dark mode for the top navbar */
     body.dark-mode .layout-navbar {
         background-color: #333333; /* Dark background */
@@ -203,11 +207,11 @@
         color: #dddddd;
     }
 
-    /* Ensure no padding or margin at the top of the parent container */
+    /* Ensure the entire top section adapts to dark mode */
     body.dark-mode .app-brand {
         background-color: #222222; /* Match the dark mode background */
-        color: #ffffff; /* Ensure text is visible */
-        border: none; /* Remove any border causing white space */
+        color: ##222222; /* Ensure text color is visible */
+        border-bottom: 1px solid #333333; /* Optional: Add a divider */
     }
 
     /* Default image styling */
@@ -215,12 +219,12 @@
         height: 40px;
         background-color: transparent;
         display: block;
-        margin: auto; 
+        margin: auto; /* Center the image */
     }
 
     /* Dark mode adjustments for the image container */
     body.dark-mode .app-brand-logo .side-nav-logo {
-        filter: brightness(0.8);
+        filter: brightness(0.9);
         background-color: #222222;
     }
 
@@ -389,6 +393,116 @@
         text-decoration: none !important;
     }
 
+    .dark-mode .dark-mode-text {
+    color: black !important;
+    }
+
+    .dark-mode .white-mode {
+    color: white !important;
+    }
+
+    
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #c0c0c0;
+        }
+
+        body.dark-mode .profile-container {
+            background: #222;
+        }
+
+        body.dark-mode .profile-header {
+            background: #333;
+        }
+
+        body.dark-mode .username {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .stats,
+        body.dark-mode .time {
+            color: #bbb;
+        }
+
+        body.dark-mode .buttons button {
+            background: #444;
+        }
+
+        body.dark-mode .buttons button:hover {
+            background: #555;
+        }
+
+        body.dark-mode .tablink {
+            background: #333;
+        }
+
+        body.dark-mode .tablink.active {
+            background: #555;
+        }
+
+        body.dark-mode .tabcontent {
+            background: #282828;
+        }
+
+        body.dark-mode .section {
+            background: #333;
+        }
+
+        body.dark-mode th {
+            background: #333;
+        }
+
+        body.dark-mode tbody tr:hover {
+            background: #444;
+        }
+
+        body.dark-mode .signature {
+            color: #bbb;
+        }
+
+        /* Mode Toggle Button */
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .mode-toggle:hover {
+            background: #555;
+        }
+
+        body.dark-mode .mode-toggle {
+            background: #444;
+        }
+
+        body.dark-mode .mode-toggle:hover {
+            background: #555;
+        }
+        /* dark mode for user profile pop up */
+        body.dark-mode .user-profile-popup {
+            background: #333 !important;  /* Darker background */
+            color: #fff !important; /* Light text for contrast */
+            border: 1px solid #777; /* Subtle border */
+        }
+
+        body.dark-mode .user-profile-popup h5,
+        body.dark-mode .user-profile-popup h6,
+        body.dark-mode .user-profile-popup p {
+            color: #ddd !important; /* Make all text readable */
+        }
+
+        body.dark-mode .user-profile-popup .badge {
+            background: #444 !important; /* Adjust badge colors */
+            color: #fff !important;
+        }
     </style>
 
 <div class="modal fade" id="logoutReasonModal" tabindex="-1" role="dialog">
@@ -472,7 +586,7 @@
                         @if (Auth::user()->profile_photo_path)
                             <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                         @else
-                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                            <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                         @endif
                     </div>
                 </a>
@@ -485,7 +599,7 @@
                                         @if (Auth::user()->profile_photo_path)
                                             <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                         @else
-                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                            <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                         @endif
                                     </div>
                                 </div>
@@ -503,6 +617,12 @@
                         <a class="dropdown-item" href="{{ route('profile.show') }}">
                             <i class="bx bx-user me-2"></i>
                             <span class="align-middle">My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('working_profile.index') }}">
+                            <i class="bx bx-briefcase me-2"></i>
+                            <span class="align-middle">Work Profile</span>
                         </a>
                     </li>
                     @can('View Role Permission Menu')
@@ -672,7 +792,7 @@ $(document).ready(function() {
                         onclick="markAsRead(${notification.id}, this)" style="flex-grow: 1;">
                             <div class="d-flex align-items-center">
                                 <!-- User Image -->
-                                <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : 'https://via.placeholder.com/50'}" 
+                                <img src="${notification.user.profile_photo_path ? '/storage/' + notification.user.profile_photo_path : '/default-profile.jpg'}" 
                                 alt="User Image" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                 <div>
                                     <strong class="${isDarkMode ? 'text-light' : 'text-dark'}">${notification.title}</strong>

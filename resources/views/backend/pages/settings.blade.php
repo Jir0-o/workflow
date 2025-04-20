@@ -49,7 +49,7 @@
                                     <th class="py-4 px-6" style="width: 500px;">
                                         <div id="permission{{ $role->id }}" class="hidden flex gap-4 flex-wrap">
                                             @foreach ($role->permissions as $item)
-                                                <div class="p-1 rounded font-bold">
+                                                <div class="bg-green-500 permissions-item p-1 rounded font-bold">
                                                     {{ $item->name }}
                                                 </div>
                                             @endforeach
@@ -180,7 +180,7 @@
                             <label for="edit_profile_picture" class="form-label">Profile Picture</label>
                             <input type="file" id="edit_profile_picture" name="profile_picture" class="form-control" accept="image/*">
                             <img id="editprofilePreview" src="" alt="Profile Picture" class="img-fluid mt-2" style="max-height: 150px;">
-                        </div>
+                        </div> 
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -301,12 +301,12 @@
                                 <tr>
                                     <td>
                                         {{ $loop->iteration }}
-                                    </td>
+                                    </td> 
                                     <td>
                                         @if ($user->profile_photo_path)
-                                            <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                            <img src="{{ asset('public/storage/' . $user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
                                         @else
-                                            <img src="https://via.placeholder.com/50" alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                            <img src={{ asset ('public/default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                         @endif
                                     </td>
                                    

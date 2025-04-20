@@ -71,7 +71,7 @@
                             </div>
                         </div>
 
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered table-dark">
                             <thead>
                                 <tr>
                                     <th>SL</th>
