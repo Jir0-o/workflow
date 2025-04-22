@@ -43,9 +43,9 @@
             <!-- Current Profile Photo -->
             <div class="mt-2" x-show="! photoPreview">
             @if (Auth::user()->profile_photo_path)
-                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="150" height="150" class="rounded-circle">
+                <img src="{{ asset('public/storage/' . Auth::user()->profile_photo_path) }}" alt="Profile Picture" width="150" height="150" class="rounded-circle">
             @else
-                <img src={{ asset ('default-profile.jpg')}} alt="Default Profile" width="150" height="150" class="rounded-circle">
+                <img src={{ asset ('public/default-profile.jpg')}} alt="Default Profile" width="150" height="150" class="rounded-circle">
             @endif
             </div>
 

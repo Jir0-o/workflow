@@ -553,6 +553,7 @@
         });
     });
 
+    
     $(".toggle-password").on("click", function () {
             const input = $("#password");
             const icon = $(this);
@@ -600,6 +601,8 @@
             // Toggle icon class
             icon.toggleClass("fa-eye fa-eye-slash");
         });
+
+
     });
 
 </script>

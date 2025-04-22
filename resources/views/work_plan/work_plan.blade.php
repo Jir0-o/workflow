@@ -42,6 +42,31 @@
                     </div>
                 </div>
 
+                {{-- feedback model --}}
+                <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form action="{{ route('feedback.submit.work_plan') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="task_id" id="feedback-task-id">
+                
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="feedbackModalLabel">Task Feedback</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                
+                        <div class="modal-body">
+                            <textarea name="feedback" id="feedback-editor"></textarea>
+                        </div>
+                
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                        </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+
             <!-- Task Create Modal -->
             <div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -289,20 +314,32 @@
                                             function confirmCompleteTask(taskId) {
                                                 Swal.fire({
                                                     title: 'Are you sure?',
-                                                    text: "Do you want to complete this task?",
+                                                    text: "Do you want to complete this work plan?",
                                                     icon: 'warning',
                                                     showCancelButton: true,
                                                     confirmButtonColor: '#3085d6',
                                                     cancelButtonColor: '#d33',
                                                     confirmButtonText: 'Yes, complete it!'
-                                                }).then((result) => {
+                                                }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        document.getElementById(`complete-task-form-${taskId}`).submit();
+                                                        Swal.fire({
+                                                            title: 'Would you like to leave feedback?',
+                                                            icon: 'question',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes',
+                                                            cancelButtonText: 'No'
+                                                        }).then(function (feedbackResult) {
+                                                            if (feedbackResult.isConfirmed) {
+                                                                $('#feedback-task-id').val(taskId);
+                                                                $('#feedbackModal').modal('show');
+                                                            } else {
+                                                                $(`#complete-task-form-${taskId}`).submit();
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             }
-                                        </script>
-
+                                        </script> 
                                     </tbody>
                                 </table>
                             </div>
@@ -482,6 +519,7 @@
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
                                             <th>Work Status</th>
+                                            <th>Feedback</th>
                                             <th>Extend Reason</th>
                                             <th>Attachments</th>
                                             <th>Status</th>
@@ -500,6 +538,14 @@
                                             <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y') }}</td>
                                             <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
                                             <td>{{ $completedtask->work_status }}</td>
+                                            <td>
+                                                @if ($completedtask->message != "Time Expired" && $completedtask->message != null)
+    
+                                                    {!!($completedtask->message) !!}</td>
+                                                @else
+                                                    No Feedback
+                                                @endif
+                                            </td>
                                             <td>
                                                 @php
                                                     // Explode the reason_message field
@@ -715,6 +761,7 @@
         CKEDITOR.replace('message');
         CKEDITOR.replace('description');
         CKEDITOR.replace('extension_reason');
+        CKEDITOR.replace('feedback-editor');
 
         $('#createTaskForm').on('submit', function (e) {
             e.preventDefault(); // Prevent the form from submitting the usual way
@@ -934,6 +981,19 @@
             $('#taskId').val(taskId); // Set taskId in hidden input
             $('#reasonTaskModal').modal('show'); // Show the modal
             $('#extension_reason').val(''); // Clear the textarea for a new message
+        });
+
+        $('#feedbackModal').on('shown.bs.modal', function () {
+            if (!$('#feedback-editor').data('ckeditorInstance')) {
+                ClassicEditor
+                    .create(document.querySelector('#feedback-editor'))
+                    .then(editor => {
+                        $('#feedback-editor').data('ckeditorInstance', editor);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
         });
 </script>
 @if (session('success'))

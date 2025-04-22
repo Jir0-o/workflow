@@ -2034,7 +2034,7 @@ $(document).ready(function(){
                 // Update user details
                 $("#username").text(user.name);
                 $("#userRank").text(userDetails?.user_title || "Info Not Updated");
-                $("#profilePhoto").attr("src", user.profile_photo_path ? "{{ asset('storage') }}/" + user.profile_photo_path : "{{ asset('storage/default-profile.png') }}");
+                $("#profilePhoto").attr("src", user.profile_photo_path ? "{{ asset('public/storage') }}/" + user.profile_photo_path : "{{ asset('storage/default-profile.png') }}");
                 $("#roleName").text(userDetails?.role_name || "Info Not Updated");
                 $("#contractEmail").text(userDetails?.email || "Info Not Updated");
                 $("#userAddress").text(userDetails?.address || "Info Not Updated");

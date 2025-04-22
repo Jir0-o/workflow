@@ -42,7 +42,7 @@ input.is-invalid {
     display: inline-block; /* Ensures buttons are inline with proper spacing */
     cursor: pointer;
     border: none;
-    background: none;
+    background: none; 
     font-size: 14px;
 }
 
@@ -347,6 +347,31 @@ input.is-invalid {
         </div>
     </div>
 </div>
+
+        {{-- feedback model --}}
+        <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form action="{{ route('feedback.submit.asign') }}" method="POST">
+                @csrf
+                <input type="hidden" name="task_id" id="feedback-task-id">
+        
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feedbackModalLabel">Task Feedback</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+        
+                <div class="modal-body">
+                    <textarea name="feedback" id="feedback-editor"></textarea>
+                </div>
+        
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                </div>
+                </form>
+            </div>
+            </div>
+        </div>
 
 
     <div class="row mt-5">
@@ -719,6 +744,7 @@ input.is-invalid {
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
+                                            <th>Feedback</th>
                                             <th>Attachments</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -756,6 +782,14 @@ input.is-invalid {
                                             <td>{{ $task->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($task->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $task->submit_by_date ? \Carbon\Carbon::parse($task->submit_by_date)->format('d F Y, h:i A') : 'Still Pending' }}</td>
+                                            <td>
+                                                @if ($task->message != "Time Expired" && $task->message != null)
+    
+                                                    {!!($task->message) !!}</td>
+                                                @else
+                                                    No Feedback
+                                                @endif
+                                            </td>
                                             <td>
                                                 @if ($task->attachment)
                                                     @php
@@ -987,21 +1021,34 @@ input.is-invalid {
                 </script>
                 {{-- Sweet alart for completed task change  --}}
                 <script>
-                    function confirmCompleteTask(StatusTaskId) {
+                    function confirmCompleteTask(taskId) {
                         Swal.fire({
                             title: 'Are you sure?',
-                            text: "Do you want to make this task completed?",
+                            text: "Do you want to complete this task?",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
                             cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes'
-                        }).then((result) => {
+                            confirmButtonText: 'Yes, complete it!'
+                        }).then(function (result) {
                             if (result.isConfirmed) {
-                                document.getElementById(`complete-task-form-${StatusTaskId}`).submit();
+                                Swal.fire({
+                                    title: 'Would you like to leave feedback?',
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Yes',
+                                    cancelButtonText: 'No'
+                                }).then(function (feedbackResult) {
+                                    if (feedbackResult.isConfirmed) {
+                                        $('#feedback-task-id').val(taskId);
+                                        $('#feedbackModal').modal('show');
+                                    } else {
+                                        $(`#complete-task-form-${taskId}`).submit();
+                                    }
+                                });
                             }
                         });
-                    } 
+                    }
                 </script> 
                 {{-- Sweet alart for requested task change  --}}
                 <script>
@@ -1133,6 +1180,7 @@ $(document).ready(function(){
     CKEDITOR.replace('task_description');
     CKEDITOR.replace('description');
     CKEDITOR.replace('submit_description');
+    CKEDITOR.replace('feedback-editor');
 
             // Initialize select2 when modal is shown
             $('#createProjectModal').on('shown.bs.modal', function() {
@@ -1838,6 +1886,19 @@ $(document).ready(function(){
         }
 
     });
+
+    $('#feedbackModal').on('shown.bs.modal', function () {
+            if (!$('#feedback-editor').data('ckeditorInstance')) {
+                ClassicEditor
+                    .create(document.querySelector('#feedback-editor'))
+                    .then(editor => {
+                        $('#feedback-editor').data('ckeditorInstance', editor);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+        });
 });
 </script>
 @if (session('success'))

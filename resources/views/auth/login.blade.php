@@ -61,7 +61,10 @@
                             <!-- Login Form -->
                             <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1 fade-in">
                                 <div class="text-center mb-4">
-                                    <img src="/images/unicorn-removebg-preview.png" alt="Unicorn Logo" class="img-fluid" style="max-height: 100px;">
+                                    <img src="{{ asset('public/storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
+                                         alt="Unicorn Logo" 
+                                         class="mx-auto d-block img-fluid" 
+                                         style="max-height: 120px; max-width: 220px;">
                                 </div>
 
                                 @if (session('status'))
@@ -84,11 +87,13 @@
                                     </div>
 
                                     <!-- Password -->
-                                    <div class="mb-4">
+                                    <div class="mb-4 position-relative">
                                         <label class="form-label" for="password">Password</label>
                                         <input id="password" type="password" name="password"
                                             class="form-control"
                                             required autocomplete="current-password" />
+                                        <span class="fa fa-eye toggle-password"
+                                            style="position: absolute; top: 53px; right: 25px; cursor: pointer;"></span>
                                     </div>
 
                                     <!-- Remember & Forgot -->
@@ -138,10 +143,8 @@
             </div>
         </div>
     </div>
-
     @include('backend.partials.footer')
 </section>
-
 
     <script>
             // Check for error message in localStorage

@@ -430,7 +430,7 @@ class AsignTaskController extends Controller
 public function completed($id)
 {
     $task = Task::findOrFail($id);
-    $startTime = Carbon::parse($task->submit_date);
+    $startTime = Carbon::parse($task->created_at);
     $currentDateTime = Carbon::now();
 
     $totalDurationInSeconds = (int) $startTime->diffInSeconds($currentDateTime);
@@ -467,6 +467,38 @@ public function pendingdate($id)
     $task->save();
 
     return back()->with('success', 'Task marked as pending successfully.');
+}
+
+public function submitFeedbackAsign(Request $request)
+{
+    $request->validate([
+        'task_id' => 'required|exists:tasks,id',
+        'feedback' => 'nullable|string',
+    ]);
+
+    $task = Task::findOrFail($request->task_id);
+
+    $startTime = Carbon::parse($task->submit_date);
+    $currentDateTime = Carbon::now();
+
+    $totalDurationInSeconds = (int) $startTime->diffInSeconds($currentDateTime);
+
+    // MySQL max time value safety
+    $maxMysqlTimeInSeconds = 838 * 3600 + 59 * 60 + 59;
+    $safeDuration = min($totalDurationInSeconds, $maxMysqlTimeInSeconds);
+
+    $hours = floor($safeDuration / 3600);
+    $minutes = floor(($safeDuration % 3600) / 60);
+    $seconds = $safeDuration % 60;
+    $timeFormatted = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+    $task->submit_by_date = $currentDateTime;
+    $task->status = 'completed';
+    $task->work_hour = $timeFormatted;
+    $task->message = $request->feedback; 
+    $task->save();
+
+    return back()->with('success', 'Feedback submitted and task marked as completed.');
 }
 
 }

@@ -70,6 +70,7 @@ Route::middleware([
     Route::put('/tasks/{task}/extend', [TaskController::class, 'extend'])->name('tasks.extend');
     Route::patch('/tasks/{task}/redo', [TaskController::class, 'redo'])->name('tasks.redo');
     Route::patch('/tasks/{task}/cancel', [TaskController::class, 'cancel'])->name('tasks.cancel');
+    Route::post('/tasks/feedback/create', [TaskController::class, 'submitFeedback'])->name('feedback.submit');
 
     //workplan route
     Route::patch('/work_plan/{task}/complete', [WorkPlanController::class, 'complete'])->name('work_plan.complete');
@@ -77,6 +78,7 @@ Route::middleware([
     Route::patch('/work_plan/{task}/redo', [WorkPlanController::class, 'redo'])->name('work_plan.redo');
     Route::patch('/work_plan/{task}/cancel', [WorkPlanController::class, 'cancel'])->name('work_plan.cancel');
     Route::get('/work_plan/{task}/show', [WorkPlanController::class, 'getTask'])->name('work_plan.show');
+    Route::post('/work_plan/feedback', [WorkPlanController::class, 'submitFeedbackWork'])->name('feedback.submit.work_plan');
 
     //manage work route
     Route::patch('/manage_work/{task}/completed', [ManageWorkController::class, 'completed'])->name('manage_work.complete');
@@ -89,12 +91,14 @@ Route::middleware([
     Route::patch('/project_title/{project_title}/drop', [ProjectTitleController::class, 'drop'])->name('project.drop');
     Route::patch('/project_title/{project_title}/running', [ProjectTitleController::class, 'running'])->name('project.running');
     Route::get('/project_title/{project_title}/edit', [ProjectTitleController::class, 'newEdit'])->name('edit.project_title');
+    Route::post('/project_title/feedback', [ProjectTitleController::class, 'submitFeedbackProject'])->name('feedback.submit.project');
 
 
     Route::patch('/tasks/{task}/completed', [AsignTaskController::class, 'completed'])->name('asign_tasks.complete');
     Route::patch('/tasks/{task}/pendingdate', [AsignTaskController::class, 'pendingdate'])->name('asign_tasks.pendingdate');
     Route::patch('/tasks/{task}/requested', [AsignTaskController::class, 'requested'])->name('asign_tasks.requested');
     Route::patch('/tasks/{task}/incomplete', [AsignTaskController::class, 'incomplete'])->name('asign_tasks.incomplete');
+    Route::post('/tasks/feedback', [AsignTaskController::class, 'submitFeedbackAsign'])->name('feedback.submit.asign');
 
     Route::post('/report/create', [ReportController::class, 'create'])->name('report.create');
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');

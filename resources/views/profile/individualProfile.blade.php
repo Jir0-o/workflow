@@ -469,8 +469,9 @@
 
     
     <div class="profile-header">
+        @if (Auth::user()->hasRole('Super Admin'))
         <div class="image-container">
-            <img src="{{ $userProfile->profile_photo_path ? asset('storage/' . $userProfile->profile_photo_path) : asset('default-profile.jpg') }}" 
+            <img src="{{ $userProfile->profile_photo_path ? asset('public/storage/' . $userProfile->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                  alt="Profile Picture" 
                  class="image" 
                  id="profileImage">
@@ -481,6 +482,14 @@
         </div>
         
         <input type="file" id="imageInput" style="display: none;" accept="image/*">
+        @else
+        <div class="image-container">
+            <img src="{{ $userProfile->profile_photo_path ? asset('public/storage/' . $userProfile->profile_photo_path) : asset('public/default-profile.jpg') }}" 
+                 alt="Profile Picture" 
+                 class="image" 
+                 id="profileImage12">
+        </div>
+        @endif
         <div class="user-info">
             <h2 class="username">
                 <span id="usernameDisplay">

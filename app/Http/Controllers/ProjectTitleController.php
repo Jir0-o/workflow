@@ -352,5 +352,21 @@ class ProjectTitleController extends Controller
     
         return back()->with('success', 'Project in Now running.');
     }
+
+    public function submitFeedbackProject(Request $request)
+    {
+        $request->validate([
+            'project_id' => 'required|exists:title_names,id',
+            'feedback' => 'nullable|string',
+        ]);
+    
+        $project = TitleName::findOrFail($request->project_id);
+        $project->end_by_date = Carbon::now();
+        $project->status = 'completed';
+        $project->feedback = $request->feedback;
+        $project->save();
+    
+        return back()->with('success', 'Feedback submitted and project marked as completed.');
+    }
     
 }

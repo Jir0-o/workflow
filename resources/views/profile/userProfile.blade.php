@@ -470,7 +470,7 @@
     
     <div class="profile-header">
         <div class="image-container">
-            <img src="{{ Auth::user()->profile_photo_path ? asset('storage/' . Auth::user()->profile_photo_path) : asset('default-profile.jpg') }}" 
+            <img src="{{ Auth::user()->profile_photo_path ? asset('public/storage/' . Auth::user()->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                  alt="Profile Picture" 
                  class="image" 
                  id="profileImage">

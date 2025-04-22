@@ -365,20 +365,22 @@ class TaskController extends Controller
 {
 
     $task = Task::findOrFail($id);
-    $startTime = Carbon::parse($task->submit_date);
+    $startTime = Carbon::parse($task->created_at);
     $currentDateTime = Carbon::now();
 
-    $totalDuration = $startTime->diffInSeconds($currentDateTime);
+    $totalDurationInSeconds = (int) $startTime->diffInSeconds($currentDateTime);
 
-    // Convert seconds to H:i:s format
-    $hours = floor($totalDuration / 3600);
-    $minutes = floor(($totalDuration % 3600) / 60);
-    $seconds = $totalDuration % 60;
-    $hoursHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    $maxMysqlTimeInSeconds = 838 * 3600 + 59 * 60 + 59;
+    $safeDuration = min($totalDurationInSeconds, $maxMysqlTimeInSeconds);
+
+    $hours = floor($safeDuration / 3600);
+    $minutes = floor(($safeDuration % 3600) / 60);
+    $seconds = $safeDuration % 60;
+    $timeFormatted = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 
     $task->submit_by_date = Carbon::now();
     $task->status = 'completed';
-    $task->work_hour = $hoursHours;
+    $task->work_hour = $timeFormatted;
     $task->save();
 
     // Find the role by name
@@ -560,4 +562,53 @@ public function incompleted($id)
 
     return back()->with('success', 'Task incompleted .');
 }
+
+    public function submitFeedback(Request $request)
+    {
+        $request->validate([
+            'task_id' => 'required|exists:tasks,id',
+            'feedback' => 'nullable|string',
+        ]);
+
+        $task = Task::findOrFail($request->task_id);
+        $startTime = Carbon::parse($task->created_at);
+        $currentDateTime = Carbon::now();
+
+        $totalDuration = $startTime->diffInSeconds($currentDateTime);
+
+        $hours = floor($totalDuration / 3600);
+        $minutes = floor(($totalDuration % 3600) / 60);
+        $seconds = $totalDuration % 60;
+        $hoursHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+        $task->submit_by_date = $currentDateTime;
+        $task->status = 'completed';
+        $task->work_hour = $hoursHours;
+        $task->message = $request->feedback; 
+        $task->save();
+
+        $role = Role::where('name', 'Super Admin')->first();
+
+        if (!$role) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Role not found.',
+            ], 404);
+        }
+
+        $superAdminUsers = User::role($role->name)->get();
+        $authUser = auth()->user();
+
+        foreach ($superAdminUsers as $superAdminUser) {
+            Notification::create([
+                'title' => "{$authUser->name} Task completed",
+                'text' => "{$authUser->name} has completed his task and submitted feedback. Please check your Completed Task tab.",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $superAdminUser->id,
+                'link' => route('asign_tasks.index'),
+            ]);
+        }
+
+        return back()->with('success', 'Feedback submitted and task marked as completed.');
+    }
 }

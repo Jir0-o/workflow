@@ -8,9 +8,11 @@
             }
 
             .side-nav-logo {
-                width: 200px;       
+                width: 170px;      
+                height: 40px; 
                 position: relative;
                 top: -10px; 
+                margin-left: -40px;
             }
         </style>
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
@@ -22,7 +24,7 @@
                             <!-- SVG content here -->
                         </svg>
                     <img 
-                        src="{{ asset('storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
+                        src="{{ asset('public/storage/profile-photos/store_photos/unicorn-removebg-preview.png') }}" 
                         alt="Unicorn Logo" 
                         class="side-nav-logo"
                     />
@@ -34,7 +36,7 @@
                 </a>
             </div>
 
-            <div class="menu-inner-shadow"></div>
+            {{-- <div class="menu-inner-shadow"></div> --}}
 
             <ul class="menu-inner py-1">
                 <li class="menu-header small text-uppercase">
@@ -178,6 +180,7 @@
                     </ul>
                 </li>
                 @endcan
+                @if(auth()->user()->can('View Mail Management'))
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">@if (auth()->user()->hasRole('Super Admin')) Mail Management @endif</span>
                 </li>
@@ -199,6 +202,7 @@
                         </li>
                     </ul>
                 </li>
+                @endcan
                 @can('View Role Permission Menu')
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text"> Role and Permission</span>

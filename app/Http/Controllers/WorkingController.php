@@ -796,7 +796,7 @@ class WorkingController extends Controller
     
         return response()->json([
             'success' => true,
-            'image_url' => asset('storage/' . $fileName)
+            'image_url' => asset('public/storage/' . $fileName)
         ]);
     }
 

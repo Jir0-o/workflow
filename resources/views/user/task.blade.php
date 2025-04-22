@@ -158,6 +158,31 @@
                     </div>
                 </div>
             </div>
+                {{-- feedback model --}}
+                <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form action="{{ route('feedback.submit') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="task_id" id="feedback-task-id">
+                
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="feedbackModalLabel">Task Feedback</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                
+                        <div class="modal-body">
+                            <textarea name="feedback" id="feedback-editor"></textarea>
+                        </div>
+                
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                        </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+
                 <!-- Nav tabs -->
                 <div class="container">
                     <div class="row justify-content-center">
@@ -322,12 +347,25 @@
                                                     confirmButtonColor: '#3085d6',
                                                     cancelButtonColor: '#d33',
                                                     confirmButtonText: 'Yes, complete it!'
-                                                }).then((result) => {
+                                                }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        document.getElementById(`complete-task-form-${taskId}`).submit();
+                                                        Swal.fire({
+                                                            title: 'Would you like to leave feedback?',
+                                                            icon: 'question',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes',
+                                                            cancelButtonText: 'No'
+                                                        }).then(function (feedbackResult) {
+                                                            if (feedbackResult.isConfirmed) {
+                                                                $('#feedback-task-id').val(taskId);
+                                                                $('#feedbackModal').modal('show');
+                                                            } else {
+                                                                $(`#complete-task-form-${taskId}`).submit();
+                                                            }
+                                                        });
                                                     }
                                                 });
-                                            } 
+                                            }
                                         </script> 
 
                                     </tbody>
@@ -518,6 +556,7 @@
                                             <th>Start Date</th>
                                             <th>Due Date</th>
                                             <th>Submitted Date</th>
+                                            <th>Feedback</th>
                                             <th>Attachments</th>
                                             <th>Status</th>
                                             @can('Task Details Allow Action')
@@ -543,6 +582,14 @@
                                             <td>{{ $completedtask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($completedtask->submit_date)->format('d F Y, h:i A') }}</td>
                                             <td>{{ $completedtask->submit_by_date ? \Carbon\Carbon::parse($completedtask->submit_by_date)->format('d F Y, h:i A') : 'Task completed' }}</td>
+                                            <td>
+                                            @if ($completedtask->message != "Time Expired" && $completedtask->message != null)
+
+                                                {!!($completedtask->message) !!}</td>
+                                            @else
+                                                No Feedback
+                                            @endif
+                                            </td>
                                             <td>
                                                 @if ($completedtask->attachment)
                                                     @php
@@ -732,6 +779,7 @@
         CKEDITOR.replace('message');
         CKEDITOR.replace('description');
         CKEDITOR.replace('extension_reason');
+        CKEDITOR.replace('feedback-editor');
 
         $('#createTaskForm').on('submit', function (e) {
             e.preventDefault(); // Prevent the default form submission behavior
@@ -1009,6 +1057,19 @@
             $('#taskId').val(taskId); // Set taskId in hidden input
             $('#reasonTaskModal').modal('show'); // Show the modal
             $('#extension_reason').val(''); // Clear the textarea for a new message
+        });
+
+        $('#feedbackModal').on('shown.bs.modal', function () {
+            if (!$('#feedback-editor').data('ckeditorInstance')) {
+                ClassicEditor
+                    .create(document.querySelector('#feedback-editor'))
+                    .then(editor => {
+                        $('#feedback-editor').data('ckeditorInstance', editor);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
         });
 </script>
 

@@ -370,8 +370,23 @@ class WorkPlanController extends Controller
 {
 
     $task = WorkPlan::findOrFail($id);
-    $task->submit_by_date = Carbon::now();
+
+    $startTime = Carbon::parse($task->submit_date);
+    $currentDateTime = Carbon::now();
+
+    $totalDurationInSeconds = (int) $startTime->diffInSeconds($currentDateTime);
+
+    $maxMysqlTimeInSeconds = 838 * 3600 + 59 * 60 + 59;
+    $safeDuration = min($totalDurationInSeconds, $maxMysqlTimeInSeconds);
+
+    $hours = floor($safeDuration / 3600);
+    $minutes = floor(($safeDuration % 3600) / 60);
+    $seconds = $safeDuration % 60;
+    $timeFormatted = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+    $task->submit_by_date = $currentDateTime;
     $task->status = 'completed';
+    $task->work_hour = $timeFormatted;
     $task->save();
 
     // Find the role by name
@@ -553,14 +568,66 @@ public function incompleted($id)
 
     return back()->with('success', 'Task incompleted .');
 }
-public function getTask($id)
-{
-    $tasks = WorkPlan::where('task_id', $id)->get();
+    public function getTask($id)
+    {
+        $tasks = WorkPlan::where('task_id', $id)->get();
 
-    if ($tasks->isEmpty()) {
-        return response()->json([], 200); 
+        if ($tasks->isEmpty()) {
+            return response()->json([], 200); 
+        }
+
+        return response()->json($tasks, 200); 
     }
 
-    return response()->json($tasks, 200); 
-}
+    public function submitFeedbackWork(Request $request)
+    {
+        $request->validate([
+            'task_id' => 'required|exists:tasks,id',
+            'feedback' => 'nullable|string',
+        ]);
+
+        $task = WorkPlan::findOrFail($request->task_id);
+        $startTime = Carbon::parse($task->submit_date);
+        $currentDateTime = Carbon::now();
+    
+        $totalDurationInSeconds = (int) $startTime->diffInSeconds($currentDateTime);
+    
+        $maxMysqlTimeInSeconds = 838 * 3600 + 59 * 60 + 59;
+        $safeDuration = min($totalDurationInSeconds, $maxMysqlTimeInSeconds);
+    
+        $hours = floor($safeDuration / 3600); 
+        $minutes = floor(($safeDuration % 3600) / 60);
+        $seconds = $safeDuration % 60;
+        $timeFormatted = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+        $task->submit_by_date = $currentDateTime;
+        $task->status = 'completed';
+        $task->work_hour = $timeFormatted;
+        $task->message = $request->feedback; 
+        $task->save();
+
+        $role = Role::where('name', 'Super Admin')->first();
+
+        if (!$role) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Role not found.',
+            ], 404);
+        }
+
+        $superAdminUsers = User::role($role->name)->get();
+        $authUser = auth()->user();
+
+        foreach ($superAdminUsers as $superAdminUser) {
+            Notification::create([
+                'title' => "{$authUser->name} Work Plan completed",
+                'text' => "{$authUser->name} has completed his work plan and submitted feedback. Please check your Completed work plan tab.",
+                'from_user_id' => $authUser->id,
+                'to_user_id' => $superAdminUser->id,
+                'link' => route('work_plan.index'),
+            ]);
+        }
+
+        return back()->with('success', 'Feedback submitted and work plan marked as completed.');
+    }
 }

@@ -135,6 +135,31 @@
                 </div>
             </div>
 
+            {{-- feedback model --}}
+            <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form action="{{ route('feedback.submit.project') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="project_id" id="feedback-task-id">
+                
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="feedbackModalLabel">Task Feedback</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                
+                        <div class="modal-body">
+                            <textarea name="feedback" id="feedback-editor"></textarea>
+                        </div>
+                
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         <div class="col-12 col-md-12 col-lg-12">
             <div class="card p-lg-4 p-2">
                 <!-- Nav tabs -->
@@ -328,6 +353,7 @@
                                             <th>Expected End Date</th>
                                             <th>Completed Date</th>
                                             <th>Assigned User</th>
+                                            <th>Feedback</th>
                                             <th>Attachment</th>
                                             <th>Status</th>
                                             @can('View Project Action')
@@ -350,6 +376,13 @@
                                                 @endphp
                                                  {{ $user->name ?? 'No user assigned' }}<br>
                                                 @endforeach
+                                            </td>
+                                            <td>
+                                                @if ($project->feedback)
+                                                    {!!($project->feedback) !!}</td>
+                                                @else
+                                                    No Feedback
+                                                @endif
                                             </td>
                                             <td>
                                                 @if ($project->attachment)
@@ -568,15 +601,28 @@
                                             function confirmCompleteTask(CompleteTaskId) {
                                                 Swal.fire({
                                                     title: 'Are you sure?',
-                                                    text: "Do you want to Complete this project? Your project completed will be today.",
+                                                    text: "Do you want to Complete this project? Your project completed date will be today.",
                                                     icon: 'warning',
                                                     showCancelButton: true,
                                                     confirmButtonColor: '#3085d6',
                                                     cancelButtonColor: '#d33',
                                                     confirmButtonText: 'Yes'
-                                                }).then((result) => {
+                                                }).then(function (result) {
                                                     if (result.isConfirmed) {
-                                                        document.getElementById(`Complete-task-form-${CompleteTaskId}`).submit();
+                                                        Swal.fire({
+                                                            title: 'Would you like to leave feedback?',
+                                                            icon: 'question',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes',
+                                                            cancelButtonText: 'No'
+                                                        }).then(function (feedbackResult) {
+                                                            if (feedbackResult.isConfirmed) {
+                                                                $('#feedback-task-id').val(CompleteTaskId);
+                                                                $('#feedbackModal').modal('show');
+                                                            } else {
+                                                                document.getElementById(`Complete-task-form-${CompleteTaskId}`).submit();
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             }
@@ -631,6 +677,7 @@
             // Initialize CKEditor for the Project Description field
             CKEDITOR.replace('description');
             CKEDITOR.replace('editDescription');
+            CKEDITOR.replace('feedback-editor');
         });
     </script>
 

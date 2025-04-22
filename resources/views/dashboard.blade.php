@@ -348,7 +348,7 @@
                                                             <a href="{{ route('working_profile.show', $Working->user->id) }}"
                                                             class="user-hover"
                                                             data-user-id="{{ $Working->user->id }}">
-                                                                <img src="{{ $Working->user->profile_photo_path ? asset('storage/' . $Working->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                                                <img src="{{ $Working->user->profile_photo_path ? asset('public/storage/' . $Working->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                                     alt="user" class="rounded-circle" width="40" height="40">
                                                             </a>
                                                         </td>
@@ -371,7 +371,7 @@
                                                             <a href="{{ route('working_profile.show', $Pending->user->id) }}"
                                                             class="user-hover"
                                                             data-user-id="{{ $Pending->user->id }}">
-                                                                <img src="{{ $Pending->user->profile_photo_path ? asset('storage/' . $Pending->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                                                <img src="{{ $Pending->user->profile_photo_path ? asset('public/storage/' . $Pending->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                                     alt="user" class="rounded-circle" width="40" height="40">
                                                             </a>
                                                         </td>
@@ -424,9 +424,9 @@
                                                    class="user-hover"
                                                    data-user-id="{{ $notWorking->id }}">
                                                     @if($notWorking->profile_photo_path)
-                                                        <img src="{{ asset('storage/' . $notWorking->profile_photo_path) }}" alt="user" class="rounded-circle" width="40" height="40">
+                                                        <img src="{{ asset('public/storage/' . $notWorking->profile_photo_path) }}" alt="user" class="rounded-circle" width="40" height="40">
                                                     @else
-                                                        <img src={{ asset('default-profile.jpg') }} alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                        <img src={{ asset('public/default-profile.jpg') }} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                                     @endif
                                                 </a>
                                             </td>
@@ -496,7 +496,7 @@
                                                         <a href="{{ route('working_profile.show', $Working->user->id) }}"
                                                         class="user-hover"
                                                         data-user-id="{{ $Working->user->id }}">
-                                                            <img src="{{ $Working->user->profile_photo_path ? asset('storage/' . $Working->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                                            <img src="{{ $Working->user->profile_photo_path ? asset('public/storage/' . $Working->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                                 alt="user" class="rounded-circle" width="40" height="40">
                                                         </a>
                                                     </td>
@@ -519,7 +519,7 @@
                                                         <a href="{{ route('working_profile.show', $Pending->user->id) }}"
                                                         class="user-hover"
                                                         data-user-id="{{ $Pending->user->id }}">
-                                                            <img src="{{ $Pending->user->profile_photo_path ? asset('storage/' . $Pending->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                                            <img src="{{ $Pending->user->profile_photo_path ? asset('public/storage/' . $Pending->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                                 alt="user" class="rounded-circle" width="40" height="40">
                                                         </a>
                                                     </td>
@@ -572,9 +572,9 @@
                                                class="user-hover"
                                                data-user-id="{{ $notWorking->id }}">
                                                 @if($notWorking->profile_photo_path)
-                                                    <img src="{{ asset('storage/' . $notWorking->profile_photo_path) }}" alt="user" class="rounded-circle" width="40" height="40">
+                                                    <img src="{{ asset('public/storage/' . $notWorking->profile_photo_path) }}" alt="user" class="rounded-circle" width="40" height="40">
                                                 @else
-                                                    <img src={{ asset('default-profile.jpg') }} alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                                    <img src={{ asset('public/default-profile.jpg') }} alt="Default Profile" width="50" height="50" class="rounded-circle">
                                                 @endif
                                             </a>
                                         </td>
@@ -635,7 +635,7 @@
                                         <a href="{{ route('working_profile.show', $WorkingHour->user->id) }}"
                                             class="user-hover"
                                             data-user-id="{{ $WorkingHour->user->id }}">
-                                            <img src="{{ $WorkingHour->user->profile_photo_path ? asset('storage/' . $WorkingHour->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                            <img src="{{ $WorkingHour->user->profile_photo_path ? asset('public/storage/' . $WorkingHour->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                 alt="user" class="rounded-circle" width="40" height="40">
                                         </a>
                                     </td>
@@ -672,7 +672,7 @@
                                         <a href="{{ route('working_profile.show', $WorkingHour->user->id) }}"
                                             class="user-hover"
                                             data-user-id="{{ $WorkingHour->user->id }}">
-                                            <img src="{{ $WorkingHour->user->profile_photo_path ? asset('storage/' . $WorkingHour->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                            <img src="{{ $WorkingHour->user->profile_photo_path ? asset('public/storage/' . $WorkingHour->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                 alt="user" class="rounded-circle" width="40" height="40">
                                         </a>
                                     </td>
@@ -709,7 +709,7 @@
                                         <a href="{{ route('working_profile.show', $WorkingHour->user->id) }}"
                                             class="user-hover"
                                             data-user-id="{{ $WorkingHour->user->id }}">
-                                            <img src="{{ $WorkingHour->user->profile_photo_path ? asset('storage/' . $WorkingHour->user->profile_photo_path) : asset('default-profile.jpg') }}" 
+                                            <img src="{{ $WorkingHour->user->profile_photo_path ? asset('public/storage/' . $WorkingHour->user->profile_photo_path) : asset('public/default-profile.jpg') }}" 
                                                 alt="user" class="rounded-circle" width="40" height="40">
                                         </a>
                                     </td>
@@ -1070,7 +1070,7 @@
         // Show "Loading..." before fetching data
         $("#username").text("Loading...");
         $("#userRank").text("Loading...");
-        $("#profilePhoto").attr("src", "{{ asset('storage/default-profile.png') }}");
+        $("#profilePhoto").attr("src", "{{ asset('public/storage/default-profile.png') }}");
         $("#roleName").text("Loading...");
         $("#contractEmail").text("Loading...");
         $("#userAddress").text("Loading...");
@@ -1094,7 +1094,7 @@
                 // Update user details
                 $("#username").text(user.name);
                 $("#userRank").text(userDetails?.user_title|| "Info Not Updated");
-                $("#profilePhoto").attr("src", user.profile_photo_path ? "{{ asset('storage') }}/" + user.profile_photo_path : "{{ asset('default-profile.png') }}");
+                $("#profilePhoto").attr("src", user.profile_photo_path ? "{{ asset('public/storage') }}/" + user.profile_photo_path : "{{ asset('public/default-profile.png') }}");
                 $("#roleName").text(userDetails?.role_name || "Info Not Updated");
                 $("#contractEmail").text(userDetails?.email || "Info Not Updated");
                 $("#userAddress").text(userDetails?.address || "Info Not Updated");
