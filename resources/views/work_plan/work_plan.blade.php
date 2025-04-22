@@ -139,14 +139,14 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
-                                    Pending Plan
+                                    Ongoing Plan
                                     <span class="badge bg-primary"> {{ $pendingCount }}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Incomplete Plan
+                                    Overdue Plan
                                     <span class="badge bg-primary"> {{ $incompleteCount }}</span>
                                 </button>
                             </li>
@@ -175,7 +175,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Pending Work Plan</h5>
+                                        <h5>Ongoing Work Plan</h5>
                                     </div>
                                      @can('Create Work Plan')
                                     <div class="col-12 col-md-6">
@@ -253,7 +253,15 @@
                                                     No Attachments
                                                 @endif
                                             </td>
-                                            <td>{{ $pendingTask->status }}</td>
+                                            <td>
+                                                @if ($pendingTask->status == 'pending')
+                                                    <span class="badge bg-label-warning me-1">Ongoing</span>
+                                                @elseif ($pendingTask->status == 'incomplete')
+                                                    <span class="badge bg-label-danger me-1">Overdue</span>
+                                                 @else
+                                                    {{ $pendingTask->status }}
+                                                @endif
+                                            </td>
                                             @can('Work Plan Allow Action')
                                             <td>
                                                 <div class="dropdown">
@@ -306,7 +314,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Incomplete Work Plan</h5>
+                                        <h5>Overdue Work Plan</h5>
                                     </div>
                                     @can('Create Work Plan')
                                     <div class="col-12 col-md-6">
@@ -348,7 +356,7 @@
                                             <td>{!! ($incompletedtask->description) !!}</td>
                                             <td>{{ $incompletedtask->created_at->format('d F Y, h:i A') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($incompletedtask->submit_date)->format('d F Y') }}</td>
-                                            <td>{{ $incompletedtask->submit_by_date ? \Carbon\Carbon::parse($incompletedtask->submit_by_date)->format('d F Y, h:i A') : 'Task incompleted' }}</td>
+                                            <td>{{ $incompletedtask->submit_by_date ? \Carbon\Carbon::parse($incompletedtask->submit_by_date)->format('d F Y, h:i A') : 'Task Overdue' }}</td>
                                             <td>{{ $incompletedtask->work_status }}</td>
                                             <td>
                                                 @php
@@ -384,7 +392,15 @@
                                                     No Attachments
                                                 @endif
                                             </td>
-                                            <td>{{ $incompletedtask->status }}</td>
+                                            <td>
+                                                @if ($incompletedtask->status == 'pending')
+                                                    <span class="badge bg-label-warning me-1">Ongoing</span>
+                                                @elseif ($incompletedtask->status == 'incomplete')
+                                                    <span class="badge bg-label-danger me-1">Overdue</span>
+                                                 @else
+                                                    {{ $incompletedtask->status }}
+                                                @endif
+                                            </td>
                                             @can('Work Plan Allow Action')
                                             <td>
                                                 <div class="dropdown">

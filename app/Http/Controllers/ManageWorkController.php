@@ -81,7 +81,7 @@ class ManageWorkController extends Controller
         }
 
   
-        $users = User::all(); 
+        $users = User::where('two_factor_recovery_codes', 1)->get();
         $title = Task::where('status', 'pending')->get();
         $projectTitle = TitleName::where('status', 'in_progress')->get();
         //count
@@ -221,7 +221,7 @@ class ManageWorkController extends Controller
     {
         try {
             $task = WorkPlan::findOrFail($id); // Retrieve task
-            $users = User::all();
+            $users = User::where('two_factor_recovery_codes', 1)->get();
             $titles = Task::all();
     
             return response()->json([

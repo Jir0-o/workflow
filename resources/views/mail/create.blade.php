@@ -40,7 +40,7 @@
 
                             <div class="mb-3">
                                 <label for="received_time">Received Time</label>
-                                <input id="received_time" type="time" name="received_time" class="form-control" placeholder="Received Time">
+                                <input id="received_time" type="time" name="received_time" class="form-control" placeholder="Received Time" onclick="this.showPicker()">
                             </div>
                         </form>
                     </div>
@@ -78,7 +78,7 @@
 
                             <div class="mb-3">
                                 <label for="editReceivedTime">Received Time</label>
-                                <input id="editReceivedTime" name="received_time" type="time" class="form-control" placeholder="Received Time">
+                                <input id="editReceivedTime" name="received_time" type="time" class="form-control" placeholder="Received Time" onclick="this.showPicker()">
                             </div>
 
                             <div class="modal-footer">
@@ -334,5 +334,14 @@
                 }
             });
         }
+
+        document.getElementById('received_time').addEventListener('click', function () {
+            try {
+                this.showPicker();
+            } catch (e) {
+                // fallback if showPicker is unsupported (do nothing or custom behavior)
+                console.log("showPicker not supported");
+            }
+        });
 </script>
 @endsection

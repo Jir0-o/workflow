@@ -503,6 +503,20 @@
             background: #444 !important; /* Adjust badge colors */
             color: #fff !important;
         }
+/* 
+     Side menu change */
+
+     .menu-link div {
+            font-size: 16px;
+            font-weight: 500;
+            color: #131212;
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        .menu-link:hover div {
+            transform: translateY(-2px) scale(1.01);
+        }
+    
     </style>
 
 <div class="modal fade" id="logoutReasonModal" tabindex="-1" role="dialog">

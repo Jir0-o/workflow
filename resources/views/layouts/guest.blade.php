@@ -19,7 +19,7 @@
     @livewireStyles
 
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <!-- MDB -->
@@ -27,11 +27,13 @@
     <link href="{{ asset('backend/css/master.css') }}" rel="stylesheet" />
 
 </head>
-
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <body>
     <div class="font-sans text-gray-900 antialiased">
         @yield('content')
     </div>
+
 
     @livewireScripts
     <!-- MDB -->

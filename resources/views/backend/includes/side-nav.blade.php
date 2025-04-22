@@ -4,7 +4,13 @@
                 text-decoration: none !important;
             }
             .unicorn-logo {
-                width: 60px; /* Adjust width as needed */
+                width: 60px;
+            }
+
+            .side-nav-logo {
+                width: 200px;       
+                position: relative;
+                top: -10px; 
             }
         </style>
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">

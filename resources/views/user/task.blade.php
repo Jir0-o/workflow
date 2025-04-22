@@ -166,7 +166,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
-                                    Pending Task
+                                    Ongoing Task
                                     <span class="badge bg-primary"> {{ $pendingCount }}</span>
                                 </button>
                             </li>
@@ -175,7 +175,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Incomplete Task
+                                    Overdue Task
                                     <span class="badge bg-primary"> {{ $incompleteCount }}</span>
                                 </button>
                             </li>
@@ -210,7 +210,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Pending Task</h5>
+                                        <h5>Ongoing Task</h5>
                                     </div>
                                     @can('Create Task Details')
                                     <div class="col-12 col-md-6">
@@ -277,7 +277,15 @@
                                                     No Attachments
                                                 @endif
                                             </td>
-                                            <td>{{ $pendingTask->status }}</td>
+                                            <td>
+                                                @if ($pendingTask->status == 'pending')
+                                                    <span class="badge bg-label-warning me-1">Ongoing</span>
+                                                @elseif ($pendingTask->status == 'incomplete')
+                                                    <span class="badge bg-label-danger me-1">Overdue</span>
+                                                 @else
+                                                    {{ $pendingTask->status }}
+                                                @endif
+                                            </td>
                                             @can('Task Details Allow Action') 
                                             <td>
                                                 <div class="dropdown">
@@ -334,7 +342,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Incomplete Task</h5>
+                                        <h5>Overdue Task</h5>
                                     </div>
                                     @can('Create Task Details')
                                     <div class="col-12 col-md-6">
@@ -419,7 +427,15 @@
                                                     No Attachments
                                                 @endif
                                             </td>
-                                            <td>{{ $incompletedtask->status }}</td>
+                                            <td>                                               
+                                                 @if ($incompletedtask->status == 'pending')
+                                                    <span class="badge bg-label-warning me-1">Ongoing</span>
+                                                @elseif ($incompletedtask->status == 'incomplete')
+                                                    <span class="badge bg-label-danger me-1">Overdue</span>
+                                                @else
+                                                    {{ $incompletedtask->status }}
+                                                @endif
+                                            </td>
                                             @can('Task Details Allow Action')
                                             <td>
                                                 <div class="dropdown">

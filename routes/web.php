@@ -143,6 +143,9 @@ Route::middleware([
     Route::post('/send-daily-report', [MailController::class, 'sendDaily'])->name('send.daily.report');
     Route::post('/send-monthly-report', [MailController::class, 'sendMonthly'])->name('send.monthly.report');
 
+    //user route
+    Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('user.toggleStatus');
+
 
     // Route::get('/test-mail', function () {
     //     $user = User::first();

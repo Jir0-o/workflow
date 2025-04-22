@@ -64,6 +64,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'profile_photo_path' => $profilePicturePath,
+                'two_factor_recovery_codes' => 1,
             ]);
     
             $user->syncRoles($request->role);
@@ -161,4 +162,13 @@ class UserController extends Controller
  
         return back()->with('success', 'User deleted successfully.');
     }
+
+    public function toggleStatus(User $user)
+    {
+        $user->two_factor_recovery_codes = !$user->two_factor_recovery_codes;
+        $user->save();
+
+        return redirect()->back()->with('status', 'User status updated successfully.');
+    }
+
 }

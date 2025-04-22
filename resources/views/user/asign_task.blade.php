@@ -235,8 +235,8 @@ input.is-invalid {
                     <div class="mb-3">
                         <label for="status">Task Status<span class="text-danger">*</span></label>
                         <select id="status" name="status" class="form-control" required>
-                            <option value="pending">Pending</option>
-                            <option value="incomplete">Incomplete</option>
+                            <option value="pending">Ongoing</option>
+                            <option value="incomplete">Overdue</option>
                             <option value="completed">Completed</option>
                             <option value="in_progress">In Progress</option>
                         </select>
@@ -319,8 +319,8 @@ input.is-invalid {
                     <div class="mb-3">
                         <label for="submit_status">Task Status<span class="text-danger">*</span></label>
                         <select id="submit_status" name="status" class="form-control" required>
-                            <option value="pending">Pending</option>
-                            <option value="incomplete">Incomplete</option>
+                            <option value="pending">Ongoing</option>
+                            <option value="incomplete">Overdue</option>
                             <option value="completed">Completed</option>
                             <option value="in_progress">In Progress</option>
                         </select>
@@ -360,14 +360,14 @@ input.is-invalid {
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Pending"
                                     type="button" role="tab" aria-controls="home" aria-selected="true">
-                                    Pending Task 
+                                    Ongoing Task 
                                     <span class="badge bg-primary"> {{ $pendingCount }}</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Incomplete"
                                     type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Incomplete Task
+                                    Overdue Task
                                     <span class="badge bg-primary"> {{ $incompleteCount }}</span>
                                 </button>
                             </li>
@@ -396,7 +396,7 @@ input.is-invalid {
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Pending Task</h5>
+                                        <h5>Ongoing Task</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
@@ -474,7 +474,15 @@ input.is-invalid {
                                                     No Attachments
                                                 @endif
                                             </td>
-                                            <td>{{ $task->status }}</td>
+                                            <td>
+                                                @if ($task->status == 'pending')
+                                                    <span class="badge bg-label-warning me-1">Ongoing</span>
+                                                @elseif ($task->status == 'incomplete')
+                                                    <span class="badge bg-label-danger me-1">Overdue</span>
+                                                    @else
+                                                    {{ $task->status }}
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -532,7 +540,7 @@ input.is-invalid {
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-12 col-md-6">
-                                        <h5>Incomplete Task</h5>
+                                        <h5>Overdue Task</h5>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="float-end">
@@ -609,7 +617,15 @@ input.is-invalid {
                                                     No Attachments
                                                 @endif
                                             </td>
-                                            <td>{{ $task->status }}</td>
+                                            <td>
+                                                @if ($task->status == 'pending')
+                                                    <span class="badge bg-label-warning me-1">Ongoing</span>
+                                                @elseif ($task->status == 'incomplete')
+                                                    <span class="badge bg-label-danger me-1">Overdue</span>
+                                                    @else
+                                                    {{ $task->status }}
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -638,7 +654,7 @@ input.is-invalid {
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
-                                                                            <i class='bx bx-repost' ></i> Make Pending
+                                                                            <i class='bx bx-repost' ></i> Make Ongoing
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -786,7 +802,7 @@ input.is-invalid {
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
-                                                                            <i class="bx bx-repost"></i> Make Pending
+                                                                            <i class="bx bx-repost"></i> Make Ongoing
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -925,7 +941,7 @@ input.is-invalid {
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <button type="button" class="dropdown-item" onclick="confirmPendingTask({{ $task->id}})">
-                                                                            <i class="bx bx-repost"></i> Make Pending
+                                                                            <i class="bx bx-repost"></i> Make Ongoing
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -1010,7 +1026,7 @@ input.is-invalid {
                     function confirmPendingTask(pendingTaskId) {
                         Swal.fire({
                             title: 'Are you sure?',
-                            text: "Do you want to make this task pending? Task last date of submit will be today.",
+                            text: "Do you want to make this task Ongoing? Task last date of submit will be today.",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
@@ -1028,7 +1044,7 @@ input.is-invalid {
                     function confirmIncompleteTask(incompleteTaskId) {
                         Swal.fire({
                             title: 'Are you sure?',
-                            text: "Do you want to make this task incomplete or pending? If task last submit date is not expired then pending other wise incomplete.",
+                            text: "Do you want to make this task incomplete or Ongoing? If task last submit date is not expired then Ongoing other wise incomplete.",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',

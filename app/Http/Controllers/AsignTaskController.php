@@ -82,7 +82,7 @@ class AsignTaskController extends Controller
         }
 
   
-        $users = User::all(); 
+        $users = User::where('two_factor_recovery_codes', 1)->get();
         $title = TitleName::all();
         //count
         $pendingCount = Task::where('status', 'pending')->count();
@@ -223,7 +223,7 @@ class AsignTaskController extends Controller
     {
         try {
             $task = Task::findOrFail($id); // Retrieve task
-            $users = User::all();
+            $users = User::where('two_factor_recovery_codes', 1)->get();
             $titles = TitleName::all();
             $assignedUsers = explode(',', $task ->user_id);
             

@@ -3,6 +3,126 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <h4 class="py-2 m2-4"><span class="text-muted fw-light">Users,Roles & Permissions</span></h4>
 
+    <div class="row mt-5">
+        <div class="col-12 col-md-12 col-lg-12">
+            {{-- Users --}}
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <h5>Users</h5>
+                        </div>
+                        @can('Create User')
+                        <div class="col-12 col-md-6">
+                            <div class="float-end">
+                                <!-- Button trigger modal -->
+                                <button type="button"  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                                    <i class="bx bx-edit-alt me-1"></i> Create User
+                                </button>
+                                <!-- Modal -->
+                            </div>
+                        </div>
+                        @endcan
+                    </div>
+                </div>
+                <div class="table-responsive text-nowrap p-3">
+                    <table id="datatable1" class="table">
+                        <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>Image</th>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            @foreach ($users as $user)
+                                <tr>
+                                    <td>
+                                        {{ $loop->iteration }}
+                                    </td> 
+                                    <td>
+                                        @if ($user->profile_photo_path)
+                                            <img src="{{ asset('public/storage/' . $user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
+                                        @else
+                                            <img src={{ asset ('public/default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
+                                        @endif
+                                    </td>
+                                   
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>
+                                        @foreach ($user->roles as $role)
+                                            {{$role->name }}
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        @if($user->two_factor_recovery_codes)
+                                            <span class="badge bg-success">Active</span>
+                                        @else
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                                data-bs-toggle="dropdown">
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                @can('edit User')
+                                                <a class="dropdown-item" 
+                                                   href="#" 
+                                                   data-bs-toggle="modal" 
+                                                   data-bs-target="#editUserModal" 
+                                                   data-id="{{ $user->id }}">
+                                                    <i class="bx bx-edit-alt me-1"></i> Edit
+                                                </a>
+                                                @endcan
+                                                @can('delete User')
+                                                    <form id="toggle-{{ $user->id }}" action="{{ route('user.toggleStatus', $user->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="bx bx-sync me-1"></i>
+                                                            {{ $user->two_factor_recovery_codes ? 'Set Inactive' : 'Set Active' }}
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <script>
+                function confirmDelete(DeleteId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Do you want to delete this element? You will get back any deleted Data",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById(`delete-${DeleteId}`).submit();
+                        }
+                    });
+                } 
+            </script> 
+            <!--/ Permissions -->
+        </div>
+    </div>
+    <br>
     <div class="row">
         <div class="col-12 col-md-6 col-lg-6">
             <!-- Roles -->
@@ -104,13 +224,17 @@
                                 <label for="email">Email</label>
                                 <input id="email" name="email" type="email" required class="form-control" placeholder="User Email">
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 position-relative">
                                 <label for="password">Password</label>
                                 <input id="password" name="password" type="password" required class="form-control" placeholder="User Password">
+                                <span class="fa fa-eye toggle-password"
+                                    style="position: absolute; top: 35px; right: 25px; cursor: pointer;"></span>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 position-relative">
                                 <label for="confirm_password">Confirm Password</label>
                                 <input id="confirm_password" name="password_confirmation" type="password" required class="form-control" placeholder="Confirm Password">
+                                <span class="fa fa-eye toggle-password-confirm"
+                                    style="position: absolute; top: 35px; right: 25px; cursor: pointer;"></span>
                             </div>
                             <div class="mb-3">
                                 <label for="user_role">Role</label>
@@ -157,14 +281,18 @@
                             <input type="email" id="edit_email" name="email" class="form-control" required>
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="edit_password" class="form-label">Password (Optional)</label>
                             <input type="password" id="edit_password" name="password" class="form-control">
+                            <span class="fa fa-eye toggle-password-edit"
+                                style="position: absolute; top: 42px; right: 25px; cursor: pointer;"></span>
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="edit_confirm_password" class="form-label">Confirm Password</label>
                             <input type="password" id="edit_confirm_password" name="password_confirmation" class="form-control">
+                            <span class="fa fa-eye toggle-password-confirm-edit"
+                                style="position: absolute; top: 42px; right: 25px; cursor: pointer;"></span>
                         </div>
                         
                         <div class="mb-3">
@@ -258,118 +386,6 @@
                     </table>
                 </div>
             </div>
-            <!--/ Permissions -->
-        </div>
-    </div>
-    <div class="row mt-5">
-        <div class="col-12 col-md-12 col-lg-12">
-            {{-- Users --}}
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <h5>Users</h5>
-                        </div>
-                        @can('Create User')
-                        <div class="col-12 col-md-6">
-                            <div class="float-end">
-                                <!-- Button trigger modal -->
-                                <button type="button"  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                                    <i class="bx bx-edit-alt me-1"></i> Create User
-                                </button>
-                                <!-- Modal -->
-                            </div>
-                        </div>
-                        @endcan
-                    </div>
-                </div>
-                <div class="table-responsive text-nowrap p-3">
-                    <table id="datatable1" class="table">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Image</th>
-                                <th>User Name</th>
-                                <th>Email</th>
-                                <th>Roles</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                            @foreach ($users as $user)
-                                <tr>
-                                    <td>
-                                        {{ $loop->iteration }}
-                                    </td> 
-                                    <td>
-                                        @if ($user->profile_photo_path)
-                                            <img src="{{ asset('public/storage/' . $user->profile_photo_path) }}" alt="Profile Picture" width="50" height="50" class="rounded-circle">
-                                        @else
-                                            <img src={{ asset ('public/default-profile.jpg')}} alt="Default Profile" width="50" height="50" class="rounded-circle">
-                                        @endif
-                                    </td>
-                                   
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>
-                                        @foreach ($user->roles as $role)
-                                            {{$role->name }}
-                                        @endforeach
-                                    </td>
-                                    <td><span class="badge bg-label-primary me-1">Active</span></td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                @can('edit User')
-                                                <a class="dropdown-item" 
-                                                   href="#" 
-                                                   data-bs-toggle="modal" 
-                                                   data-bs-target="#editUserModal" 
-                                                   data-id="{{ $user->id }}">
-                                                    <i class="bx bx-edit-alt me-1"></i> Edit
-                                                </a>
-                                                @endcan                               
-                                                        @can('delete User')
-                                                        <form id="delete-{{ $user->id }}" action="{{ route('user.destroy', $user->id) }}" method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="dropdown-item" onclick="confirmDelete({{ $user->id}})">
-                                                                <i class="bx bx-trash me-1"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                        @endcan
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <script>
-                function confirmDelete(DeleteId) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "Do you want to delete this element? You will get back any deleted Data",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, Delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            document.getElementById(`delete-${DeleteId}`).submit();
-                        }
-                    });
-                } 
-            </script> 
             <!--/ Permissions -->
         </div>
     </div>
@@ -537,7 +553,53 @@
         });
     });
 
+    $(".toggle-password").on("click", function () {
+            const input = $("#password");
+            const icon = $(this);
 
+            // Toggle input type
+            const type = input.attr("type") === "password" ? "text" : "password";
+            input.attr("type", type);
+
+            // Toggle icon class
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
+
+        $(".toggle-password-confirm").on("click", function () {
+            const input = $("#confirm_password");
+            const icon = $(this);
+
+            // Toggle input type
+            const type = input.attr("type") === "password" ? "text" : "password";
+            input.attr("type", type);
+
+            // Toggle icon class
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
+
+        $(".toggle-password-edit").on("click", function () {
+            const input = $("#edit_password");
+            const icon = $(this);
+
+            // Toggle input type
+            const type = input.attr("type") === "password" ? "text" : "password";
+            input.attr("type", type);
+
+            // Toggle icon class
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
+
+        $(".toggle-password-confirm-edit").on("click", function () {
+            const input = $("#edit_confirm_password");
+            const icon = $(this);
+
+            // Toggle input type
+            const type = input.attr("type") === "password" ? "text" : "password";
+            input.attr("type", type);
+
+            // Toggle icon class
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
     });
 
 </script>

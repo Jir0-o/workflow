@@ -40,7 +40,7 @@ class ProjectTitleController extends Controller
         $runningProject = TitleName::where('status', 'in_progress')->with('user','task')->latest()->get();
         $completedProject = TitleName::where('status', 'completed')->with('user','task')->latest()->get();
         $droppedProject = TitleName::where('status', 'dropped')->with('user','task')->latest()->get();
-        $users = User::all(); 
+        $users = User::where('two_factor_recovery_codes', 1)->get();
     
         return view('user.project.projectTitle', compact('runningCount', 'completedCount', 'droppedCount','runningProject','completedProject','droppedProject','projects','users'));
 
@@ -51,7 +51,7 @@ class ProjectTitleController extends Controller
      */
     public function create()
     {
-        $users = User::all(); 
+        $users = User::where('two_factor_recovery_codes', 1)->get();
         return view('user.project.createProject',compact('users'));
     }
 
@@ -165,7 +165,7 @@ class ProjectTitleController extends Controller
     public function newEdit(string $id)
     {
         try {
-            $users = User::all(); 
+            $users = User::where('two_factor_recovery_codes', 1)->get();
             $project = TitleName::findOrFail($id);
             $assignedUsers = explode(',', $project->user_id);
     
